@@ -10,6 +10,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"time"
 )
 
 // Map functions return a slice of KeyValue.
@@ -50,6 +51,7 @@ func Worker(mapf func(string, string) []KeyValue,
 	nMap := numberReply.NMap
 	nReduce := numberReply.NReduce
 	for {
+		time.Sleep(time.Millisecond * 10)
 		ok := call("Coordinator.AssignMapTaskReq", &pid, &reply)
 		if ok {
 			//run map task
@@ -71,6 +73,7 @@ func Worker(mapf func(string, string) []KeyValue,
 
 	var reduceReply TaskReqReply
 	for {
+		time.Sleep(time.Millisecond * 10)
 		ok := call("Coordinator.AssignReduceTaskReq", &pid, &reduceReply)
 		if ok {
 			// run reduce task

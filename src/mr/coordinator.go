@@ -136,7 +136,7 @@ func (c *Coordinator) MapTaskNotice(args *Task, reply *struct{}) error {
 		// and the map task is completed by another worker.
 		// Do not change the TaskDB in this case
 		// if TaskDB[args.FileName] doesn't exist, then add the current worker info to TaskDB
-		if !exists {
+		if !exists && args.Status == Complete {
 			c.TaskDB[args.TaskID] = TaskInfo{args.TaskID, args.MapWorkerPID[0], Complete}
 			c.mapWG.Done()
 			//fmt.Printf("task %v is complete\n", args)
