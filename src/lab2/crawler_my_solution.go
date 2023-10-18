@@ -1,4 +1,4 @@
-package my_main
+package main
 
 import (
 	"fmt"
@@ -27,7 +27,7 @@ func SerialCrawl(url string, depth int, fetcher Fetcher) {
 	}
 	fmt.Printf("found: %s %q\n", url, body)
 	for _, u := range urls {
-		Crawl(u, depth-1, fetcher)
+		SerialCrawl(u, depth-1, fetcher)
 	}
 	return
 }
@@ -37,45 +37,64 @@ func ConncurrentCrawl(url string, depth int, fetcher Fetcher) {
 	var mu sync.RWMutex
 	var wg sync.WaitGroup
 
-	fetchedDB := map[string]bool
+	fetchedDB := make(map[string]bool)
+	done := false
 	tasks <- Task{url, depth}
 	wg.Add(1)
 
 	go func() {
-		wg.Wait
+		wg.Wait()
 		close(tasks)
+		mu.Lock()
+		done = true
+		mu.Unlock()
 	}()
 
-	for task := range tasks {
-		go func(mu *sync.RWMutex) {
+	for {
+		mu.RLock()
+		status := done
+		mu.RUnlock()
+		if status {
+			return
+		}
+		task := <-tasks
+		go func(mu *sync.RWMutex, task *Task) {
+			fmt.Printf("Processing task %v\n", task)
 			body, children_urls, err := fetcher.Fetch(task.url)
-			fmt.Printf("found: %s %q\n", task.url, body)
-			mu.RLock()
-			fetchedDB[task.url] = true
-			mu.RUnLock()
-			wg.Done()
+			if err != nil {
+				mu.Lock()
+				fetchedDB[task.url] = true
+				mu.Unlock()
+				fmt.Printf("Error: %v\n", err)
+			} else {
+				fmt.Printf("found: %s %q\n", task.url, body)
+				mu.Lock()
+				fetchedDB[task.url] = true
+				mu.Unlock()
 
-			for _, url := range children_urls {
-				// TO DO: depth >=0 and url is not in fetched
-				mu.RLo
-				_, exists = fetchedDB[url]
-				tasks <- Task{url, d}
-				wg.Add(1)
+				for _, url := range children_urls {
+					mu.RLock()
+					_, exists := fetchedDB[url]
+					mu.RUnlock()
+					if !exists && task.depth > 0 {
+						t := Task{url, task.depth - 1}
+						tasks <- t
+						wg.Add(1)
+					}
+
+				}
 			}
-		}(&mu)
-
+			wg.Done()
+		}(&mu, &task)
 	}
 
 }
 
-func ProcessTask(tasks <-chan Task, fetcher *Fetcher, wg *sync.WaitGroup) (<-chan Task, []string, int) {
-
-	return tasks, children_urls, task.depth - 1
-
-}
-
 func main() {
-	Crawl("https://golang.org/", 4, fetcher)
+	fmt.Println("***Starting serial crawler...")
+	SerialCrawl("https://golang.org/", 4, fetcher)
+	fmt.Println("***Starting concurrent crawler...")
+	ConncurrentCrawl("https://golang.org/", 4, fetcher)
 }
 
 type Task struct {
