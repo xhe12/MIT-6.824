@@ -42,23 +42,23 @@ func ConncurrentCrawl(url string, depth int, fetcher Fetcher) {
 	tasks <- Task{url, depth}
 	wg.Add(1)
 
-	go func() {
+	go func(wg *sync.WaitGroup) {
 		wg.Wait()
 		close(tasks)
 		mu.Lock()
 		done = true
 		mu.Unlock()
-	}()
+	}(&wg)
 
 	for {
 		mu.RLock()
-		status := done
-		mu.RUnlock()
-		if status {
+		if done {
 			return
 		}
+		mu.RUnlock()
 		task := <-tasks
-		go func(mu *sync.RWMutex, task *Task) {
+		go func() {
+			defer wg.Done()
 			fmt.Printf("Processing task %v\n", task)
 			body, children_urls, err := fetcher.Fetch(task.url)
 			if err != nil {
@@ -78,14 +78,15 @@ func ConncurrentCrawl(url string, depth int, fetcher Fetcher) {
 					mu.RUnlock()
 					if !exists && task.depth > 0 {
 						t := Task{url, task.depth - 1}
-						tasks <- t
 						wg.Add(1)
+						fmt.Printf("Adding task %v\n", t)
+						tasks <- t
 					}
 
 				}
 			}
-			wg.Done()
-		}(&mu, &task)
+
+		}()
 	}
 
 }
