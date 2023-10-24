@@ -138,17 +138,31 @@ func (rf *Raft) Snapshot(index int, snapshot []byte) {
 // field names must start with capital letters!
 type RequestVoteArgs struct {
 	// Your data here (2A, 2B).
+	Term        int // candidate's term
+	CandidateId int //candidate requesting vote
+	// TO DO: lastLogIndex
+	// TO DO: lastLogTerm
 }
 
 // example RequestVote RPC reply structure.
 // field names must start with capital letters!
 type RequestVoteReply struct {
 	// Your data here (2A).
+	Term        int // current term
+	VoteGranted bool
 }
 
 // example RequestVote RPC handler.
 func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	// Your code here (2A, 2B).
+	reply.Term = rf.currentTerm
+	if args.Term < rf.currentTerm {
+		reply.VoteGranted = false
+	} else {
+		reply.VoteGranted = true
+		rf.votedFor = args.CandidateId
+	}
+	// (2B) TO DO: Rejection based logs
 }
 
 // example code to send a RequestVote RPC to a server.
@@ -232,11 +246,36 @@ func (rf *Raft) ticker() {
 		// Your code here to check if a leader election should
 		// be started and to randomize sleeping time using
 		// time.Sleep().
-		electionTimeout := rand.Intn(150) + 150
-		timer := time.NewTimer(time.Duration(electionTimeout) * time.Millisecond)
+		electionTimeout := time.Duration(rand.Intn(150)+250) * time.Millisecond // 250ms ~ 400ms
+		timer := time.NewTimer(electionTimeout)
 		select {
 		case <-timer.C:
+			// Retart another timer for receiving a majority of votes
+			timer.Reset(electionTimeout)
 			// call request vote
+			rf.currentTerm++
+			vote := 1 // vote for self
+			//TO DO: reset election timer
+			// send request vote RPCs to all other servers
+			reply := make([]RequestVoteReply, len(rf.peers))
+			args := RequestVoteArgs{}
+
+			for i := 0; i < len(rf.peers) && i != rf.me; i++ {
+				go func() {
+					if rf.sendRequestVote(i, &args, &reply[i]) {
+						if reply[i].VoteGranted {
+							rf.mu.Lock()
+							vote++
+							rf.mu.Unlock()
+						}
+					}
+				}()
+			}
+			select {
+			case <-timer.C:
+				// start another election
+			}
+
 		case <-heartbeat:
 			timer.Stop()
 		}
