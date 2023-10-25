@@ -69,7 +69,9 @@ type Raft struct {
 	// leader only
 	nextIndex  []int
 	matchIndex []int // initialized to 0
-	leaderID   int   // initialized to -1
+
+	leaderID   int // initialized to -1
+	hbReceived bool
 }
 
 // return currentTerm and whether this server
@@ -155,12 +157,17 @@ type RequestVoteReply struct {
 // example RequestVote RPC handler.
 func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	// Your code here (2A, 2B).
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
 	reply.Term = rf.currentTerm
 	if args.Term < rf.currentTerm {
 		reply.VoteGranted = false
 	} else {
 		reply.VoteGranted = true
+
 		rf.votedFor = args.CandidateId
+		rf.currentTerm = args.Term
+
 	}
 	// (2B) TO DO: Rejection based logs
 }
@@ -247,39 +254,91 @@ func (rf *Raft) ticker() {
 		// be started and to randomize sleeping time using
 		// time.Sleep().
 		electionTimeout := time.Duration(rand.Intn(150)+250) * time.Millisecond // 250ms ~ 400ms
-		timer := time.NewTimer(electionTimeout)
-		select {
-		case <-timer.C:
-			// Retart another timer for receiving a majority of votes
-			timer.Reset(electionTimeout)
-			// call request vote
-			rf.currentTerm++
-			vote := 1 // vote for self
-			//TO DO: reset election timer
-			// send request vote RPCs to all other servers
-			reply := make([]RequestVoteReply, len(rf.peers))
-			args := RequestVoteArgs{}
 
-			for i := 0; i < len(rf.peers) && i != rf.me; i++ {
-				go func() {
-					if rf.sendRequestVote(i, &args, &reply[i]) {
-						if reply[i].VoteGranted {
-							rf.mu.Lock()
-							vote++
-							rf.mu.Unlock()
-						}
-					}
-				}()
-			}
-			select {
-			case <-timer.C:
-				// start another election
-			}
-
-		case <-heartbeat:
+		// TO DO: timer garbage collected?
+		timedOut := false
+		timer := time.AfterFunc(electionTimeout, func() {
+			timedOut = true
+		})
+		defer timer.Stop()
+		c := sync.NewCond(&rf.mu)
+		c.L.Lock()
+		for !rf.hbReceived || !timedOut {
+			c.Wait()
+		}
+		c.L.Unlock()
+		if rf.hbReceived {
 			timer.Stop()
+			rf.mu.Lock()
+			rf.hbReceived = false
+			rf.mu.Unlock()
+		} else {
+			rf.startElection()
 		}
 
+	}
+}
+
+func (rf *Raft) startElection() {
+	// Start another timer for receiving a majority of votes
+	electionTimeout := time.Duration(rand.Intn(150)+250) * time.Millisecond // 250ms ~ 400ms
+	//timer := time.NewTimer(electionTimeout)
+	// call request vote
+	rf.currentTerm++
+	vote := 1 // vote for self
+	// send request vote RPCs to all other servers
+	reply := make([]RequestVoteReply, len(rf.peers), len(rf.peers))
+	args := RequestVoteArgs{rf.currentTerm, rf.me}
+
+	for i := 0; i < len(rf.peers) && i != rf.me; i++ {
+		go func() {
+			if rf.sendRequestVote(i, &args, &reply[i]) {
+				if reply[i].VoteGranted {
+					rf.mu.Lock()
+					vote++
+					rf.mu.Unlock()
+				}
+			}
+		}()
+	}
+	elected := false
+	done := make(chan struct{})
+	go func() {
+		for vote <= len(rf.peers)/2 {
+			select {
+			case <-done:
+				return
+			default:
+				time.Sleep(5 * time.Millisecond)
+			}
+		}
+		elected = true
+	}()
+
+	timedOut := false
+	timer := time.AfterFunc(electionTimeout, func() {
+		timedOut = true
+	})
+	defer timer.Stop()
+	c := sync.NewCond(&rf.mu)
+	c.L.Lock()
+	for !rf.hbReceived || !timedOut || !elected {
+		c.Wait()
+	}
+	c.L.Unlock()
+	timer.Stop()
+
+	if rf.hbReceived {
+		rf.mu.Lock()
+		rf.hbReceived = false
+		rf.mu.Unlock()
+		done <- struct{}{}
+	} else if elected {
+		rf.leaderID = rf.me
+	} else {
+		// timedout = true
+		done <- struct{}{}
+		rf.startElection()
 	}
 }
 
