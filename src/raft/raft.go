@@ -48,10 +48,18 @@ type ApplyMsg struct {
 	SnapshotTerm  int
 	SnapshotIndex int
 }
+type status int8
+
+const (
+	follower status = iota
+	candidate
+	leader
+)
 
 // A Go object implementing a single Raft peer.
 type Raft struct {
-	mu        sync.Mutex          // Lock to protect shared access to this peer's state
+	mu        sync.Mutex // Lock to protect shared access to this peer's state
+	cond      *sync.Cond
 	peers     []*labrpc.ClientEnd // RPC end points of all peers
 	persister *Persister          // Object to hold this peer's persisted state
 	me        int                 // this peer's index into peers[]
@@ -71,16 +79,22 @@ type Raft struct {
 	matchIndex []int // initialized to 0
 
 	leaderID   int // initialized to -1
-	hbReceived bool
+	status     status
+	hbReceived atomic.Bool
 }
 
 // return currentTerm and whether this server
 // believes it is the leader.
 func (rf *Raft) GetState() (int, bool) {
 
-	var term int
+	var term int = rf.currentTerm
 	var isleader bool
 	// Your code here (2A).
+	if rf.status == leader {
+		isleader = true
+	} else {
+		isleader = false
+	}
 	return term, isleader
 }
 
@@ -169,7 +183,61 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		rf.currentTerm = args.Term
 
 	}
-	// (2B) TO DO: Rejection based logs
+	// (2B) TO DO: log-based rejection
+}
+
+type AppendEntriesArg struct {
+	Term     int // leader's term
+	LeaderId int
+	//PrevLogIndex int
+	//PrevLogTerm int
+	//Entries []Entry
+	//LeaderCOmmit int
+}
+
+type AppendEntriesReply struct {
+	Term    int // currentTerm
+	success bool
+}
+
+func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply) {
+	reply.Term = rf.currentTerm
+	if args.Term < rf.currentTerm {
+		reply.success = false
+	} else {
+		reply.success = true
+		rf.hbReceived.Store(true)
+		rf.cond.Broadcast()
+
+	}
+}
+func (rf *Raft) sendAppendEntries() {
+	for !rf.killed() {
+		for rf.status == leader {
+			args := AppendEntriesArg{rf.currentTerm, rf.me}
+			replies := make(chan AppendEntriesReply)
+			var wg sync.WaitGroup
+			for i := 0; i < len(rf.peers) && i != rf.me; i++ {
+				wg.Add(1)
+				reply := AppendEntriesReply{}
+				ok := rf.peers[i].Call("Raft.AppendEntries", &args, &reply)
+				if ok {
+					replies <- reply
+				}
+			}
+			go func() {
+				for r := range replies {
+					wg.Done()
+					if r.Term > rf.currentTerm {
+						rf.status = follower
+					}
+				}
+			}()
+			wg.Wait()
+			close(replies)
+		}
+	}
+
 }
 
 // example code to send a RequestVote RPC to a server.
@@ -248,31 +316,34 @@ func (rf *Raft) killed() bool {
 // The ticker go routine starts a new election if this peer hasn't received
 // heartsbeats recently.
 func (rf *Raft) ticker() {
-	for rf.killed() == false {
+	for !rf.killed() {
 
 		// Your code here to check if a leader election should
 		// be started and to randomize sleeping time using
 		// time.Sleep().
 		electionTimeout := time.Duration(rand.Intn(150)+250) * time.Millisecond // 250ms ~ 400ms
-
-		// TO DO: timer garbage collected?
-		timedOut := false
+		//c := sync.NewCond(&rf.mu)
+		var timedOut atomic.Bool
+		timedOut.Store(false)
 		timer := time.AfterFunc(electionTimeout, func() {
-			timedOut = true
+			timedOut.Store(true)
+			rf.cond.Broadcast()
 		})
 		defer timer.Stop()
-		c := sync.NewCond(&rf.mu)
-		c.L.Lock()
-		for !rf.hbReceived || !timedOut {
-			c.Wait()
+
+		rf.cond.L.Lock()
+		for !rf.hbReceived.Load() || !timedOut.Load() {
+			rf.cond.Wait()
+			time.Sleep(time.Millisecond * 5)
 		}
-		c.L.Unlock()
-		if rf.hbReceived {
-			timer.Stop()
-			rf.mu.Lock()
-			rf.hbReceived = false
-			rf.mu.Unlock()
+		rf.cond.L.Unlock()
+
+		if rf.hbReceived.Load() {
+			rf.hbReceived.Store(false)
 		} else {
+			rf.mu.Lock()
+			rf.status = candidate
+			rf.mu.Unlock()
 			rf.startElection()
 		}
 
@@ -285,26 +356,26 @@ func (rf *Raft) startElection() {
 	//timer := time.NewTimer(electionTimeout)
 	// call request vote
 	rf.currentTerm++
-	vote := 1 // vote for self
+	var vote uint32 = 1 // vote for self
 	// send request vote RPCs to all other servers
-	reply := make([]RequestVoteReply, len(rf.peers), len(rf.peers))
+	reply := make([]RequestVoteReply, len(rf.peers))
 	args := RequestVoteArgs{rf.currentTerm, rf.me}
 
 	for i := 0; i < len(rf.peers) && i != rf.me; i++ {
-		go func() {
+		go func(i int) {
 			if rf.sendRequestVote(i, &args, &reply[i]) {
 				if reply[i].VoteGranted {
-					rf.mu.Lock()
-					vote++
-					rf.mu.Unlock()
+					atomic.AddUint32(&vote, 1)
 				}
 			}
-		}()
+		}(i)
 	}
-	elected := false
+	var elected atomic.Bool
+	elected.Store(false)
 	done := make(chan struct{})
 	go func() {
-		for vote <= len(rf.peers)/2 {
+		// start counting votes
+		for vote <= uint32(len(rf.peers)/2) {
 			select {
 			case <-done:
 				return
@@ -312,31 +383,37 @@ func (rf *Raft) startElection() {
 				time.Sleep(5 * time.Millisecond)
 			}
 		}
-		elected = true
+		elected.Store(true)
+		rf.cond.Signal()
 	}()
 
-	timedOut := false
+	var timedOut atomic.Bool
+	timedOut.Store(false)
 	timer := time.AfterFunc(electionTimeout, func() {
-		timedOut = true
+		timedOut.Store(true)
+		rf.cond.Signal()
 	})
-	defer timer.Stop()
-	c := sync.NewCond(&rf.mu)
-	c.L.Lock()
-	for !rf.hbReceived || !timedOut || !elected {
-		c.Wait()
+
+	//rf.cond.L.Lock()
+	for !rf.hbReceived.Load() || !timedOut.Load() || !elected.Load() {
+		rf.cond.Wait()
 	}
-	c.L.Unlock()
+	//rf.cond.L.Unlock()
 	timer.Stop()
 
-	if rf.hbReceived {
+	if rf.hbReceived.Load() {
+		rf.hbReceived.Store(false)
 		rf.mu.Lock()
-		rf.hbReceived = false
+		rf.status = follower
 		rf.mu.Unlock()
-		done <- struct{}{}
-	} else if elected {
+		done <- struct{}{} // stop counting votes
+	} else if elected.Load() {
+		rf.mu.Lock()
 		rf.leaderID = rf.me
+		rf.status = leader
+		rf.mu.Unlock()
 	} else {
-		// timedout = true
+		// election timed out, start a new one
 		done <- struct{}{}
 		rf.startElection()
 	}
@@ -357,6 +434,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.peers = peers
 	rf.persister = persister
 	rf.me = me
+	rf.cond = sync.NewCond(&rf.mu)
 
 	// Your initialization code here (2A, 2B, 2C).
 
@@ -365,11 +443,13 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.commitIndex = 0 // initialized to 0
 	rf.lastApplied = 0 // initialized to 0
 	rf.leaderID = -1
+	rf.status = follower
 	// initialize from state persisted before a crash
 	rf.readPersist(persister.ReadRaftState())
 
 	// start ticker goroutine to start elections
 	go rf.ticker()
+	go rf.sendAppendEntries()
 
 	return rf
 }
