@@ -19,6 +19,7 @@ package raft
 
 import (
 	//	"bytes"
+	"fmt"
 	"math/rand"
 	"sync"
 	"sync/atomic"
@@ -75,12 +76,12 @@ type Raft struct {
 	lastApplied int // initialized to 0
 
 	// leader only
-	nextIndex  []int
-	matchIndex []int // initialized to 0
+	//nextIndex  []int
+	//matchIndex []int // initialized to 0
 
-	leaderID   int // initialized to -1
-	status     status
-	hbReceived atomic.Bool
+	leaderID int // initialized to -1
+	status   status
+	hbs      chan bool // heartbeat channel
 }
 
 // return currentTerm and whether this server
@@ -197,18 +198,18 @@ type AppendEntriesArg struct {
 
 type AppendEntriesReply struct {
 	Term    int // currentTerm
-	success bool
+	Success bool
 }
 
 func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply) {
 	reply.Term = rf.currentTerm
 	if args.Term < rf.currentTerm {
-		reply.success = false
+		reply.Success = false
 	} else {
-		reply.success = true
-		rf.hbReceived.Store(true)
-		rf.cond.Broadcast()
-
+		reply.Success = true
+		//rf.hbReceived.Store(true)
+		rf.hbs <- true
+		//rf.cond.Broadcast()
 	}
 }
 func (rf *Raft) sendAppendEntries() {
@@ -223,13 +224,20 @@ func (rf *Raft) sendAppendEntries() {
 				ok := rf.peers[i].Call("Raft.AppendEntries", &args, &reply)
 				if ok {
 					replies <- reply
+				} else {
+					// No reply received
+					wg.Done()
 				}
 			}
 			go func() {
 				for r := range replies {
 					wg.Done()
 					if r.Term > rf.currentTerm {
+						rf.mu.Lock()
 						rf.status = follower
+						rf.leaderID = -1
+						rf.mu.Unlock()
+						fmt.Printf("server %v becomes follower\n", rf.me)
 					}
 				}
 			}()
@@ -321,31 +329,48 @@ func (rf *Raft) ticker() {
 		// Your code here to check if a leader election should
 		// be started and to randomize sleeping time using
 		// time.Sleep().
-		electionTimeout := time.Duration(rand.Intn(150)+250) * time.Millisecond // 250ms ~ 400ms
+		electionTimeout := time.Duration(rand.Intn(150)+150) * time.Millisecond // 150ms ~ 300ms
 		//c := sync.NewCond(&rf.mu)
-		var timedOut atomic.Bool
-		timedOut.Store(false)
-		timer := time.AfterFunc(electionTimeout, func() {
-			timedOut.Store(true)
-			rf.cond.Broadcast()
-		})
-		defer timer.Stop()
+		//var timedOut atomic.Bool
+		//timedOut.Store(false)
+		//timedOut := false
+		timer := time.NewTimer(electionTimeout)
 
-		rf.cond.L.Lock()
-		for !rf.hbReceived.Load() || !timedOut.Load() {
-			rf.cond.Wait()
-			time.Sleep(time.Millisecond * 5)
-		}
-		rf.cond.L.Unlock()
-
-		if rf.hbReceived.Load() {
-			rf.hbReceived.Store(false)
-		} else {
+		// rf.cond.L.Lock()
+		// i := 1
+		// for !rf.hbReceived.Load() && !timedOut {
+		// 	fmt.Printf("Waiting %v\n", i)
+		// 	i++
+		// 	rf.cond.Wait()
+		// }
+		// rf.cond.L.Unlock()
+		select {
+		case <-timer.C:
 			rf.mu.Lock()
 			rf.status = candidate
+			fmt.Printf("server %v is starting an election for term %v\n", rf.me, rf.currentTerm+1)
 			rf.mu.Unlock()
 			rf.startElection()
+		case <-rf.hbs:
+			fmt.Printf("server %v has received heartbeat\n", rf.me)
+
 		}
+
+		if !timer.Stop() {
+			<-timer.C
+			fmt.Println("election timer is stopped")
+		}
+
+		// if rf.hbReceived.Load() {
+		// 	rf.hbReceived.Store(false)
+		// 	fmt.Printf("server %v has received heartbeat\n", rf.me)
+		// } else {
+		// 	rf.mu.Lock()
+		// 	rf.status = candidate
+		// 	fmt.Printf("server %v is starting an election for term %v\n", rf.me, rf.currentTerm+1)
+		// 	rf.mu.Unlock()
+		// 	rf.startElection()
+		// }
 
 	}
 }
@@ -370,8 +395,9 @@ func (rf *Raft) startElection() {
 			}
 		}(i)
 	}
-	var elected atomic.Bool
-	elected.Store(false)
+	// var elected atomic.Bool
+	// elected.Store(false)
+	elected := make(chan bool, 1)
 	done := make(chan struct{})
 	go func() {
 		// start counting votes
@@ -380,43 +406,69 @@ func (rf *Raft) startElection() {
 			case <-done:
 				return
 			default:
-				time.Sleep(5 * time.Millisecond)
+				time.Sleep(time.Millisecond)
 			}
 		}
-		elected.Store(true)
-		rf.cond.Signal()
+		elected <- true
+		// elected.Store(true)
+		// rf.cond.Signal()
 	}()
+	timer := time.NewTimer(electionTimeout)
 
-	var timedOut atomic.Bool
-	timedOut.Store(false)
-	timer := time.AfterFunc(electionTimeout, func() {
-		timedOut.Store(true)
-		rf.cond.Signal()
-	})
+	// timer := time.AfterFunc(electionTimeout, func() {
+	// 	//timedOut.Store(true)
+	// 	//rf.mu.Lock()
+	// 	//timedOut = true
+	// 	//rf.cond.Broadcast()
+	// 	//rf.mu.Unlock()
+	// 	fmt.Printf("candidate %v has not timed out an election\n", rf.me)
+	// })
 
 	//rf.cond.L.Lock()
-	for !rf.hbReceived.Load() || !timedOut.Load() || !elected.Load() {
-		rf.cond.Wait()
-	}
+	// for !rf.hbReceived.Load() && !timedOut.Load() && !elected.Load() {
+	// 	rf.cond.Wait()
+	// }
 	//rf.cond.L.Unlock()
-	timer.Stop()
-
-	if rf.hbReceived.Load() {
-		rf.hbReceived.Store(false)
-		rf.mu.Lock()
-		rf.status = follower
-		rf.mu.Unlock()
-		done <- struct{}{} // stop counting votes
-	} else if elected.Load() {
+	//timer.Stop()
+	select {
+	case <-elected:
 		rf.mu.Lock()
 		rf.leaderID = rf.me
 		rf.status = leader
+		fmt.Printf("server %v is elected for term %v", rf.me, rf.currentTerm)
 		rf.mu.Unlock()
-	} else {
+	case <-rf.hbs:
+		rf.mu.Lock()
+		rf.status = follower
+		fmt.Printf("candidate %v received a heart beat from a leader for term %v\n", rf.me, rf.currentTerm)
+		rf.mu.Unlock()
+		done <- struct{}{} // stop counting votes
+	case <-timer.C:
 		// election timed out, start a new one
 		done <- struct{}{}
+		fmt.Println("election is timed out, starting a new one...")
 		rf.startElection()
 	}
+
+	// if rf.hbReceived.Load() {
+	// 	rf.hbReceived.Store(false)
+	// 	rf.mu.Lock()
+	// 	rf.status = follower
+	// 	fmt.Printf("candidate %v received a heart beat from a leader for term %v\n", rf.me, rf.currentTerm)
+	// 	rf.mu.Unlock()
+	// 	done <- struct{}{} // stop counting votes
+	// } else if elected.Load() {
+	// 	rf.mu.Lock()
+	// 	rf.leaderID = rf.me
+	// 	rf.status = leader
+	// 	fmt.Printf("server %v is elected for term %v", rf.me, rf.currentTerm)
+	// 	rf.mu.Unlock()
+	// } else {
+	// 	// election timed out, start a new one
+	// 	done <- struct{}{}
+	// 	fmt.Println("election is timed out, starting a new one...")
+	// 	rf.startElection()
+	// }
 }
 
 // the service or tester wants to create a Raft server. the ports
@@ -435,6 +487,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.persister = persister
 	rf.me = me
 	rf.cond = sync.NewCond(&rf.mu)
+	rf.hbs = make(chan bool, 1)
 
 	// Your initialization code here (2A, 2B, 2C).
 
