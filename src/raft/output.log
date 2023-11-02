@@ -1,48 +1,1861 @@
-000006 TERM S1 follower is starting an election for term 1
-000007 TERM S3 follower is starting an election for term 1
-Test (2A): multiple elections ...
-000015 VOTE S3 received 5 votes in term 1. There's 7 alive
-000015 VOTE S3 is elected for term 1
-000015 VOTE S1 received 2 votes in term 1. There's 7 alive
-000016 TIMR S3 Leader, checking heartbeats
-000017 TERM S2 has received heartbeat in term 1
-000018 TERM S4 has received heartbeat in term 1
-000018 TERM S6 has received heartbeat in term 1
-000019 TERM S5 has received heartbeat in term 1
-000019 TERM S0 has received heartbeat in term 1
-000020 VOTE S1 received a heart beat from leader 3 for term 1
-002881 TERM S4 follower is starting an election for term 2
-002885 VOTE S4 received 7 votes in term 2. There's 7 alive
-002885 VOTE S4 is elected for term 2
-002886 TIMR S4 Leader, checking heartbeats
-002888 TERM S3 has received heartbeat in term 2
-002889 TERM S6 has received heartbeat in term 2
-002889 TERM S2 has received heartbeat in term 2
-002889 TERM S5 has received heartbeat in term 2
-002889 TERM S0 has received heartbeat in term 2
-002889 TERM S1 has received heartbeat in term 2
-005332 TEST S2 in term 2 is disconnected
-005333 TEST S3 in term 2 is disconnected
-005333 TEST S2 in term 2 is disconnected
-map[2:[4]]
-005573 TERM S2 follower is starting an election for term 3
-005953 TERM S1 follower is starting an election for term 3
-007378 TERM S3 follower is starting an election for term 3
-008975 TERM S6 follower is starting an election for term 4
-012549 TERM S0 follower is starting an election for term 5
-016332 TERM S5 follower is starting an election for term 6
-021683 TERM S4 follower is starting an election for term 7
-054198 VOTE S1 received 5 votes in term 7. There's 5 alive
-054200 VOTE S1 is elected for term 7
-054201 TIMR S1 Leader, checking heartbeats
-055501 VOTE S6 received 5 votes in term 7. There's 5 alive
-055501 VOTE S6 is elected for term 7
-055502 TIMR S6 Leader, checking heartbeats
-055505 TERM S1 follower is starting an election for term 8
-055507 TERM S6 has received heartbeat in term 8
-055507 TERM S6 follower is starting an election for term 9
---- FAIL: TestManyElections2A (5.60s)
-    config.go:460: expected one leader, got none
+Test (2A): election after network failure ...
+281 TERM S2 follower is starting an election for term 1
+282 VOTE S2 received vote request reply from 0
+282 VOTE S2 received vote request reply from 1
+282 VOTE S2 received 3 votes in term 1. There's 3 alive
+282 VOTE S2 is elected for term 1
+282 TIMR S2 Leader, checking heartbeats
+282 TERM S0 has received heartbeat from S2 in term 1
+282 TERM S1 has received heartbeat from S2 in term 1
+284 TIMR S2 Leader, checking heartbeats
+284 TERM S0 has received heartbeat from S2 in term 1
+284 TERM S1 has received heartbeat from S2 in term 1
+286 TIMR S2 Leader, checking heartbeats
+286 TERM S0 has received heartbeat from S2 in term 1
+287 TERM S1 has received heartbeat from S2 in term 1
+289 TIMR S2 Leader, checking heartbeats
+289 TERM S0 has received heartbeat from S2 in term 1
+289 TERM S1 has received heartbeat from S2 in term 1
+291 TIMR S2 Leader, checking heartbeats
+291 TERM S0 has received heartbeat from S2 in term 1
+291 TERM S1 has received heartbeat from S2 in term 1
+293 TIMR S2 Leader, checking heartbeats
+293 TERM S0 has received heartbeat from S2 in term 1
+293 TERM S1 has received heartbeat from S2 in term 1
+296 TIMR S2 Leader, checking heartbeats
+296 TERM S0 has received heartbeat from S2 in term 1
+296 TERM S1 has received heartbeat from S2 in term 1
+298 TIMR S2 Leader, checking heartbeats
+298 TERM S0 has received heartbeat from S2 in term 1
+298 TERM S1 has received heartbeat from S2 in term 1
+300 TIMR S2 Leader, checking heartbeats
+300 TERM S0 has received heartbeat from S2 in term 1
+300 TERM S1 has received heartbeat from S2 in term 1
+303 TIMR S2 Leader, checking heartbeats
+303 TERM S0 has received heartbeat from S2 in term 1
+303 TERM S1 has received heartbeat from S2 in term 1
+305 TIMR S2 Leader, checking heartbeats
+305 TERM S0 has received heartbeat from S2 in term 1
+305 TERM S1 has received heartbeat from S2 in term 1
+307 TIMR S2 Leader, checking heartbeats
+307 TERM S0 has received heartbeat from S2 in term 1
+307 TERM S1 has received heartbeat from S2 in term 1
+310 TIMR S2 Leader, checking heartbeats
+310 TERM S0 has received heartbeat from S2 in term 1
+310 TERM S1 has received heartbeat from S2 in term 1
+312 TIMR S2 Leader, checking heartbeats
+312 TERM S0 has received heartbeat from S2 in term 1
+312 TERM S1 has received heartbeat from S2 in term 1
+314 TIMR S2 Leader, checking heartbeats
+314 TERM S0 has received heartbeat from S2 in term 1
+314 TERM S1 has received heartbeat from S2 in term 1
+316 TIMR S2 Leader, checking heartbeats
+317 TERM S0 has received heartbeat from S2 in term 1
+317 TERM S1 has received heartbeat from S2 in term 1
+319 TIMR S2 Leader, checking heartbeats
+319 TERM S0 has received heartbeat from S2 in term 1
+319 TERM S1 has received heartbeat from S2 in term 1
+321 TIMR S2 Leader, checking heartbeats
+321 TERM S0 has received heartbeat from S2 in term 1
+321 TERM S1 has received heartbeat from S2 in term 1
+323 TIMR S2 Leader, checking heartbeats
+323 TERM S0 has received heartbeat from S2 in term 1
+324 TERM S1 has received heartbeat from S2 in term 1
+326 TIMR S2 Leader, checking heartbeats
+326 TERM S0 has received heartbeat from S2 in term 1
+326 TERM S1 has received heartbeat from S2 in term 1
+328 TIMR S2 Leader, checking heartbeats
+328 TERM S0 has received heartbeat from S2 in term 1
+328 TERM S1 has received heartbeat from S2 in term 1
+330 TIMR S2 Leader, checking heartbeats
+330 TERM S0 has received heartbeat from S2 in term 1
+330 TERM S1 has received heartbeat from S2 in term 1
+333 TIMR S2 Leader, checking heartbeats
+333 TERM S0 has received heartbeat from S2 in term 1
+333 TERM S1 has received heartbeat from S2 in term 1
+335 TIMR S2 Leader, checking heartbeats
+335 TERM S0 has received heartbeat from S2 in term 1
+335 TERM S1 has received heartbeat from S2 in term 1
+337 TIMR S2 Leader, checking heartbeats
+337 TERM S0 has received heartbeat from S2 in term 1
+337 TERM S1 has received heartbeat from S2 in term 1
+340 TIMR S2 Leader, checking heartbeats
+340 TERM S0 has received heartbeat from S2 in term 1
+340 TERM S1 has received heartbeat from S2 in term 1
+342 TIMR S2 Leader, checking heartbeats
+342 TERM S0 has received heartbeat from S2 in term 1
+342 TERM S1 has received heartbeat from S2 in term 1
+344 TIMR S2 Leader, checking heartbeats
+344 TERM S0 has received heartbeat from S2 in term 1
+344 TERM S1 has received heartbeat from S2 in term 1
+347 TIMR S2 Leader, checking heartbeats
+347 TERM S0 has received heartbeat from S2 in term 1
+347 TERM S1 has received heartbeat from S2 in term 1
+349 TIMR S2 Leader, checking heartbeats
+349 TERM S0 has received heartbeat from S2 in term 1
+349 TERM S1 has received heartbeat from S2 in term 1
+351 TIMR S2 Leader, checking heartbeats
+351 TERM S0 has received heartbeat from S2 in term 1
+351 TERM S1 has received heartbeat from S2 in term 1
+353 TIMR S2 Leader, checking heartbeats
+354 TERM S0 has received heartbeat from S2 in term 1
+354 TERM S1 has received heartbeat from S2 in term 1
+356 TIMR S2 Leader, checking heartbeats
+356 TERM S0 has received heartbeat from S2 in term 1
+356 TERM S1 has received heartbeat from S2 in term 1
+358 TIMR S2 Leader, checking heartbeats
+358 TERM S0 has received heartbeat from S2 in term 1
+358 TERM S1 has received heartbeat from S2 in term 1
+360 TIMR S2 Leader, checking heartbeats
+360 TERM S0 has received heartbeat from S2 in term 1
+361 TERM S1 has received heartbeat from S2 in term 1
+363 TIMR S2 Leader, checking heartbeats
+363 TERM S0 has received heartbeat from S2 in term 1
+363 TERM S1 has received heartbeat from S2 in term 1
+365 TIMR S2 Leader, checking heartbeats
+365 TERM S0 has received heartbeat from S2 in term 1
+365 TERM S1 has received heartbeat from S2 in term 1
+367 TIMR S2 Leader, checking heartbeats
+367 TERM S0 has received heartbeat from S2 in term 1
+368 TERM S1 has received heartbeat from S2 in term 1
+370 TIMR S2 Leader, checking heartbeats
+370 TERM S0 has received heartbeat from S2 in term 1
+370 TERM S1 has received heartbeat from S2 in term 1
+372 TIMR S2 Leader, checking heartbeats
+372 TERM S0 has received heartbeat from S2 in term 1
+372 TERM S1 has received heartbeat from S2 in term 1
+374 TIMR S2 Leader, checking heartbeats
+374 TERM S0 has received heartbeat from S2 in term 1
+374 TERM S1 has received heartbeat from S2 in term 1
+377 TIMR S2 Leader, checking heartbeats
+377 TERM S0 has received heartbeat from S2 in term 1
+377 TERM S1 has received heartbeat from S2 in term 1
+379 TIMR S2 Leader, checking heartbeats
+379 TERM S0 has received heartbeat from S2 in term 1
+379 TERM S1 has received heartbeat from S2 in term 1
+381 TIMR S2 Leader, checking heartbeats
+381 TERM S0 has received heartbeat from S2 in term 1
+381 TERM S1 has received heartbeat from S2 in term 1
+383 TIMR S2 Leader, checking heartbeats
+384 TERM S0 has received heartbeat from S2 in term 1
+384 TERM S1 has received heartbeat from S2 in term 1
+386 TIMR S2 Leader, checking heartbeats
+386 TERM S0 has received heartbeat from S2 in term 1
+386 TERM S1 has received heartbeat from S2 in term 1
+388 TIMR S2 Leader, checking heartbeats
+388 TERM S0 has received heartbeat from S2 in term 1
+388 TERM S1 has received heartbeat from S2 in term 1
+390 TIMR S2 Leader, checking heartbeats
+390 TERM S0 has received heartbeat from S2 in term 1
+390 TERM S1 has received heartbeat from S2 in term 1
+392 TIMR S2 Leader, checking heartbeats
+392 TERM S0 has received heartbeat from S2 in term 1
+393 TERM S1 has received heartbeat from S2 in term 1
+395 TIMR S2 Leader, checking heartbeats
+395 TERM S0 has received heartbeat from S2 in term 1
+395 TERM S1 has received heartbeat from S2 in term 1
+397 TIMR S2 Leader, checking heartbeats
+397 TERM S0 has received heartbeat from S2 in term 1
+397 TERM S1 has received heartbeat from S2 in term 1
+399 TIMR S2 Leader, checking heartbeats
+399 TERM S0 has received heartbeat from S2 in term 1
+399 TERM S1 has received heartbeat from S2 in term 1
+401 TIMR S2 Leader, checking heartbeats
+401 TERM S0 has received heartbeat from S2 in term 1
+401 TERM S1 has received heartbeat from S2 in term 1
+403 TIMR S2 Leader, checking heartbeats
+404 TERM S0 has received heartbeat from S2 in term 1
+404 TERM S1 has received heartbeat from S2 in term 1
+406 TIMR S2 Leader, checking heartbeats
+406 TERM S0 has received heartbeat from S2 in term 1
+406 TERM S1 has received heartbeat from S2 in term 1
+408 TIMR S2 Leader, checking heartbeats
+408 TERM S0 has received heartbeat from S2 in term 1
+408 TERM S1 has received heartbeat from S2 in term 1
+410 TIMR S2 Leader, checking heartbeats
+410 TERM S0 has received heartbeat from S2 in term 1
+410 TERM S1 has received heartbeat from S2 in term 1
+412 TIMR S2 Leader, checking heartbeats
+412 TERM S0 has received heartbeat from S2 in term 1
+413 TERM S1 has received heartbeat from S2 in term 1
+415 TIMR S2 Leader, checking heartbeats
+415 TERM S0 has received heartbeat from S2 in term 1
+415 TERM S1 has received heartbeat from S2 in term 1
+417 TIMR S2 Leader, checking heartbeats
+417 TERM S0 has received heartbeat from S2 in term 1
+417 TERM S1 has received heartbeat from S2 in term 1
+419 TIMR S2 Leader, checking heartbeats
+419 TERM S0 has received heartbeat from S2 in term 1
+419 TERM S1 has received heartbeat from S2 in term 1
+421 TIMR S2 Leader, checking heartbeats
+421 TERM S0 has received heartbeat from S2 in term 1
+422 TERM S1 has received heartbeat from S2 in term 1
+424 TIMR S2 Leader, checking heartbeats
+424 TERM S0 has received heartbeat from S2 in term 1
+424 TERM S1 has received heartbeat from S2 in term 1
+426 TIMR S2 Leader, checking heartbeats
+426 TERM S0 has received heartbeat from S2 in term 1
+426 TERM S1 has received heartbeat from S2 in term 1
+428 TIMR S2 Leader, checking heartbeats
+428 TERM S0 has received heartbeat from S2 in term 1
+429 TERM S1 has received heartbeat from S2 in term 1
+431 TIMR S2 Leader, checking heartbeats
+431 TERM S0 has received heartbeat from S2 in term 1
+431 TERM S1 has received heartbeat from S2 in term 1
+433 TIMR S2 Leader, checking heartbeats
+433 TERM S0 has received heartbeat from S2 in term 1
+433 TERM S1 has received heartbeat from S2 in term 1
+435 TIMR S2 Leader, checking heartbeats
+435 TERM S0 has received heartbeat from S2 in term 1
+435 TERM S1 has received heartbeat from S2 in term 1
+438 TIMR S2 Leader, checking heartbeats
+438 TERM S0 has received heartbeat from S2 in term 1
+438 TERM S1 has received heartbeat from S2 in term 1
+440 TIMR S2 Leader, checking heartbeats
+440 TERM S0 has received heartbeat from S2 in term 1
+440 TERM S1 has received heartbeat from S2 in term 1
+442 TIMR S2 Leader, checking heartbeats
+442 TERM S0 has received heartbeat from S2 in term 1
+442 TERM S1 has received heartbeat from S2 in term 1
+445 TIMR S2 Leader, checking heartbeats
+445 TERM S0 has received heartbeat from S2 in term 1
+445 TERM S1 has received heartbeat from S2 in term 1
+447 TIMR S2 Leader, checking heartbeats
+447 TERM S0 has received heartbeat from S2 in term 1
+447 TERM S1 has received heartbeat from S2 in term 1
+449 TIMR S2 Leader, checking heartbeats
+449 TERM S0 has received heartbeat from S2 in term 1
+449 TERM S1 has received heartbeat from S2 in term 1
+451 TIMR S2 Leader, checking heartbeats
+451 TERM S0 has received heartbeat from S2 in term 1
+452 TERM S1 has received heartbeat from S2 in term 1
+454 TIMR S2 Leader, checking heartbeats
+454 TERM S0 has received heartbeat from S2 in term 1
+454 TERM S1 has received heartbeat from S2 in term 1
+456 TIMR S2 Leader, checking heartbeats
+456 TERM S0 has received heartbeat from S2 in term 1
+456 TERM S1 has received heartbeat from S2 in term 1
+458 TIMR S2 Leader, checking heartbeats
+458 TERM S0 has received heartbeat from S2 in term 1
+458 TERM S1 has received heartbeat from S2 in term 1
+461 TIMR S2 Leader, checking heartbeats
+461 TERM S0 has received heartbeat from S2 in term 1
+461 TERM S1 has received heartbeat from S2 in term 1
+463 TIMR S2 Leader, checking heartbeats
+463 TERM S0 has received heartbeat from S2 in term 1
+463 TERM S1 has received heartbeat from S2 in term 1
+465 TIMR S2 Leader, checking heartbeats
+465 TERM S0 has received heartbeat from S2 in term 1
+465 TERM S1 has received heartbeat from S2 in term 1
+467 TIMR S2 Leader, checking heartbeats
+468 TERM S0 has received heartbeat from S2 in term 1
+468 TERM S1 has received heartbeat from S2 in term 1
+470 TIMR S2 Leader, checking heartbeats
+470 TERM S0 has received heartbeat from S2 in term 1
+470 TERM S1 has received heartbeat from S2 in term 1
+472 TIMR S2 Leader, checking heartbeats
+473 TERM S0 has received heartbeat from S2 in term 1
+473 TERM S1 has received heartbeat from S2 in term 1
+475 TIMR S2 Leader, checking heartbeats
+475 TERM S0 has received heartbeat from S2 in term 1
+475 TERM S1 has received heartbeat from S2 in term 1
+477 TIMR S2 Leader, checking heartbeats
+477 TERM S0 has received heartbeat from S2 in term 1
+477 TERM S1 has received heartbeat from S2 in term 1
+479 TIMR S2 Leader, checking heartbeats
+480 TERM S0 has received heartbeat from S2 in term 1
+480 TERM S1 has received heartbeat from S2 in term 1
+482 TIMR S2 Leader, checking heartbeats
+482 TERM S0 has received heartbeat from S2 in term 1
+482 TERM S1 has received heartbeat from S2 in term 1
+484 TIMR S2 Leader, checking heartbeats
+484 TERM S0 has received heartbeat from S2 in term 1
+484 TERM S1 has received heartbeat from S2 in term 1
+486 TIMR S2 Leader, checking heartbeats
+486 TERM S0 has received heartbeat from S2 in term 1
+486 TERM S1 has received heartbeat from S2 in term 1
+488 TIMR S2 Leader, checking heartbeats
+489 TERM S0 has received heartbeat from S2 in term 1
+489 TERM S1 has received heartbeat from S2 in term 1
+491 TIMR S2 Leader, checking heartbeats
+491 TERM S0 has received heartbeat from S2 in term 1
+491 TERM S1 has received heartbeat from S2 in term 1
+493 TIMR S2 Leader, checking heartbeats
+493 TERM S0 has received heartbeat from S2 in term 1
+493 TERM S1 has received heartbeat from S2 in term 1
+495 TIMR S2 Leader, checking heartbeats
+495 TERM S0 has received heartbeat from S2 in term 1
+495 TERM S1 has received heartbeat from S2 in term 1
+497 TIMR S2 Leader, checking heartbeats
+498 TERM S0 has received heartbeat from S2 in term 1
+498 TERM S1 has received heartbeat from S2 in term 1
+500 TIMR S2 Leader, checking heartbeats
+500 TERM S0 has received heartbeat from S2 in term 1
+500 TERM S1 has received heartbeat from S2 in term 1
+502 TIMR S2 Leader, checking heartbeats
+502 TERM S0 has received heartbeat from S2 in term 1
+502 TERM S1 has received heartbeat from S2 in term 1
+504 TIMR S2 Leader, checking heartbeats
+504 TERM S0 has received heartbeat from S2 in term 1
+504 TERM S1 has received heartbeat from S2 in term 1
+506 TIMR S2 Leader, checking heartbeats
+507 TERM S0 has received heartbeat from S2 in term 1
+507 TERM S1 has received heartbeat from S2 in term 1
+509 TIMR S2 Leader, checking heartbeats
+509 TERM S0 has received heartbeat from S2 in term 1
+509 TERM S1 has received heartbeat from S2 in term 1
+511 TIMR S2 Leader, checking heartbeats
+511 TERM S0 has received heartbeat from S2 in term 1
+511 TERM S1 has received heartbeat from S2 in term 1
+513 TIMR S2 Leader, checking heartbeats
+513 TERM S0 has received heartbeat from S2 in term 1
+513 TERM S1 has received heartbeat from S2 in term 1
+515 TIMR S2 Leader, checking heartbeats
+515 TERM S0 has received heartbeat from S2 in term 1
+516 TERM S1 has received heartbeat from S2 in term 1
+518 TIMR S2 Leader, checking heartbeats
+518 TERM S0 has received heartbeat from S2 in term 1
+518 TERM S1 has received heartbeat from S2 in term 1
+520 TIMR S2 Leader, checking heartbeats
+520 TERM S0 has received heartbeat from S2 in term 1
+520 TERM S1 has received heartbeat from S2 in term 1
+522 TIMR S2 Leader, checking heartbeats
+522 TERM S0 has received heartbeat from S2 in term 1
+522 TERM S1 has received heartbeat from S2 in term 1
+524 TIMR S2 Leader, checking heartbeats
+524 TERM S0 has received heartbeat from S2 in term 1
+524 TERM S1 has received heartbeat from S2 in term 1
+527 TIMR S2 Leader, checking heartbeats
+527 TERM S0 has received heartbeat from S2 in term 1
+527 TERM S1 has received heartbeat from S2 in term 1
+529 TIMR S2 Leader, checking heartbeats
+529 TERM S0 has received heartbeat from S2 in term 1
+529 TERM S1 has received heartbeat from S2 in term 1
+531 TIMR S2 Leader, checking heartbeats
+531 TERM S0 has received heartbeat from S2 in term 1
+531 TERM S1 has received heartbeat from S2 in term 1
+533 TIMR S2 Leader, checking heartbeats
+533 TERM S0 has received heartbeat from S2 in term 1
+533 TERM S1 has received heartbeat from S2 in term 1
+536 TIMR S2 Leader, checking heartbeats
+536 TERM S0 has received heartbeat from S2 in term 1
+536 TERM S1 has received heartbeat from S2 in term 1
+538 TIMR S2 Leader, checking heartbeats
+538 TERM S0 has received heartbeat from S2 in term 1
+538 TERM S1 has received heartbeat from S2 in term 1
+540 TIMR S2 Leader, checking heartbeats
+540 TERM S0 has received heartbeat from S2 in term 1
+540 TERM S1 has received heartbeat from S2 in term 1
+542 TIMR S2 Leader, checking heartbeats
+543 TERM S0 has received heartbeat from S2 in term 1
+543 TERM S1 has received heartbeat from S2 in term 1
+545 TIMR S2 Leader, checking heartbeats
+545 TERM S0 has received heartbeat from S2 in term 1
+545 TERM S1 has received heartbeat from S2 in term 1
+547 TIMR S2 Leader, checking heartbeats
+547 TERM S0 has received heartbeat from S2 in term 1
+547 TERM S1 has received heartbeat from S2 in term 1
+549 TIMR S2 Leader, checking heartbeats
+549 TERM S0 has received heartbeat from S2 in term 1
+549 TERM S1 has received heartbeat from S2 in term 1
+552 TIMR S2 Leader, checking heartbeats
+552 TERM S0 has received heartbeat from S2 in term 1
+552 TERM S1 has received heartbeat from S2 in term 1
+554 TIMR S2 Leader, checking heartbeats
+554 TERM S0 has received heartbeat from S2 in term 1
+554 TERM S1 has received heartbeat from S2 in term 1
+556 TIMR S2 Leader, checking heartbeats
+556 TERM S0 has received heartbeat from S2 in term 1
+556 TERM S1 has received heartbeat from S2 in term 1
+558 TIMR S2 Leader, checking heartbeats
+559 TERM S0 has received heartbeat from S2 in term 1
+559 TERM S1 has received heartbeat from S2 in term 1
+561 TIMR S2 Leader, checking heartbeats
+561 TERM S0 has received heartbeat from S2 in term 1
+561 TERM S1 has received heartbeat from S2 in term 1
+563 TIMR S2 Leader, checking heartbeats
+563 TERM S0 has received heartbeat from S2 in term 1
+563 TERM S1 has received heartbeat from S2 in term 1
+565 TIMR S2 Leader, checking heartbeats
+565 TERM S0 has received heartbeat from S2 in term 1
+565 TERM S1 has received heartbeat from S2 in term 1
+568 TIMR S2 Leader, checking heartbeats
+568 TERM S0 has received heartbeat from S2 in term 1
+568 TERM S1 has received heartbeat from S2 in term 1
+570 TIMR S2 Leader, checking heartbeats
+570 TERM S0 has received heartbeat from S2 in term 1
+570 TERM S1 has received heartbeat from S2 in term 1
+572 TIMR S2 Leader, checking heartbeats
+572 TERM S0 has received heartbeat from S2 in term 1
+572 TERM S1 has received heartbeat from S2 in term 1
+574 TIMR S2 Leader, checking heartbeats
+574 TERM S0 has received heartbeat from S2 in term 1
+575 TERM S1 has received heartbeat from S2 in term 1
+577 TIMR S2 Leader, checking heartbeats
+577 TERM S0 has received heartbeat from S2 in term 1
+577 TERM S1 has received heartbeat from S2 in term 1
+579 TIMR S2 Leader, checking heartbeats
+579 TERM S0 has received heartbeat from S2 in term 1
+579 TERM S1 has received heartbeat from S2 in term 1
+581 TIMR S2 Leader, checking heartbeats
+581 TERM S0 has received heartbeat from S2 in term 1
+581 TERM S1 has received heartbeat from S2 in term 1
+583 TIMR S2 Leader, checking heartbeats
+583 TERM S0 has received heartbeat from S2 in term 1
+583 TERM S1 has received heartbeat from S2 in term 1
+586 TIMR S2 Leader, checking heartbeats
+586 TERM S0 has received heartbeat from S2 in term 1
+586 TERM S1 has received heartbeat from S2 in term 1
+588 TIMR S2 Leader, checking heartbeats
+588 TERM S0 has received heartbeat from S2 in term 1
+588 TERM S1 has received heartbeat from S2 in term 1
+590 TIMR S2 Leader, checking heartbeats
+590 TERM S0 has received heartbeat from S2 in term 1
+590 TERM S1 has received heartbeat from S2 in term 1
+592 TIMR S2 Leader, checking heartbeats
+592 TERM S0 has received heartbeat from S2 in term 1
+592 TERM S1 has received heartbeat from S2 in term 1
+594 TIMR S2 Leader, checking heartbeats
+595 TERM S0 has received heartbeat from S2 in term 1
+595 TERM S1 has received heartbeat from S2 in term 1
+597 TIMR S2 Leader, checking heartbeats
+597 TERM S0 has received heartbeat from S2 in term 1
+597 TERM S1 has received heartbeat from S2 in term 1
+599 TIMR S2 Leader, checking heartbeats
+599 TERM S0 has received heartbeat from S2 in term 1
+599 TERM S1 has received heartbeat from S2 in term 1
+601 TIMR S2 Leader, checking heartbeats
+601 TERM S0 has received heartbeat from S2 in term 1
+601 TERM S1 has received heartbeat from S2 in term 1
+603 TIMR S2 Leader, checking heartbeats
+603 TERM S0 has received heartbeat from S2 in term 1
+603 TERM S1 has received heartbeat from S2 in term 1
+606 TIMR S2 Leader, checking heartbeats
+606 TERM S0 has received heartbeat from S2 in term 1
+606 TERM S1 has received heartbeat from S2 in term 1
+608 TIMR S2 Leader, checking heartbeats
+608 TERM S0 has received heartbeat from S2 in term 1
+608 TERM S1 has received heartbeat from S2 in term 1
+610 TIMR S2 Leader, checking heartbeats
+610 TERM S0 has received heartbeat from S2 in term 1
+610 TERM S1 has received heartbeat from S2 in term 1
+612 TIMR S2 Leader, checking heartbeats
+612 TERM S0 has received heartbeat from S2 in term 1
+612 TERM S1 has received heartbeat from S2 in term 1
+614 TIMR S2 Leader, checking heartbeats
+614 TERM S0 has received heartbeat from S2 in term 1
+614 TERM S1 has received heartbeat from S2 in term 1
+617 TIMR S2 Leader, checking heartbeats
+617 TERM S0 has received heartbeat from S2 in term 1
+617 TERM S1 has received heartbeat from S2 in term 1
+619 TIMR S2 Leader, checking heartbeats
+619 TERM S0 has received heartbeat from S2 in term 1
+619 TERM S1 has received heartbeat from S2 in term 1
+621 TIMR S2 Leader, checking heartbeats
+621 TERM S0 has received heartbeat from S2 in term 1
+621 TERM S1 has received heartbeat from S2 in term 1
+623 TIMR S2 Leader, checking heartbeats
+623 TERM S0 has received heartbeat from S2 in term 1
+623 TERM S1 has received heartbeat from S2 in term 1
+625 TIMR S2 Leader, checking heartbeats
+626 TERM S0 has received heartbeat from S2 in term 1
+626 TERM S1 has received heartbeat from S2 in term 1
+628 TIMR S2 Leader, checking heartbeats
+628 TERM S0 has received heartbeat from S2 in term 1
+628 TERM S1 has received heartbeat from S2 in term 1
+630 TIMR S2 Leader, checking heartbeats
+630 TERM S0 has received heartbeat from S2 in term 1
+630 TERM S1 has received heartbeat from S2 in term 1
+632 TIMR S2 Leader, checking heartbeats
+632 TERM S0 has received heartbeat from S2 in term 1
+632 TERM S1 has received heartbeat from S2 in term 1
+634 TIMR S2 Leader, checking heartbeats
+634 TERM S0 has received heartbeat from S2 in term 1
+634 TERM S1 has received heartbeat from S2 in term 1
+636 TIMR S2 Leader, checking heartbeats
+637 TERM S0 has received heartbeat from S2 in term 1
+637 TERM S1 has received heartbeat from S2 in term 1
+639 TIMR S2 Leader, checking heartbeats
+639 TERM S0 has received heartbeat from S2 in term 1
+639 TERM S1 has received heartbeat from S2 in term 1
+641 TIMR S2 Leader, checking heartbeats
+641 TERM S0 has received heartbeat from S2 in term 1
+641 TERM S1 has received heartbeat from S2 in term 1
+643 TIMR S2 Leader, checking heartbeats
+643 TERM S0 has received heartbeat from S2 in term 1
+643 TERM S1 has received heartbeat from S2 in term 1
+645 TIMR S2 Leader, checking heartbeats
+645 TERM S0 has received heartbeat from S2 in term 1
+645 TERM S1 has received heartbeat from S2 in term 1
+647 TIMR S2 Leader, checking heartbeats
+647 TERM S0 has received heartbeat from S2 in term 1
+648 TERM S1 has received heartbeat from S2 in term 1
+650 TIMR S2 Leader, checking heartbeats
+650 TERM S0 has received heartbeat from S2 in term 1
+650 TERM S1 has received heartbeat from S2 in term 1
+652 TIMR S2 Leader, checking heartbeats
+652 TERM S0 has received heartbeat from S2 in term 1
+652 TERM S1 has received heartbeat from S2 in term 1
+654 TIMR S2 Leader, checking heartbeats
+654 TERM S0 has received heartbeat from S2 in term 1
+654 TERM S1 has received heartbeat from S2 in term 1
+657 TIMR S2 Leader, checking heartbeats
+657 TERM S0 has received heartbeat from S2 in term 1
+657 TERM S1 has received heartbeat from S2 in term 1
+659 TIMR S2 Leader, checking heartbeats
+659 TERM S0 has received heartbeat from S2 in term 1
+659 TERM S1 has received heartbeat from S2 in term 1
+661 TIMR S2 Leader, checking heartbeats
+661 TERM S0 has received heartbeat from S2 in term 1
+661 TERM S1 has received heartbeat from S2 in term 1
+663 TIMR S2 Leader, checking heartbeats
+663 TERM S0 has received heartbeat from S2 in term 1
+664 TERM S1 has received heartbeat from S2 in term 1
+666 TIMR S2 Leader, checking heartbeats
+666 TERM S0 has received heartbeat from S2 in term 1
+666 TERM S1 has received heartbeat from S2 in term 1
+668 TIMR S2 Leader, checking heartbeats
+668 TERM S0 has received heartbeat from S2 in term 1
+668 TERM S1 has received heartbeat from S2 in term 1
+670 TIMR S2 Leader, checking heartbeats
+670 TERM S0 has received heartbeat from S2 in term 1
+670 TERM S1 has received heartbeat from S2 in term 1
+672 TIMR S2 Leader, checking heartbeats
+672 TERM S0 has received heartbeat from S2 in term 1
+673 TERM S1 has received heartbeat from S2 in term 1
+675 TIMR S2 Leader, checking heartbeats
+675 TERM S0 has received heartbeat from S2 in term 1
+675 TERM S1 has received heartbeat from S2 in term 1
+677 TIMR S2 Leader, checking heartbeats
+677 TERM S0 has received heartbeat from S2 in term 1
+677 TERM S1 has received heartbeat from S2 in term 1
+679 TIMR S2 Leader, checking heartbeats
+679 TERM S0 has received heartbeat from S2 in term 1
+679 TERM S1 has received heartbeat from S2 in term 1
+681 TIMR S2 Leader, checking heartbeats
+682 TERM S0 has received heartbeat from S2 in term 1
+682 TERM S1 has received heartbeat from S2 in term 1
+684 TIMR S2 Leader, checking heartbeats
+684 TERM S0 has received heartbeat from S2 in term 1
+684 TERM S1 has received heartbeat from S2 in term 1
+686 TIMR S2 Leader, checking heartbeats
+686 TERM S0 has received heartbeat from S2 in term 1
+686 TERM S1 has received heartbeat from S2 in term 1
+688 TIMR S2 Leader, checking heartbeats
+688 TERM S0 has received heartbeat from S2 in term 1
+688 TERM S1 has received heartbeat from S2 in term 1
+690 TIMR S2 Leader, checking heartbeats
+690 TERM S0 has received heartbeat from S2 in term 1
+691 TERM S1 has received heartbeat from S2 in term 1
+693 TIMR S2 Leader, checking heartbeats
+693 TERM S0 has received heartbeat from S2 in term 1
+693 TERM S1 has received heartbeat from S2 in term 1
+695 TIMR S2 Leader, checking heartbeats
+695 TERM S0 has received heartbeat from S2 in term 1
+695 TERM S1 has received heartbeat from S2 in term 1
+697 TIMR S2 Leader, checking heartbeats
+697 TERM S0 has received heartbeat from S2 in term 1
+697 TERM S1 has received heartbeat from S2 in term 1
+699 TIMR S2 Leader, checking heartbeats
+699 TERM S0 has received heartbeat from S2 in term 1
+700 TERM S1 has received heartbeat from S2 in term 1
+702 TIMR S2 Leader, checking heartbeats
+702 TERM S0 has received heartbeat from S2 in term 1
+702 TERM S1 has received heartbeat from S2 in term 1
+704 TIMR S2 Leader, checking heartbeats
+704 TERM S0 has received heartbeat from S2 in term 1
+704 TERM S1 has received heartbeat from S2 in term 1
+706 TIMR S2 Leader, checking heartbeats
+706 TERM S0 has received heartbeat from S2 in term 1
+706 TERM S1 has received heartbeat from S2 in term 1
+708 TIMR S2 Leader, checking heartbeats
+709 TERM S0 has received heartbeat from S2 in term 1
+709 TERM S1 has received heartbeat from S2 in term 1
+711 TIMR S2 Leader, checking heartbeats
+711 TERM S0 has received heartbeat from S2 in term 1
+711 TERM S1 has received heartbeat from S2 in term 1
+713 TIMR S2 Leader, checking heartbeats
+713 TERM S0 has received heartbeat from S2 in term 1
+713 TERM S1 has received heartbeat from S2 in term 1
+715 TIMR S2 Leader, checking heartbeats
+715 TERM S0 has received heartbeat from S2 in term 1
+715 TERM S1 has received heartbeat from S2 in term 1
+717 TIMR S2 Leader, checking heartbeats
+717 TERM S0 has received heartbeat from S2 in term 1
+718 TERM S1 has received heartbeat from S2 in term 1
+720 TIMR S2 Leader, checking heartbeats
+720 TERM S0 has received heartbeat from S2 in term 1
+720 TERM S1 has received heartbeat from S2 in term 1
+722 TIMR S2 Leader, checking heartbeats
+722 TERM S0 has received heartbeat from S2 in term 1
+722 TERM S1 has received heartbeat from S2 in term 1
+724 TIMR S2 Leader, checking heartbeats
+724 TERM S0 has received heartbeat from S2 in term 1
+724 TERM S1 has received heartbeat from S2 in term 1
+726 TIMR S2 Leader, checking heartbeats
+726 TERM S0 has received heartbeat from S2 in term 1
+726 TERM S1 has received heartbeat from S2 in term 1
+728 TIMR S2 Leader, checking heartbeats
+728 TERM S0 has received heartbeat from S2 in term 1
+729 TERM S1 has received heartbeat from S2 in term 1
+731 TIMR S2 Leader, checking heartbeats
+731 TERM S0 has received heartbeat from S2 in term 1
+731 TERM S1 has received heartbeat from S2 in term 1
+733 TIMR S2 Leader, checking heartbeats
+733 TERM S0 has received heartbeat from S2 in term 1
+733 TERM S1 has received heartbeat from S2 in term 1
+735 TIMR S2 Leader, checking heartbeats
+735 TERM S0 has received heartbeat from S2 in term 1
+735 TERM S1 has received heartbeat from S2 in term 1
+737 TIMR S2 Leader, checking heartbeats
+737 TERM S0 has received heartbeat from S2 in term 1
+737 TERM S1 has received heartbeat from S2 in term 1
+739 TIMR S2 Leader, checking heartbeats
+739 TERM S0 has received heartbeat from S2 in term 1
+740 TERM S1 has received heartbeat from S2 in term 1
+742 TIMR S2 Leader, checking heartbeats
+742 TERM S0 has received heartbeat from S2 in term 1
+742 TERM S1 has received heartbeat from S2 in term 1
+744 TIMR S2 Leader, checking heartbeats
+744 TERM S0 has received heartbeat from S2 in term 1
+744 TERM S1 has received heartbeat from S2 in term 1
+746 TIMR S2 Leader, checking heartbeats
+746 TERM S0 has received heartbeat from S2 in term 1
+746 TERM S1 has received heartbeat from S2 in term 1
+748 TIMR S2 Leader, checking heartbeats
+748 TERM S0 has received heartbeat from S2 in term 1
+748 TERM S1 has received heartbeat from S2 in term 1
+750 TIMR S2 Leader, checking heartbeats
+750 TERM S0 has received heartbeat from S2 in term 1
+751 TERM S1 has received heartbeat from S2 in term 1
+753 TIMR S2 Leader, checking heartbeats
+753 TERM S0 has received heartbeat from S2 in term 1
+753 TERM S1 has received heartbeat from S2 in term 1
+755 TIMR S2 Leader, checking heartbeats
+755 TERM S0 has received heartbeat from S2 in term 1
+755 TERM S1 has received heartbeat from S2 in term 1
+757 TIMR S2 Leader, checking heartbeats
+757 TERM S0 has received heartbeat from S2 in term 1
+758 TERM S1 has received heartbeat from S2 in term 1
+760 TIMR S2 Leader, checking heartbeats
+760 TERM S0 has received heartbeat from S2 in term 1
+760 TERM S1 has received heartbeat from S2 in term 1
+762 TIMR S2 Leader, checking heartbeats
+762 TERM S0 has received heartbeat from S2 in term 1
+762 TERM S1 has received heartbeat from S2 in term 1
+764 TIMR S2 Leader, checking heartbeats
+764 TERM S0 has received heartbeat from S2 in term 1
+764 TERM S1 has received heartbeat from S2 in term 1
+766 TIMR S2 Leader, checking heartbeats
+767 TERM S0 has received heartbeat from S2 in term 1
+767 TERM S1 has received heartbeat from S2 in term 1
+769 TIMR S2 Leader, checking heartbeats
+769 TERM S0 has received heartbeat from S2 in term 1
+769 TERM S1 has received heartbeat from S2 in term 1
+771 TIMR S2 Leader, checking heartbeats
+771 TERM S0 has received heartbeat from S2 in term 1
+771 TERM S1 has received heartbeat from S2 in term 1
+773 TIMR S2 Leader, checking heartbeats
+773 TERM S0 has received heartbeat from S2 in term 1
+774 TERM S1 has received heartbeat from S2 in term 1
+776 TIMR S2 Leader, checking heartbeats
+776 TERM S0 has received heartbeat from S2 in term 1
+776 TERM S1 has received heartbeat from S2 in term 1
+778 TIMR S2 Leader, checking heartbeats
+778 TERM S0 has received heartbeat from S2 in term 1
+778 TERM S1 has received heartbeat from S2 in term 1
+780 TIMR S2 Leader, checking heartbeats
+780 TERM S0 has received heartbeat from S2 in term 1
+780 TERM S1 has received heartbeat from S2 in term 1
+782 TIMR S2 Leader, checking heartbeats
+782 TERM S0 has received heartbeat from S2 in term 1
+782 TERM S1 has received heartbeat from S2 in term 1
+785 TIMR S2 Leader, checking heartbeats
+785 TERM S0 has received heartbeat from S2 in term 1
+785 TERM S1 has received heartbeat from S2 in term 1
+787 TIMR S2 Leader, checking heartbeats
+787 TERM S0 has received heartbeat from S2 in term 1
+787 TERM S1 has received heartbeat from S2 in term 1
+789 TIMR S2 Leader, checking heartbeats
+789 TERM S0 has received heartbeat from S2 in term 1
+789 TERM S1 has received heartbeat from S2 in term 1
+791 TIMR S2 Leader, checking heartbeats
+792 TERM S0 has received heartbeat from S2 in term 1
+792 TERM S1 has received heartbeat from S2 in term 1
+794 TIMR S2 Leader, checking heartbeats
+794 TERM S0 has received heartbeat from S2 in term 1
+794 TERM S1 has received heartbeat from S2 in term 1
+796 TIMR S2 Leader, checking heartbeats
+796 TERM S0 has received heartbeat from S2 in term 1
+796 TERM S1 has received heartbeat from S2 in term 1
+798 TIMR S2 Leader, checking heartbeats
+798 TERM S0 has received heartbeat from S2 in term 1
+798 TERM S1 has received heartbeat from S2 in term 1
+800 TIMR S2 Leader, checking heartbeats
+800 TERM S0 has received heartbeat from S2 in term 1
+800 TERM S1 has received heartbeat from S2 in term 1
+803 TIMR S2 Leader, checking heartbeats
+803 TERM S0 has received heartbeat from S2 in term 1
+803 TERM S1 has received heartbeat from S2 in term 1
+805 TIMR S2 Leader, checking heartbeats
+805 TERM S0 has received heartbeat from S2 in term 1
+805 TERM S1 has received heartbeat from S2 in term 1
+807 TIMR S2 Leader, checking heartbeats
+807 TERM S0 has received heartbeat from S2 in term 1
+807 TERM S1 has received heartbeat from S2 in term 1
+810 TIMR S2 Leader, checking heartbeats
+810 TERM S0 has received heartbeat from S2 in term 1
+810 TERM S1 has received heartbeat from S2 in term 1
+812 TIMR S2 Leader, checking heartbeats
+812 TERM S0 has received heartbeat from S2 in term 1
+812 TERM S1 has received heartbeat from S2 in term 1
+814 TIMR S2 Leader, checking heartbeats
+814 TERM S0 has received heartbeat from S2 in term 1
+814 TERM S1 has received heartbeat from S2 in term 1
+816 TIMR S2 Leader, checking heartbeats
+816 TERM S0 has received heartbeat from S2 in term 1
+816 TERM S1 has received heartbeat from S2 in term 1
+818 TIMR S2 Leader, checking heartbeats
+818 TERM S0 has received heartbeat from S2 in term 1
+819 TERM S1 has received heartbeat from S2 in term 1
+821 TIMR S2 Leader, checking heartbeats
+821 TERM S0 has received heartbeat from S2 in term 1
+821 TERM S1 has received heartbeat from S2 in term 1
+823 TIMR S2 Leader, checking heartbeats
+823 TERM S0 has received heartbeat from S2 in term 1
+823 TERM S1 has received heartbeat from S2 in term 1
+825 TIMR S2 Leader, checking heartbeats
+825 TERM S0 has received heartbeat from S2 in term 1
+825 TERM S1 has received heartbeat from S2 in term 1
+828 TIMR S2 Leader, checking heartbeats
+828 TERM S0 has received heartbeat from S2 in term 1
+828 TERM S1 has received heartbeat from S2 in term 1
+830 TIMR S2 Leader, checking heartbeats
+830 TERM S0 has received heartbeat from S2 in term 1
+830 TERM S1 has received heartbeat from S2 in term 1
+832 TIMR S2 Leader, checking heartbeats
+832 TERM S0 has received heartbeat from S2 in term 1
+832 TERM S1 has received heartbeat from S2 in term 1
+834 TIMR S2 Leader, checking heartbeats
+834 TERM S0 has received heartbeat from S2 in term 1
+834 TERM S1 has received heartbeat from S2 in term 1
+836 TIMR S2 Leader, checking heartbeats
+836 TERM S0 has received heartbeat from S2 in term 1
+836 TERM S1 has received heartbeat from S2 in term 1
+839 TIMR S2 Leader, checking heartbeats
+839 TERM S0 has received heartbeat from S2 in term 1
+839 TERM S1 has received heartbeat from S2 in term 1
+841 TIMR S2 Leader, checking heartbeats
+841 TERM S0 has received heartbeat from S2 in term 1
+841 TERM S1 has received heartbeat from S2 in term 1
+843 TIMR S2 Leader, checking heartbeats
+843 TERM S0 has received heartbeat from S2 in term 1
+843 TERM S1 has received heartbeat from S2 in term 1
+845 TIMR S2 Leader, checking heartbeats
+845 TERM S0 has received heartbeat from S2 in term 1
+845 TERM S1 has received heartbeat from S2 in term 1
+848 TIMR S2 Leader, checking heartbeats
+848 TERM S0 has received heartbeat from S2 in term 1
+848 TERM S1 has received heartbeat from S2 in term 1
+850 TIMR S2 Leader, checking heartbeats
+850 TERM S0 has received heartbeat from S2 in term 1
+850 TERM S1 has received heartbeat from S2 in term 1
+852 TIMR S2 Leader, checking heartbeats
+852 TERM S0 has received heartbeat from S2 in term 1
+852 TERM S1 has received heartbeat from S2 in term 1
+854 TIMR S2 Leader, checking heartbeats
+855 TERM S0 has received heartbeat from S2 in term 1
+855 TERM S1 has received heartbeat from S2 in term 1
+857 TIMR S2 Leader, checking heartbeats
+857 TERM S0 has received heartbeat from S2 in term 1
+857 TERM S1 has received heartbeat from S2 in term 1
+859 TIMR S2 Leader, checking heartbeats
+859 TERM S0 has received heartbeat from S2 in term 1
+859 TERM S1 has received heartbeat from S2 in term 1
+861 TIMR S2 Leader, checking heartbeats
+861 TERM S0 has received heartbeat from S2 in term 1
+861 TERM S1 has received heartbeat from S2 in term 1
+863 TIMR S2 Leader, checking heartbeats
+863 TERM S0 has received heartbeat from S2 in term 1
+864 TERM S1 has received heartbeat from S2 in term 1
+866 TIMR S2 Leader, checking heartbeats
+866 TERM S0 has received heartbeat from S2 in term 1
+866 TERM S1 has received heartbeat from S2 in term 1
+868 TIMR S2 Leader, checking heartbeats
+868 TERM S0 has received heartbeat from S2 in term 1
+868 TERM S1 has received heartbeat from S2 in term 1
+870 TIMR S2 Leader, checking heartbeats
+870 TERM S0 has received heartbeat from S2 in term 1
+870 TERM S1 has received heartbeat from S2 in term 1
+872 TIMR S2 Leader, checking heartbeats
+872 TERM S0 has received heartbeat from S2 in term 1
+873 TERM S1 has received heartbeat from S2 in term 1
+875 TIMR S2 Leader, checking heartbeats
+875 TERM S0 has received heartbeat from S2 in term 1
+875 TERM S1 has received heartbeat from S2 in term 1
+877 TIMR S2 Leader, checking heartbeats
+877 TERM S0 has received heartbeat from S2 in term 1
+877 TERM S1 has received heartbeat from S2 in term 1
+879 TIMR S2 Leader, checking heartbeats
+879 TERM S0 has received heartbeat from S2 in term 1
+880 TERM S1 has received heartbeat from S2 in term 1
+882 TIMR S2 Leader, checking heartbeats
+882 TERM S0 has received heartbeat from S2 in term 1
+882 TERM S1 has received heartbeat from S2 in term 1
+884 TIMR S2 Leader, checking heartbeats
+884 TERM S0 has received heartbeat from S2 in term 1
+884 TERM S1 has received heartbeat from S2 in term 1
+886 TIMR S2 Leader, checking heartbeats
+886 TERM S0 has received heartbeat from S2 in term 1
+886 TERM S1 has received heartbeat from S2 in term 1
+888 TIMR S2 Leader, checking heartbeats
+888 TERM S0 has received heartbeat from S2 in term 1
+888 TERM S1 has received heartbeat from S2 in term 1
+891 TIMR S2 Leader, checking heartbeats
+891 TERM S0 has received heartbeat from S2 in term 1
+891 TERM S1 has received heartbeat from S2 in term 1
+893 TIMR S2 Leader, checking heartbeats
+893 TERM S0 has received heartbeat from S2 in term 1
+893 TERM S1 has received heartbeat from S2 in term 1
+895 TIMR S2 Leader, checking heartbeats
+895 TERM S0 has received heartbeat from S2 in term 1
+895 TERM S1 has received heartbeat from S2 in term 1
+897 TIMR S2 Leader, checking heartbeats
+897 TERM S0 has received heartbeat from S2 in term 1
+897 TERM S1 has received heartbeat from S2 in term 1
+900 TIMR S2 Leader, checking heartbeats
+900 TERM S0 has received heartbeat from S2 in term 1
+900 TERM S1 has received heartbeat from S2 in term 1
+902 TIMR S2 Leader, checking heartbeats
+902 TERM S0 has received heartbeat from S2 in term 1
+902 TERM S1 has received heartbeat from S2 in term 1
+904 TIMR S2 Leader, checking heartbeats
+904 TERM S0 has received heartbeat from S2 in term 1
+904 TERM S1 has received heartbeat from S2 in term 1
+906 TIMR S2 Leader, checking heartbeats
+906 TERM S0 has received heartbeat from S2 in term 1
+906 TERM S1 has received heartbeat from S2 in term 1
+909 TIMR S2 Leader, checking heartbeats
+909 TERM S0 has received heartbeat from S2 in term 1
+909 TERM S1 has received heartbeat from S2 in term 1
+911 TIMR S2 Leader, checking heartbeats
+911 TERM S0 has received heartbeat from S2 in term 1
+911 TERM S1 has received heartbeat from S2 in term 1
+913 TIMR S2 Leader, checking heartbeats
+913 TERM S0 has received heartbeat from S2 in term 1
+913 TERM S1 has received heartbeat from S2 in term 1
+915 TIMR S2 Leader, checking heartbeats
+915 TERM S0 has received heartbeat from S2 in term 1
+915 TERM S1 has received heartbeat from S2 in term 1
+918 TIMR S2 Leader, checking heartbeats
+918 TERM S0 has received heartbeat from S2 in term 1
+918 TERM S1 has received heartbeat from S2 in term 1
+920 TIMR S2 Leader, checking heartbeats
+920 TERM S0 has received heartbeat from S2 in term 1
+920 TERM S1 has received heartbeat from S2 in term 1
+922 TIMR S2 Leader, checking heartbeats
+922 TERM S0 has received heartbeat from S2 in term 1
+922 TERM S1 has received heartbeat from S2 in term 1
+924 TIMR S2 Leader, checking heartbeats
+924 TERM S0 has received heartbeat from S2 in term 1
+925 TERM S1 has received heartbeat from S2 in term 1
+927 TIMR S2 Leader, checking heartbeats
+927 TERM S0 has received heartbeat from S2 in term 1
+927 TERM S1 has received heartbeat from S2 in term 1
+929 TIMR S2 Leader, checking heartbeats
+929 TERM S0 has received heartbeat from S2 in term 1
+929 TERM S1 has received heartbeat from S2 in term 1
+931 TIMR S2 Leader, checking heartbeats
+931 TERM S0 has received heartbeat from S2 in term 1
+931 TERM S1 has received heartbeat from S2 in term 1
+934 TIMR S2 Leader, checking heartbeats
+934 TERM S0 has received heartbeat from S2 in term 1
+934 TERM S1 has received heartbeat from S2 in term 1
+936 TIMR S2 Leader, checking heartbeats
+936 TERM S0 has received heartbeat from S2 in term 1
+936 TERM S1 has received heartbeat from S2 in term 1
+938 TIMR S2 Leader, checking heartbeats
+938 TERM S0 has received heartbeat from S2 in term 1
+938 TERM S1 has received heartbeat from S2 in term 1
+940 TIMR S2 Leader, checking heartbeats
+940 TERM S0 has received heartbeat from S2 in term 1
+940 TERM S1 has received heartbeat from S2 in term 1
+942 TIMR S2 Leader, checking heartbeats
+942 TERM S0 has received heartbeat from S2 in term 1
+943 TERM S1 has received heartbeat from S2 in term 1
+945 TIMR S2 Leader, checking heartbeats
+945 TERM S0 has received heartbeat from S2 in term 1
+945 TERM S1 has received heartbeat from S2 in term 1
+947 TIMR S2 Leader, checking heartbeats
+947 TERM S0 has received heartbeat from S2 in term 1
+947 TERM S1 has received heartbeat from S2 in term 1
+949 TIMR S2 Leader, checking heartbeats
+949 TERM S0 has received heartbeat from S2 in term 1
+949 TERM S1 has received heartbeat from S2 in term 1
+951 TIMR S2 Leader, checking heartbeats
+951 TERM S0 has received heartbeat from S2 in term 1
+951 TERM S1 has received heartbeat from S2 in term 1
+953 TIMR S2 Leader, checking heartbeats
+953 TERM S0 has received heartbeat from S2 in term 1
+954 TERM S1 has received heartbeat from S2 in term 1
+956 TIMR S2 Leader, checking heartbeats
+956 TERM S0 has received heartbeat from S2 in term 1
+956 TERM S1 has received heartbeat from S2 in term 1
+958 TIMR S2 Leader, checking heartbeats
+958 TERM S0 has received heartbeat from S2 in term 1
+958 TERM S1 has received heartbeat from S2 in term 1
+960 TIMR S2 Leader, checking heartbeats
+960 TERM S0 has received heartbeat from S2 in term 1
+960 TERM S1 has received heartbeat from S2 in term 1
+962 TIMR S2 Leader, checking heartbeats
+962 TERM S0 has received heartbeat from S2 in term 1
+962 TERM S1 has received heartbeat from S2 in term 1
+964 TIMR S2 Leader, checking heartbeats
+964 TERM S0 has received heartbeat from S2 in term 1
+965 TERM S1 has received heartbeat from S2 in term 1
+967 TIMR S2 Leader, checking heartbeats
+967 TERM S0 has received heartbeat from S2 in term 1
+967 TERM S1 has received heartbeat from S2 in term 1
+969 TIMR S2 Leader, checking heartbeats
+969 TERM S0 has received heartbeat from S2 in term 1
+969 TERM S1 has received heartbeat from S2 in term 1
+971 TIMR S2 Leader, checking heartbeats
+971 TERM S0 has received heartbeat from S2 in term 1
+971 TERM S1 has received heartbeat from S2 in term 1
+973 TIMR S2 Leader, checking heartbeats
+973 TERM S0 has received heartbeat from S2 in term 1
+973 TERM S1 has received heartbeat from S2 in term 1
+975 TIMR S2 Leader, checking heartbeats
+975 TERM S0 has received heartbeat from S2 in term 1
+976 TERM S1 has received heartbeat from S2 in term 1
+978 TIMR S2 Leader, checking heartbeats
+978 TERM S0 has received heartbeat from S2 in term 1
+978 TERM S1 has received heartbeat from S2 in term 1
+980 TIMR S2 Leader, checking heartbeats
+980 TERM S0 has received heartbeat from S2 in term 1
+980 TERM S1 has received heartbeat from S2 in term 1
+982 TIMR S2 Leader, checking heartbeats
+982 TERM S0 has received heartbeat from S2 in term 1
+982 TERM S1 has received heartbeat from S2 in term 1
+984 TIMR S2 Leader, checking heartbeats
+984 TERM S0 has received heartbeat from S2 in term 1
+984 TERM S1 has received heartbeat from S2 in term 1
+986 TIMR S2 Leader, checking heartbeats
+987 TERM S0 has received heartbeat from S2 in term 1
+987 TERM S1 has received heartbeat from S2 in term 1
+989 TIMR S2 Leader, checking heartbeats
+989 TERM S0 has received heartbeat from S2 in term 1
+989 TERM S1 has received heartbeat from S2 in term 1
+991 TIMR S2 Leader, checking heartbeats
+991 TERM S0 has received heartbeat from S2 in term 1
+991 TERM S1 has received heartbeat from S2 in term 1
+993 TIMR S2 Leader, checking heartbeats
+993 TERM S0 has received heartbeat from S2 in term 1
+993 TERM S1 has received heartbeat from S2 in term 1
+995 TIMR S2 Leader, checking heartbeats
+996 TERM S0 has received heartbeat from S2 in term 1
+996 TERM S1 has received heartbeat from S2 in term 1
+998 TIMR S2 Leader, checking heartbeats
+998 TERM S0 has received heartbeat from S2 in term 1
+998 TERM S1 has received heartbeat from S2 in term 1
+1000 TIMR S2 Leader, checking heartbeats
+1000 TERM S0 has received heartbeat from S2 in term 1
+1000 TERM S1 has received heartbeat from S2 in term 1
+1002 TIMR S2 Leader, checking heartbeats
+1002 TERM S0 has received heartbeat from S2 in term 1
+1002 TERM S1 has received heartbeat from S2 in term 1
+1004 TIMR S2 Leader, checking heartbeats
+1004 TERM S0 has received heartbeat from S2 in term 1
+1004 TERM S1 has received heartbeat from S2 in term 1
+1007 TIMR S2 Leader, checking heartbeats
+1007 TERM S0 has received heartbeat from S2 in term 1
+1007 TERM S1 has received heartbeat from S2 in term 1
+1009 TIMR S2 Leader, checking heartbeats
+1009 TERM S0 has received heartbeat from S2 in term 1
+1009 TERM S1 has received heartbeat from S2 in term 1
+1011 TIMR S2 Leader, checking heartbeats
+1011 TERM S0 has received heartbeat from S2 in term 1
+1011 TERM S1 has received heartbeat from S2 in term 1
+1013 TIMR S2 Leader, checking heartbeats
+1014 TERM S0 has received heartbeat from S2 in term 1
+1014 TERM S1 has received heartbeat from S2 in term 1
+1016 TIMR S2 Leader, checking heartbeats
+1016 TERM S0 has received heartbeat from S2 in term 1
+1016 TERM S1 has received heartbeat from S2 in term 1
+1018 TIMR S2 Leader, checking heartbeats
+1018 TERM S0 has received heartbeat from S2 in term 1
+1018 TERM S1 has received heartbeat from S2 in term 1
+1020 TIMR S2 Leader, checking heartbeats
+1020 TERM S0 has received heartbeat from S2 in term 1
+1020 TERM S1 has received heartbeat from S2 in term 1
+1022 TIMR S2 Leader, checking heartbeats
+1022 TERM S0 has received heartbeat from S2 in term 1
+1023 TERM S1 has received heartbeat from S2 in term 1
+1025 TIMR S2 Leader, checking heartbeats
+1025 TERM S0 has received heartbeat from S2 in term 1
+1025 TERM S1 has received heartbeat from S2 in term 1
+1027 TIMR S2 Leader, checking heartbeats
+1027 TERM S0 has received heartbeat from S2 in term 1
+1027 TERM S1 has received heartbeat from S2 in term 1
+1029 TIMR S2 Leader, checking heartbeats
+1029 TERM S0 has received heartbeat from S2 in term 1
+1029 TERM S1 has received heartbeat from S2 in term 1
+1031 TIMR S2 Leader, checking heartbeats
+1031 TERM S0 has received heartbeat from S2 in term 1
+1032 TERM S1 has received heartbeat from S2 in term 1
+1034 TIMR S2 Leader, checking heartbeats
+1034 TERM S0 has received heartbeat from S2 in term 1
+1034 TERM S1 has received heartbeat from S2 in term 1
+1036 TIMR S2 Leader, checking heartbeats
+1036 TERM S0 has received heartbeat from S2 in term 1
+1036 TERM S1 has received heartbeat from S2 in term 1
+1038 TIMR S2 Leader, checking heartbeats
+1038 TERM S0 has received heartbeat from S2 in term 1
+1038 TERM S1 has received heartbeat from S2 in term 1
+1040 TIMR S2 Leader, checking heartbeats
+1041 TERM S0 has received heartbeat from S2 in term 1
+1041 TERM S1 has received heartbeat from S2 in term 1
+1043 TIMR S2 Leader, checking heartbeats
+1043 TERM S0 has received heartbeat from S2 in term 1
+1043 TERM S1 has received heartbeat from S2 in term 1
+1045 TIMR S2 Leader, checking heartbeats
+1045 TERM S0 has received heartbeat from S2 in term 1
+1045 TERM S1 has received heartbeat from S2 in term 1
+1047 TIMR S2 Leader, checking heartbeats
+1047 TERM S0 has received heartbeat from S2 in term 1
+1047 TERM S1 has received heartbeat from S2 in term 1
+1049 TIMR S2 Leader, checking heartbeats
+1049 TERM S0 has received heartbeat from S2 in term 1
+1049 TERM S1 has received heartbeat from S2 in term 1
+1052 TIMR S2 Leader, checking heartbeats
+1052 TERM S0 has received heartbeat from S2 in term 1
+1052 TERM S1 has received heartbeat from S2 in term 1
+1054 TIMR S2 Leader, checking heartbeats
+1054 TERM S0 has received heartbeat from S2 in term 1
+1054 TERM S1 has received heartbeat from S2 in term 1
+1056 TIMR S2 Leader, checking heartbeats
+1056 TERM S0 has received heartbeat from S2 in term 1
+1056 TERM S1 has received heartbeat from S2 in term 1
+1058 TIMR S2 Leader, checking heartbeats
+1058 TERM S0 has received heartbeat from S2 in term 1
+1058 TERM S1 has received heartbeat from S2 in term 1
+1060 TIMR S2 Leader, checking heartbeats
+1061 TERM S0 has received heartbeat from S2 in term 1
+1061 TERM S1 has received heartbeat from S2 in term 1
+1063 TIMR S2 Leader, checking heartbeats
+1063 TERM S0 has received heartbeat from S2 in term 1
+1063 TERM S1 has received heartbeat from S2 in term 1
+1065 TIMR S2 Leader, checking heartbeats
+1065 TERM S0 has received heartbeat from S2 in term 1
+1065 TERM S1 has received heartbeat from S2 in term 1
+1067 TIMR S2 Leader, checking heartbeats
+1067 TERM S0 has received heartbeat from S2 in term 1
+1067 TERM S1 has received heartbeat from S2 in term 1
+2 and 0 are disconnected
+1069 TIMR S2 Leader, checking heartbeats
+1076 TIMR S2 Leader, checking heartbeats
+1082 TIMR S2 Leader, checking heartbeats
+1089 TIMR S2 Leader, checking heartbeats
+1095 TIMR S2 Leader, checking heartbeats
+1102 TIMR S2 Leader, checking heartbeats
+1109 TIMR S2 Leader, checking heartbeats
+1115 TIMR S2 Leader, checking heartbeats
+1122 TIMR S2 Leader, checking heartbeats
+1129 TIMR S2 Leader, checking heartbeats
+1136 TIMR S2 Leader, checking heartbeats
+1142 TIMR S2 Leader, checking heartbeats
+1149 TIMR S2 Leader, checking heartbeats
+1155 TIMR S2 Leader, checking heartbeats
+1162 TIMR S2 Leader, checking heartbeats
+1169 TIMR S2 Leader, checking heartbeats
+1176 TIMR S2 Leader, checking heartbeats
+1182 TIMR S2 Leader, checking heartbeats
+1189 TIMR S2 Leader, checking heartbeats
+1196 TIMR S2 Leader, checking heartbeats
+1203 TIMR S2 Leader, checking heartbeats
+1210 TIMR S2 Leader, checking heartbeats
+1217 TIMR S2 Leader, checking heartbeats
+1224 TIMR S2 Leader, checking heartbeats
+1230 TIMR S2 Leader, checking heartbeats
+1237 TIMR S2 Leader, checking heartbeats
+1244 TIMR S2 Leader, checking heartbeats
+1251 TIMR S2 Leader, checking heartbeats
+1258 TIMR S2 Leader, checking heartbeats
+1265 TIMR S2 Leader, checking heartbeats
+1272 TIMR S2 Leader, checking heartbeats
+1279 TIMR S2 Leader, checking heartbeats
+1286 TIMR S2 Leader, checking heartbeats
+1292 TIMR S2 Leader, checking heartbeats
+1299 TIMR S2 Leader, checking heartbeats
+1306 TIMR S2 Leader, checking heartbeats
+1313 TIMR S2 Leader, checking heartbeats
+1320 TIMR S2 Leader, checking heartbeats
+1327 TIMR S2 Leader, checking heartbeats
+1333 TIMR S2 Leader, checking heartbeats
+1340 TIMR S2 Leader, checking heartbeats
+1346 TIMR S2 Leader, checking heartbeats
+1353 TIMR S2 Leader, checking heartbeats
+1359 TIMR S2 Leader, checking heartbeats
+1366 TIMR S2 Leader, checking heartbeats
+1373 TIMR S2 Leader, checking heartbeats
+1376 TERM S0 follower is starting an election for term 2
+1379 TIMR S2 Leader, checking heartbeats
+1384 TERM S1 follower is starting an election for term 2
+1386 TIMR S2 Leader, checking heartbeats
+1387 VOTE S0 received 1 votes in term 2. There's 1 alive
+1387 VOTE S0 is elected for term 2
+1387 TIMR S0 Leader, checking heartbeats
+1392 TIMR S2 Leader, checking heartbeats
+1393 TIMR S0 Leader, checking heartbeats
+1395 VOTE S1 received 1 votes in term 2. There's 1 alive
+1395 VOTE S1 is elected for term 2
+1395 TIMR S1 Leader, checking heartbeats
+1399 TIMR S2 Leader, checking heartbeats
+1399 TIMR S0 Leader, checking heartbeats
+1401 TIMR S1 Leader, checking heartbeats
+1405 TIMR S2 Leader, checking heartbeats
+1405 TIMR S0 Leader, checking heartbeats
+1408 TIMR S1 Leader, checking heartbeats
+1412 TIMR S2 Leader, checking heartbeats
+1412 TIMR S0 Leader, checking heartbeats
+1415 TIMR S1 Leader, checking heartbeats
+1419 TIMR S2 Leader, checking heartbeats
+1419 TIMR S0 Leader, checking heartbeats
+1421 TIMR S1 Leader, checking heartbeats
+1426 TIMR S2 Leader, checking heartbeats
+1426 TIMR S0 Leader, checking heartbeats
+1428 TIMR S1 Leader, checking heartbeats
+1433 TIMR S2 Leader, checking heartbeats
+1433 TIMR S0 Leader, checking heartbeats
+1435 TIMR S1 Leader, checking heartbeats
+1440 TIMR S2 Leader, checking heartbeats
+1440 TIMR S0 Leader, checking heartbeats
+1442 TIMR S1 Leader, checking heartbeats
+1446 TIMR S2 Leader, checking heartbeats
+1446 TIMR S0 Leader, checking heartbeats
+1449 TIMR S1 Leader, checking heartbeats
+1453 TIMR S2 Leader, checking heartbeats
+1453 TIMR S0 Leader, checking heartbeats
+1455 TIMR S1 Leader, checking heartbeats
+1460 TIMR S2 Leader, checking heartbeats
+1460 TIMR S0 Leader, checking heartbeats
+1462 TIMR S1 Leader, checking heartbeats
+1467 TIMR S2 Leader, checking heartbeats
+1467 TIMR S0 Leader, checking heartbeats
+1469 TIMR S1 Leader, checking heartbeats
+1473 TIMR S2 Leader, checking heartbeats
+1474 TIMR S0 Leader, checking heartbeats
+1476 TIMR S1 Leader, checking heartbeats
+1480 TIMR S2 Leader, checking heartbeats
+1480 TIMR S0 Leader, checking heartbeats
+1482 TIMR S1 Leader, checking heartbeats
+1487 TIMR S0 Leader, checking heartbeats
+1487 TIMR S2 Leader, checking heartbeats
+1489 TIMR S1 Leader, checking heartbeats
+1494 TIMR S0 Leader, checking heartbeats
+1494 TIMR S2 Leader, checking heartbeats
+1496 TIMR S1 Leader, checking heartbeats
+1501 TIMR S0 Leader, checking heartbeats
+1501 TIMR S2 Leader, checking heartbeats
+1503 TIMR S1 Leader, checking heartbeats
+1507 TIMR S0 Leader, checking heartbeats
+1507 TIMR S2 Leader, checking heartbeats
+1510 TIMR S1 Leader, checking heartbeats
+1514 TIMR S0 Leader, checking heartbeats
+1514 TIMR S2 Leader, checking heartbeats
+1517 TIMR S1 Leader, checking heartbeats
+1521 TIMR S0 Leader, checking heartbeats
+1521 TIMR S2 Leader, checking heartbeats
+1523 TIMR S1 Leader, checking heartbeats
+1528 TIMR S2 Leader, checking heartbeats
+1528 TIMR S0 Leader, checking heartbeats
+1530 TIMR S1 Leader, checking heartbeats
+1535 TIMR S2 Leader, checking heartbeats
+1535 TIMR S0 Leader, checking heartbeats
+1537 TIMR S1 Leader, checking heartbeats
+1542 TIMR S2 Leader, checking heartbeats
+1542 TIMR S0 Leader, checking heartbeats
+1544 TIMR S1 Leader, checking heartbeats
+1549 TIMR S2 Leader, checking heartbeats
+1549 TIMR S0 Leader, checking heartbeats
+1551 TIMR S1 Leader, checking heartbeats
+1555 TIMR S2 Leader, checking heartbeats
+1555 TIMR S0 Leader, checking heartbeats
+1558 TIMR S1 Leader, checking heartbeats
+1562 TIMR S2 Leader, checking heartbeats
+1562 TIMR S0 Leader, checking heartbeats
+1565 TIMR S1 Leader, checking heartbeats
+1569 TIMR S2 Leader, checking heartbeats
+1569 TIMR S0 Leader, checking heartbeats
+1571 TIMR S1 Leader, checking heartbeats
+1576 TIMR S2 Leader, checking heartbeats
+1576 TIMR S0 Leader, checking heartbeats
+1578 TIMR S1 Leader, checking heartbeats
+1583 TIMR S2 Leader, checking heartbeats
+1583 TIMR S0 Leader, checking heartbeats
+1585 TIMR S1 Leader, checking heartbeats
+1589 TIMR S2 Leader, checking heartbeats
+1589 TIMR S0 Leader, checking heartbeats
+1592 TIMR S1 Leader, checking heartbeats
+1596 TIMR S2 Leader, checking heartbeats
+1596 TIMR S0 Leader, checking heartbeats
+1598 TIMR S1 Leader, checking heartbeats
+1603 TIMR S2 Leader, checking heartbeats
+1603 TIMR S0 Leader, checking heartbeats
+1605 TIMR S1 Leader, checking heartbeats
+1610 TIMR S2 Leader, checking heartbeats
+1610 TIMR S0 Leader, checking heartbeats
+1612 TIMR S1 Leader, checking heartbeats
+1616 TIMR S2 Leader, checking heartbeats
+1616 TIMR S0 Leader, checking heartbeats
+1618 TIMR S1 Leader, checking heartbeats
+1623 TIMR S2 Leader, checking heartbeats
+1623 TIMR S0 Leader, checking heartbeats
+1625 TIMR S1 Leader, checking heartbeats
+1630 TIMR S2 Leader, checking heartbeats
+1630 TIMR S0 Leader, checking heartbeats
+1632 TIMR S1 Leader, checking heartbeats
+1637 TIMR S2 Leader, checking heartbeats
+1637 TIMR S0 Leader, checking heartbeats
+1639 TIMR S1 Leader, checking heartbeats
+1643 TIMR S2 Leader, checking heartbeats
+1643 TIMR S0 Leader, checking heartbeats
+1646 TIMR S1 Leader, checking heartbeats
+1650 TIMR S2 Leader, checking heartbeats
+1650 TIMR S0 Leader, checking heartbeats
+1652 TIMR S1 Leader, checking heartbeats
+1657 TIMR S0 Leader, checking heartbeats
+1657 TIMR S2 Leader, checking heartbeats
+1659 TIMR S1 Leader, checking heartbeats
+1664 TIMR S0 Leader, checking heartbeats
+1664 TIMR S2 Leader, checking heartbeats
+1666 TIMR S1 Leader, checking heartbeats
+1670 TIMR S0 Leader, checking heartbeats
+1670 TIMR S2 Leader, checking heartbeats
+1672 TIMR S1 Leader, checking heartbeats
+1677 TIMR S0 Leader, checking heartbeats
+1677 TIMR S2 Leader, checking heartbeats
+1679 TIMR S1 Leader, checking heartbeats
+1684 TIMR S0 Leader, checking heartbeats
+1684 TIMR S2 Leader, checking heartbeats
+1686 TIMR S1 Leader, checking heartbeats
+1690 TIMR S0 Leader, checking heartbeats
+1690 TIMR S2 Leader, checking heartbeats
+1692 TIMR S1 Leader, checking heartbeats
+1697 TIMR S2 Leader, checking heartbeats
+1697 TIMR S0 Leader, checking heartbeats
+1699 TIMR S1 Leader, checking heartbeats
+1704 TIMR S2 Leader, checking heartbeats
+1704 TIMR S0 Leader, checking heartbeats
+1706 TIMR S1 Leader, checking heartbeats
+1711 TIMR S2 Leader, checking heartbeats
+1711 TIMR S0 Leader, checking heartbeats
+1713 TIMR S1 Leader, checking heartbeats
+1717 TIMR S2 Leader, checking heartbeats
+1717 TIMR S0 Leader, checking heartbeats
+1719 TIMR S1 Leader, checking heartbeats
+1724 TIMR S0 Leader, checking heartbeats
+1724 TIMR S2 Leader, checking heartbeats
+1726 TIMR S1 Leader, checking heartbeats
+1730 TIMR S0 Leader, checking heartbeats
+1731 TIMR S2 Leader, checking heartbeats
+1733 TIMR S1 Leader, checking heartbeats
+1737 TIMR S0 Leader, checking heartbeats
+1737 TIMR S2 Leader, checking heartbeats
+1739 TIMR S1 Leader, checking heartbeats
+1744 TIMR S0 Leader, checking heartbeats
+1744 TIMR S2 Leader, checking heartbeats
+1746 TIMR S1 Leader, checking heartbeats
+1751 TIMR S0 Leader, checking heartbeats
+1751 TIMR S2 Leader, checking heartbeats
+1753 TIMR S1 Leader, checking heartbeats
+1758 TIMR S0 Leader, checking heartbeats
+1758 TIMR S2 Leader, checking heartbeats
+1760 TIMR S1 Leader, checking heartbeats
+1765 TIMR S0 Leader, checking heartbeats
+1765 TIMR S2 Leader, checking heartbeats
+1767 TIMR S1 Leader, checking heartbeats
+1772 TIMR S0 Leader, checking heartbeats
+1772 TIMR S2 Leader, checking heartbeats
+1774 TIMR S1 Leader, checking heartbeats
+1778 TIMR S0 Leader, checking heartbeats
+1779 TIMR S2 Leader, checking heartbeats
+1781 TIMR S1 Leader, checking heartbeats
+1785 TIMR S0 Leader, checking heartbeats
+1785 TIMR S2 Leader, checking heartbeats
+1787 TIMR S1 Leader, checking heartbeats
+1792 TIMR S0 Leader, checking heartbeats
+1792 TIMR S2 Leader, checking heartbeats
+1794 TIMR S1 Leader, checking heartbeats
+1799 TIMR S0 Leader, checking heartbeats
+1799 TIMR S2 Leader, checking heartbeats
+1801 TIMR S1 Leader, checking heartbeats
+1806 TIMR S2 Leader, checking heartbeats
+1806 TIMR S0 Leader, checking heartbeats
+1808 TIMR S1 Leader, checking heartbeats
+1812 TIMR S2 Leader, checking heartbeats
+1812 TIMR S0 Leader, checking heartbeats
+1815 TIMR S1 Leader, checking heartbeats
+1819 TIMR S2 Leader, checking heartbeats
+1819 TIMR S0 Leader, checking heartbeats
+1821 TIMR S1 Leader, checking heartbeats
+1826 TIMR S2 Leader, checking heartbeats
+1826 TIMR S0 Leader, checking heartbeats
+1828 TIMR S1 Leader, checking heartbeats
+1833 TIMR S2 Leader, checking heartbeats
+1833 TIMR S0 Leader, checking heartbeats
+1835 TIMR S1 Leader, checking heartbeats
+1839 TIMR S2 Leader, checking heartbeats
+1839 TIMR S0 Leader, checking heartbeats
+1842 TIMR S1 Leader, checking heartbeats
+1846 TIMR S2 Leader, checking heartbeats
+1846 TIMR S0 Leader, checking heartbeats
+1848 TIMR S1 Leader, checking heartbeats
+1853 TIMR S2 Leader, checking heartbeats
+1853 TIMR S0 Leader, checking heartbeats
+1855 TIMR S1 Leader, checking heartbeats
+1859 TIMR S2 Leader, checking heartbeats
+1859 TIMR S0 Leader, checking heartbeats
+1862 TIMR S1 Leader, checking heartbeats
+1866 TIMR S2 Leader, checking heartbeats
+1866 TIMR S0 Leader, checking heartbeats
+1868 TIMR S1 Leader, checking heartbeats
+1873 TIMR S2 Leader, checking heartbeats
+1873 TIMR S0 Leader, checking heartbeats
+1875 TIMR S1 Leader, checking heartbeats
+1880 TIMR S2 Leader, checking heartbeats
+1880 TIMR S0 Leader, checking heartbeats
+1882 TIMR S1 Leader, checking heartbeats
+1886 TIMR S2 Leader, checking heartbeats
+1886 TIMR S0 Leader, checking heartbeats
+1889 TIMR S1 Leader, checking heartbeats
+1893 TIMR S2 Leader, checking heartbeats
+1893 TIMR S0 Leader, checking heartbeats
+1896 TIMR S1 Leader, checking heartbeats
+1900 TIMR S2 Leader, checking heartbeats
+1900 TIMR S0 Leader, checking heartbeats
+1902 TIMR S1 Leader, checking heartbeats
+1907 TIMR S2 Leader, checking heartbeats
+1907 TIMR S0 Leader, checking heartbeats
+1909 TIMR S1 Leader, checking heartbeats
+1914 TIMR S2 Leader, checking heartbeats
+1914 TIMR S0 Leader, checking heartbeats
+1916 TIMR S1 Leader, checking heartbeats
+1921 TIMR S2 Leader, checking heartbeats
+1921 TIMR S0 Leader, checking heartbeats
+1923 TIMR S1 Leader, checking heartbeats
+1927 TIMR S2 Leader, checking heartbeats
+1927 TIMR S0 Leader, checking heartbeats
+1930 TIMR S1 Leader, checking heartbeats
+1934 TIMR S2 Leader, checking heartbeats
+1934 TIMR S0 Leader, checking heartbeats
+1936 TIMR S1 Leader, checking heartbeats
+1941 TIMR S2 Leader, checking heartbeats
+1941 TIMR S0 Leader, checking heartbeats
+1943 TIMR S1 Leader, checking heartbeats
+1948 TIMR S2 Leader, checking heartbeats
+1948 TIMR S0 Leader, checking heartbeats
+1950 TIMR S1 Leader, checking heartbeats
+1954 TIMR S2 Leader, checking heartbeats
+1954 TIMR S0 Leader, checking heartbeats
+1957 TIMR S1 Leader, checking heartbeats
+1961 TIMR S0 Leader, checking heartbeats
+1961 TIMR S2 Leader, checking heartbeats
+1964 TIMR S1 Leader, checking heartbeats
+1968 TIMR S0 Leader, checking heartbeats
+1968 TIMR S2 Leader, checking heartbeats
+1970 TIMR S1 Leader, checking heartbeats
+1975 TIMR S0 Leader, checking heartbeats
+1975 TIMR S2 Leader, checking heartbeats
+1977 TIMR S1 Leader, checking heartbeats
+1982 TIMR S0 Leader, checking heartbeats
+1982 TIMR S2 Leader, checking heartbeats
+1984 TIMR S1 Leader, checking heartbeats
+1988 TIMR S0 Leader, checking heartbeats
+1989 TIMR S2 Leader, checking heartbeats
+1991 TIMR S1 Leader, checking heartbeats
+1995 TIMR S0 Leader, checking heartbeats
+1995 TIMR S2 Leader, checking heartbeats
+1997 TIMR S1 Leader, checking heartbeats
+2002 TIMR S0 Leader, checking heartbeats
+2002 TIMR S2 Leader, checking heartbeats
+2004 TIMR S1 Leader, checking heartbeats
+2009 TIMR S0 Leader, checking heartbeats
+2009 TIMR S2 Leader, checking heartbeats
+2011 TIMR S1 Leader, checking heartbeats
+2015 TIMR S0 Leader, checking heartbeats
+2015 TIMR S2 Leader, checking heartbeats
+2018 TIMR S1 Leader, checking heartbeats
+2022 TIMR S0 Leader, checking heartbeats
+2022 TIMR S2 Leader, checking heartbeats
+2024 TIMR S1 Leader, checking heartbeats
+2029 TIMR S0 Leader, checking heartbeats
+2029 TIMR S2 Leader, checking heartbeats
+2031 TIMR S1 Leader, checking heartbeats
+2036 TIMR S0 Leader, checking heartbeats
+2036 TIMR S2 Leader, checking heartbeats
+2038 TIMR S1 Leader, checking heartbeats
+2043 TIMR S0 Leader, checking heartbeats
+2043 TIMR S2 Leader, checking heartbeats
+2045 TIMR S1 Leader, checking heartbeats
+2049 TIMR S0 Leader, checking heartbeats
+2049 TIMR S2 Leader, checking heartbeats
+2051 TIMR S1 Leader, checking heartbeats
+2056 TIMR S0 Leader, checking heartbeats
+2056 TIMR S2 Leader, checking heartbeats
+2058 TIMR S1 Leader, checking heartbeats
+2063 TIMR S0 Leader, checking heartbeats
+2063 TIMR S2 Leader, checking heartbeats
+2065 TIMR S1 Leader, checking heartbeats
+2069 TIMR S0 Leader, checking heartbeats
+2069 TIMR S2 Leader, checking heartbeats
+2072 TIMR S1 Leader, checking heartbeats
+2076 TIMR S0 Leader, checking heartbeats
+2076 TIMR S2 Leader, checking heartbeats
+2079 TIMR S1 Leader, checking heartbeats
+2083 TIMR S2 Leader, checking heartbeats
+2083 TIMR S0 Leader, checking heartbeats
+2085 TIMR S1 Leader, checking heartbeats
+2090 TIMR S2 Leader, checking heartbeats
+2090 TIMR S0 Leader, checking heartbeats
+2092 TIMR S1 Leader, checking heartbeats
+2097 TIMR S2 Leader, checking heartbeats
+2097 TIMR S0 Leader, checking heartbeats
+2099 TIMR S1 Leader, checking heartbeats
+2103 TIMR S0 Leader, checking heartbeats
+2103 TIMR S2 Leader, checking heartbeats
+2105 TIMR S1 Leader, checking heartbeats
+2110 TIMR S0 Leader, checking heartbeats
+2110 TIMR S2 Leader, checking heartbeats
+2112 TIMR S1 Leader, checking heartbeats
+2117 TIMR S0 Leader, checking heartbeats
+2117 TIMR S2 Leader, checking heartbeats
+2119 TIMR S1 Leader, checking heartbeats
+2124 TIMR S0 Leader, checking heartbeats
+2124 TIMR S2 Leader, checking heartbeats
+2126 TIMR S1 Leader, checking heartbeats
+2131 TIMR S0 Leader, checking heartbeats
+2131 TIMR S2 Leader, checking heartbeats
+2133 TIMR S1 Leader, checking heartbeats
+2137 TIMR S0 Leader, checking heartbeats
+2137 TIMR S2 Leader, checking heartbeats
+2140 TIMR S1 Leader, checking heartbeats
+2144 TIMR S0 Leader, checking heartbeats
+2144 TIMR S2 Leader, checking heartbeats
+2147 TIMR S1 Leader, checking heartbeats
+2151 TIMR S2 Leader, checking heartbeats
+2151 TIMR S0 Leader, checking heartbeats
+2154 TIMR S1 Leader, checking heartbeats
+2158 TIMR S2 Leader, checking heartbeats
+2158 TIMR S0 Leader, checking heartbeats
+2160 TIMR S1 Leader, checking heartbeats
+2165 TIMR S2 Leader, checking heartbeats
+2165 TIMR S0 Leader, checking heartbeats
+2167 TIMR S1 Leader, checking heartbeats
+2171 TIMR S2 Leader, checking heartbeats
+2171 TIMR S0 Leader, checking heartbeats
+2174 TIMR S1 Leader, checking heartbeats
+2178 TIMR S2 Leader, checking heartbeats
+2178 TIMR S0 Leader, checking heartbeats
+2181 TIMR S1 Leader, checking heartbeats
+2185 TIMR S2 Leader, checking heartbeats
+2185 TIMR S0 Leader, checking heartbeats
+2187 TIMR S1 Leader, checking heartbeats
+2192 TIMR S0 Leader, checking heartbeats
+2192 TIMR S2 Leader, checking heartbeats
+2194 TIMR S1 Leader, checking heartbeats
+2198 TIMR S0 Leader, checking heartbeats
+2198 TIMR S2 Leader, checking heartbeats
+2201 TIMR S1 Leader, checking heartbeats
+2205 TIMR S0 Leader, checking heartbeats
+2205 TIMR S2 Leader, checking heartbeats
+2208 TIMR S1 Leader, checking heartbeats
+2212 TIMR S2 Leader, checking heartbeats
+2212 TIMR S0 Leader, checking heartbeats
+2214 TIMR S1 Leader, checking heartbeats
+2219 TIMR S2 Leader, checking heartbeats
+2219 TIMR S0 Leader, checking heartbeats
+2221 TIMR S1 Leader, checking heartbeats
+2226 TIMR S2 Leader, checking heartbeats
+2226 TIMR S0 Leader, checking heartbeats
+2228 TIMR S1 Leader, checking heartbeats
+2233 TIMR S2 Leader, checking heartbeats
+2233 TIMR S0 Leader, checking heartbeats
+2235 TIMR S1 Leader, checking heartbeats
+2239 TIMR S2 Leader, checking heartbeats
+2239 TIMR S0 Leader, checking heartbeats
+2241 TIMR S1 Leader, checking heartbeats
+2246 TIMR S2 Leader, checking heartbeats
+2246 TIMR S0 Leader, checking heartbeats
+2248 TIMR S1 Leader, checking heartbeats
+2253 TIMR S2 Leader, checking heartbeats
+2253 TIMR S0 Leader, checking heartbeats
+2255 TIMR S1 Leader, checking heartbeats
+2259 TIMR S2 Leader, checking heartbeats
+2259 TIMR S0 Leader, checking heartbeats
+2262 TIMR S1 Leader, checking heartbeats
+2266 TIMR S2 Leader, checking heartbeats
+2266 TIMR S0 Leader, checking heartbeats
+2269 TIMR S1 Leader, checking heartbeats
+2273 TIMR S2 Leader, checking heartbeats
+2273 TIMR S0 Leader, checking heartbeats
+2275 TIMR S1 Leader, checking heartbeats
+2280 TIMR S2 Leader, checking heartbeats
+2280 TIMR S0 Leader, checking heartbeats
+2282 TIMR S1 Leader, checking heartbeats
+2286 TIMR S2 Leader, checking heartbeats
+2286 TIMR S0 Leader, checking heartbeats
+2288 TIMR S1 Leader, checking heartbeats
+2293 TIMR S2 Leader, checking heartbeats
+2293 TIMR S0 Leader, checking heartbeats
+2295 TIMR S1 Leader, checking heartbeats
+2300 TIMR S2 Leader, checking heartbeats
+2300 TIMR S0 Leader, checking heartbeats
+2302 TIMR S1 Leader, checking heartbeats
+2307 TIMR S2 Leader, checking heartbeats
+2307 TIMR S0 Leader, checking heartbeats
+2309 TIMR S1 Leader, checking heartbeats
+2313 TIMR S2 Leader, checking heartbeats
+2314 TIMR S0 Leader, checking heartbeats
+2316 TIMR S1 Leader, checking heartbeats
+2320 TIMR S2 Leader, checking heartbeats
+2320 TIMR S0 Leader, checking heartbeats
+2322 TIMR S1 Leader, checking heartbeats
+2327 TIMR S2 Leader, checking heartbeats
+2327 TIMR S0 Leader, checking heartbeats
+2329 TIMR S1 Leader, checking heartbeats
+2333 TIMR S2 Leader, checking heartbeats
+2333 TIMR S0 Leader, checking heartbeats
+2335 TIMR S1 Leader, checking heartbeats
+2340 TIMR S2 Leader, checking heartbeats
+2340 TIMR S0 Leader, checking heartbeats
+2342 TIMR S1 Leader, checking heartbeats
+2347 TIMR S2 Leader, checking heartbeats
+2347 TIMR S0 Leader, checking heartbeats
+2349 TIMR S1 Leader, checking heartbeats
+2353 TIMR S2 Leader, checking heartbeats
+2354 TIMR S0 Leader, checking heartbeats
+2356 TIMR S1 Leader, checking heartbeats
+2360 TIMR S2 Leader, checking heartbeats
+2360 TIMR S0 Leader, checking heartbeats
+2363 TIMR S1 Leader, checking heartbeats
+2367 TIMR S2 Leader, checking heartbeats
+2367 TIMR S0 Leader, checking heartbeats
+2370 TIMR S1 Leader, checking heartbeats
+2374 TIMR S0 Leader, checking heartbeats
+2374 TIMR S2 Leader, checking heartbeats
+2376 TIMR S1 Leader, checking heartbeats
+2381 TIMR S2 Leader, checking heartbeats
+2381 TIMR S0 Leader, checking heartbeats
+2383 TIMR S1 Leader, checking heartbeats
+2387 TIMR S0 Leader, checking heartbeats
+2387 TIMR S2 Leader, checking heartbeats
+2389 TIMR S1 Leader, checking heartbeats
+2394 TIMR S2 Leader, checking heartbeats
+2394 TIMR S0 Leader, checking heartbeats
+2396 TIMR S1 Leader, checking heartbeats
+2400 TIMR S2 Leader, checking heartbeats
+2400 TIMR S0 Leader, checking heartbeats
+2403 TIMR S1 Leader, checking heartbeats
+2407 TIMR S2 Leader, checking heartbeats
+2407 TIMR S0 Leader, checking heartbeats
+2409 TIMR S1 Leader, checking heartbeats
+2413 TIMR S2 Leader, checking heartbeats
+2413 TIMR S0 Leader, checking heartbeats
+2416 TIMR S1 Leader, checking heartbeats
+2420 TIMR S2 Leader, checking heartbeats
+2420 TIMR S0 Leader, checking heartbeats
+2423 TIMR S1 Leader, checking heartbeats
+2427 TIMR S2 Leader, checking heartbeats
+2427 TIMR S0 Leader, checking heartbeats
+2429 TIMR S1 Leader, checking heartbeats
+2434 TIMR S2 Leader, checking heartbeats
+2434 TIMR S0 Leader, checking heartbeats
+2436 TIMR S1 Leader, checking heartbeats
+2441 TIMR S2 Leader, checking heartbeats
+2441 TIMR S0 Leader, checking heartbeats
+2443 TIMR S1 Leader, checking heartbeats
+2447 TIMR S2 Leader, checking heartbeats
+2447 TIMR S0 Leader, checking heartbeats
+2450 TIMR S1 Leader, checking heartbeats
+2454 TIMR S2 Leader, checking heartbeats
+2454 TIMR S0 Leader, checking heartbeats
+2456 TIMR S1 Leader, checking heartbeats
+2461 TIMR S2 Leader, checking heartbeats
+2461 TIMR S0 Leader, checking heartbeats
+2463 TIMR S1 Leader, checking heartbeats
+2468 TIMR S0 Leader, checking heartbeats
+2468 TIMR S2 Leader, checking heartbeats
+2470 TIMR S1 Leader, checking heartbeats
+2474 TIMR S0 Leader, checking heartbeats
+2474 TIMR S2 Leader, checking heartbeats
+2477 TIMR S1 Leader, checking heartbeats
+2481 TIMR S0 Leader, checking heartbeats
+2481 TIMR S2 Leader, checking heartbeats
+2483 TIMR S1 Leader, checking heartbeats
+2488 TIMR S0 Leader, checking heartbeats
+2488 TIMR S2 Leader, checking heartbeats
+2490 TIMR S1 Leader, checking heartbeats
+2495 TIMR S0 Leader, checking heartbeats
+2495 TIMR S2 Leader, checking heartbeats
+2497 TIMR S1 Leader, checking heartbeats
+2502 TIMR S0 Leader, checking heartbeats
+2502 TIMR S2 Leader, checking heartbeats
+2504 TIMR S1 Leader, checking heartbeats
+2508 TIMR S0 Leader, checking heartbeats
+2508 TIMR S2 Leader, checking heartbeats
+2511 TIMR S1 Leader, checking heartbeats
+2515 TIMR S0 Leader, checking heartbeats
+2515 TIMR S2 Leader, checking heartbeats
+2517 TIMR S1 Leader, checking heartbeats
+2522 TIMR S0 Leader, checking heartbeats
+2522 TIMR S2 Leader, checking heartbeats
+2524 TIMR S1 Leader, checking heartbeats
+2529 TIMR S0 Leader, checking heartbeats
+2529 TIMR S2 Leader, checking heartbeats
+2531 TIMR S1 Leader, checking heartbeats
+2535 TIMR S0 Leader, checking heartbeats
+2535 TIMR S2 Leader, checking heartbeats
+2538 TIMR S1 Leader, checking heartbeats
+2542 TIMR S0 Leader, checking heartbeats
+2542 TIMR S2 Leader, checking heartbeats
+2544 TIMR S1 Leader, checking heartbeats
+2549 TIMR S0 Leader, checking heartbeats
+2549 TIMR S2 Leader, checking heartbeats
+2551 TIMR S1 Leader, checking heartbeats
+2556 TIMR S0 Leader, checking heartbeats
+2556 TIMR S2 Leader, checking heartbeats
+2558 TIMR S1 Leader, checking heartbeats
+2563 TIMR S0 Leader, checking heartbeats
+2563 TIMR S2 Leader, checking heartbeats
+2565 TIMR S1 Leader, checking heartbeats
+2569 TIMR S0 Leader, checking heartbeats
+2569 TIMR S2 Leader, checking heartbeats
+2572 TIMR S1 Leader, checking heartbeats
+2576 TIMR S0 Leader, checking heartbeats
+2576 TIMR S2 Leader, checking heartbeats
+2578 TIMR S1 Leader, checking heartbeats
+2583 TIMR S2 Leader, checking heartbeats
+2583 TIMR S0 Leader, checking heartbeats
+2585 TIMR S1 Leader, checking heartbeats
+2589 TIMR S2 Leader, checking heartbeats
+2589 TIMR S0 Leader, checking heartbeats
+2592 TIMR S1 Leader, checking heartbeats
+2596 TIMR S2 Leader, checking heartbeats
+2596 TIMR S0 Leader, checking heartbeats
+2598 TIMR S1 Leader, checking heartbeats
+2603 TIMR S2 Leader, checking heartbeats
+2603 TIMR S0 Leader, checking heartbeats
+2605 TIMR S1 Leader, checking heartbeats
+2610 TIMR S2 Leader, checking heartbeats
+2610 TIMR S0 Leader, checking heartbeats
+2612 TIMR S1 Leader, checking heartbeats
+2616 TIMR S0 Leader, checking heartbeats
+2617 TIMR S2 Leader, checking heartbeats
+2619 TIMR S1 Leader, checking heartbeats
+2623 TIMR S0 Leader, checking heartbeats
+2623 TIMR S2 Leader, checking heartbeats
+2625 TIMR S1 Leader, checking heartbeats
+2630 TIMR S2 Leader, checking heartbeats
+2630 TIMR S0 Leader, checking heartbeats
+2632 TIMR S1 Leader, checking heartbeats
+2637 TIMR S2 Leader, checking heartbeats
+2637 TIMR S0 Leader, checking heartbeats
+2639 TIMR S1 Leader, checking heartbeats
+2644 TIMR S2 Leader, checking heartbeats
+2644 TIMR S0 Leader, checking heartbeats
+2646 TIMR S1 Leader, checking heartbeats
+2650 TIMR S2 Leader, checking heartbeats
+2650 TIMR S0 Leader, checking heartbeats
+2652 TIMR S1 Leader, checking heartbeats
+2657 TIMR S2 Leader, checking heartbeats
+2657 TIMR S0 Leader, checking heartbeats
+2659 TIMR S1 Leader, checking heartbeats
+2664 TIMR S2 Leader, checking heartbeats
+2664 TIMR S0 Leader, checking heartbeats
+2666 TIMR S1 Leader, checking heartbeats
+2670 TIMR S2 Leader, checking heartbeats
+2670 TIMR S0 Leader, checking heartbeats
+2673 TIMR S1 Leader, checking heartbeats
+2677 TIMR S2 Leader, checking heartbeats
+2677 TIMR S0 Leader, checking heartbeats
+2680 TIMR S1 Leader, checking heartbeats
+2684 TIMR S2 Leader, checking heartbeats
+2684 TIMR S0 Leader, checking heartbeats
+2686 TIMR S1 Leader, checking heartbeats
+2691 TIMR S2 Leader, checking heartbeats
+2691 TIMR S0 Leader, checking heartbeats
+2693 TIMR S1 Leader, checking heartbeats
+2698 TIMR S2 Leader, checking heartbeats
+2698 TIMR S0 Leader, checking heartbeats
+2700 TIMR S1 Leader, checking heartbeats
+2705 TIMR S2 Leader, checking heartbeats
+2705 TIMR S0 Leader, checking heartbeats
+2707 TIMR S1 Leader, checking heartbeats
+2711 TIMR S0 Leader, checking heartbeats
+2711 TIMR S2 Leader, checking heartbeats
+2714 TIMR S1 Leader, checking heartbeats
+2718 TIMR S0 Leader, checking heartbeats
+2718 TIMR S2 Leader, checking heartbeats
+2721 TIMR S1 Leader, checking heartbeats
+2725 TIMR S0 Leader, checking heartbeats
+2725 TIMR S2 Leader, checking heartbeats
+2727 TIMR S1 Leader, checking heartbeats
+2732 TIMR S2 Leader, checking heartbeats
+2732 TIMR S0 Leader, checking heartbeats
+2734 TIMR S1 Leader, checking heartbeats
+2738 TIMR S2 Leader, checking heartbeats
+2738 TIMR S0 Leader, checking heartbeats
+2740 TIMR S1 Leader, checking heartbeats
+2745 TIMR S2 Leader, checking heartbeats
+2745 TIMR S0 Leader, checking heartbeats
+2747 TIMR S1 Leader, checking heartbeats
+2752 TIMR S2 Leader, checking heartbeats
+2752 TIMR S0 Leader, checking heartbeats
+2754 TIMR S1 Leader, checking heartbeats
+2758 TIMR S2 Leader, checking heartbeats
+2758 TIMR S0 Leader, checking heartbeats
+2760 TIMR S1 Leader, checking heartbeats
+2765 TIMR S2 Leader, checking heartbeats
+2765 TIMR S0 Leader, checking heartbeats
+2767 TIMR S1 Leader, checking heartbeats
+2771 TIMR S2 Leader, checking heartbeats
+2771 TIMR S0 Leader, checking heartbeats
+2774 TIMR S1 Leader, checking heartbeats
+2778 TIMR S0 Leader, checking heartbeats
+2778 TIMR S2 Leader, checking heartbeats
+2780 TIMR S1 Leader, checking heartbeats
+2785 TIMR S0 Leader, checking heartbeats
+2785 TIMR S2 Leader, checking heartbeats
+2787 TIMR S1 Leader, checking heartbeats
+2792 TIMR S0 Leader, checking heartbeats
+2792 TIMR S2 Leader, checking heartbeats
+2794 TIMR S1 Leader, checking heartbeats
+2798 TIMR S0 Leader, checking heartbeats
+2798 TIMR S2 Leader, checking heartbeats
+2800 TIMR S1 Leader, checking heartbeats
+2805 TIMR S2 Leader, checking heartbeats
+2805 TIMR S0 Leader, checking heartbeats
+2807 TIMR S1 Leader, checking heartbeats
+2811 TIMR S2 Leader, checking heartbeats
+2811 TIMR S0 Leader, checking heartbeats
+2814 TIMR S1 Leader, checking heartbeats
+2818 TIMR S2 Leader, checking heartbeats
+2818 TIMR S0 Leader, checking heartbeats
+2821 TIMR S1 Leader, checking heartbeats
+2825 TIMR S2 Leader, checking heartbeats
+2825 TIMR S0 Leader, checking heartbeats
+2827 TIMR S1 Leader, checking heartbeats
+2832 TIMR S2 Leader, checking heartbeats
+2832 TIMR S0 Leader, checking heartbeats
+2834 TIMR S1 Leader, checking heartbeats
+2838 TIMR S0 Leader, checking heartbeats
+2838 TIMR S2 Leader, checking heartbeats
+2840 TIMR S1 Leader, checking heartbeats
+2845 TIMR S0 Leader, checking heartbeats
+2845 TIMR S2 Leader, checking heartbeats
+2847 TIMR S1 Leader, checking heartbeats
+2851 TIMR S0 Leader, checking heartbeats
+2851 TIMR S2 Leader, checking heartbeats
+2853 TIMR S1 Leader, checking heartbeats
+2858 TIMR S0 Leader, checking heartbeats
+2858 TIMR S2 Leader, checking heartbeats
+2860 TIMR S1 Leader, checking heartbeats
+2865 TIMR S0 Leader, checking heartbeats
+2865 TIMR S2 Leader, checking heartbeats
+2867 TIMR S1 Leader, checking heartbeats
+2872 TIMR S0 Leader, checking heartbeats
+2872 TIMR S2 Leader, checking heartbeats
+2874 TIMR S1 Leader, checking heartbeats
+2878 TIMR S0 Leader, checking heartbeats
+2878 TIMR S2 Leader, checking heartbeats
+2881 TIMR S1 Leader, checking heartbeats
+2885 TIMR S0 Leader, checking heartbeats
+2885 TIMR S2 Leader, checking heartbeats
+2887 TIMR S1 Leader, checking heartbeats
+2892 TIMR S0 Leader, checking heartbeats
+2892 TIMR S2 Leader, checking heartbeats
+2894 TIMR S1 Leader, checking heartbeats
+2898 TIMR S0 Leader, checking heartbeats
+2898 TIMR S2 Leader, checking heartbeats
+2901 TIMR S1 Leader, checking heartbeats
+2906 TIMR S2 Leader, checking heartbeats
+2906 TIMR S0 Leader, checking heartbeats
+2908 TIMR S1 Leader, checking heartbeats
+2912 TIMR S2 Leader, checking heartbeats
+2912 TIMR S0 Leader, checking heartbeats
+2915 TIMR S1 Leader, checking heartbeats
+2919 TIMR S2 Leader, checking heartbeats
+2919 TIMR S0 Leader, checking heartbeats
+2921 TIMR S1 Leader, checking heartbeats
+2925 TIMR S2 Leader, checking heartbeats
+2926 TIMR S0 Leader, checking heartbeats
+2928 TIMR S1 Leader, checking heartbeats
+2932 TIMR S0 Leader, checking heartbeats
+2932 TIMR S2 Leader, checking heartbeats
+2934 TIMR S1 Leader, checking heartbeats
+2939 TIMR S0 Leader, checking heartbeats
+2939 TIMR S2 Leader, checking heartbeats
+2941 TIMR S1 Leader, checking heartbeats
+2946 TIMR S0 Leader, checking heartbeats
+2946 TIMR S2 Leader, checking heartbeats
+2948 TIMR S1 Leader, checking heartbeats
+2952 TIMR S0 Leader, checking heartbeats
+2953 TIMR S2 Leader, checking heartbeats
+2955 TIMR S1 Leader, checking heartbeats
+2959 TIMR S0 Leader, checking heartbeats
+2959 TIMR S2 Leader, checking heartbeats
+2961 TIMR S1 Leader, checking heartbeats
+2966 TIMR S0 Leader, checking heartbeats
+2966 TIMR S2 Leader, checking heartbeats
+2968 TIMR S1 Leader, checking heartbeats
+2973 TIMR S0 Leader, checking heartbeats
+2973 TIMR S2 Leader, checking heartbeats
+2975 TIMR S1 Leader, checking heartbeats
+2980 TIMR S2 Leader, checking heartbeats
+2980 TIMR S0 Leader, checking heartbeats
+2982 TIMR S1 Leader, checking heartbeats
+2987 TIMR S2 Leader, checking heartbeats
+2987 TIMR S0 Leader, checking heartbeats
+2989 TIMR S1 Leader, checking heartbeats
+2993 TIMR S0 Leader, checking heartbeats
+2993 TIMR S2 Leader, checking heartbeats
+2996 TIMR S1 Leader, checking heartbeats
+3000 TIMR S0 Leader, checking heartbeats
+3000 TIMR S2 Leader, checking heartbeats
+3002 TIMR S1 Leader, checking heartbeats
+3007 TIMR S0 Leader, checking heartbeats
+3007 TIMR S2 Leader, checking heartbeats
+3009 TIMR S1 Leader, checking heartbeats
+3013 TIMR S0 Leader, checking heartbeats
+3013 TIMR S2 Leader, checking heartbeats
+3016 TIMR S1 Leader, checking heartbeats
+3020 TIMR S0 Leader, checking heartbeats
+3020 TIMR S2 Leader, checking heartbeats
+3022 TIMR S1 Leader, checking heartbeats
+3027 TIMR S0 Leader, checking heartbeats
+3027 TIMR S2 Leader, checking heartbeats
+3029 TIMR S1 Leader, checking heartbeats
+3033 TIMR S0 Leader, checking heartbeats
+3033 TIMR S2 Leader, checking heartbeats
+3036 TIMR S1 Leader, checking heartbeats
+3040 TIMR S0 Leader, checking heartbeats
+3040 TIMR S2 Leader, checking heartbeats
+3042 TIMR S1 Leader, checking heartbeats
+3047 TIMR S0 Leader, checking heartbeats
+3047 TIMR S2 Leader, checking heartbeats
+3049 TIMR S1 Leader, checking heartbeats
+3054 TIMR S0 Leader, checking heartbeats
+3054 TIMR S2 Leader, checking heartbeats
+3056 TIMR S1 Leader, checking heartbeats
+3061 TIMR S0 Leader, checking heartbeats
+3061 TIMR S2 Leader, checking heartbeats
+3063 TIMR S1 Leader, checking heartbeats
+3067 TIMR S0 Leader, checking heartbeats
+3067 TIMR S2 Leader, checking heartbeats
+3069 TIMR S1 Leader, checking heartbeats
+--- FAIL: TestReElection2A (3.07s)
+    config.go:487: expected no leader among connected servers, but 1 claims to be leader
 FAIL
 exit status 1
-FAIL	6.824/raft	7.074s
+FAIL	6.824/raft	3.185s

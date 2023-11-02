@@ -137,6 +137,9 @@ func TestManyElections2A(t *testing.T) {
 		cfg.connect(i1)
 		cfg.connect(i2)
 		cfg.connect(i3)
+		Debug(dTest, "S%v in term %v is connected", i1, cfg.rafts[i1].currentTerm)
+		Debug(dTest, "S%v in term %v is connected", i2, cfg.rafts[i2].currentTerm)
+		Debug(dTest, "S%v in term %v is connected", i3, cfg.rafts[i3].currentTerm)
 	}
 
 	cfg.checkOneLeader()
