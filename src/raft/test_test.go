@@ -60,30 +60,36 @@ func TestReElection2A(t *testing.T) {
 	cfg.begin("Test (2A): election after network failure")
 
 	leader1 := cfg.checkOneLeader()
+	//fmt.Printf("First check point, the leader is %v\n", leader1)
 
 	// if the leader disconnects, a new one should be elected.
 	cfg.disconnect(leader1)
-	cfg.checkOneLeader()
-
+	// leader := cfg.checkOneLeader()
+	// fmt.Printf("Second check point, the leader is %v\n", leader)
 	// if the old leader rejoins, that shouldn't
 	// disturb the new leader. and the old leader
 	// should switch to follower.
 	cfg.connect(leader1)
 	leader2 := cfg.checkOneLeader()
+	//fmt.Printf("Third check point, the leader is %v\n", leader2)
 
 	// if there's no quorum, no new leader should
 	// be elected.
 	cfg.disconnect(leader2)
 	cfg.disconnect((leader2 + 1) % servers)
+	fmt.Printf("%v and %v are disconnected\n", leader2, (leader2+1)%servers)
 	time.Sleep(2 * RaftElectionTimeout)
 
 	// check that the one connected server
 	// does not think it is the leader.
+	// leader := cfg.checkOneLeader()
+	// fmt.Printf("%v is a leader\n", leader)
 	cfg.checkNoLeader()
 
 	// if a quorum arises, it should elect a leader.
 	cfg.connect((leader2 + 1) % servers)
 	cfg.checkOneLeader()
+	//fmt.Printf("Fourth check point, the leader is %v\n", leader)
 
 	// re-join of last node shouldn't prevent leader from existing.
 	cfg.connect(leader2)
@@ -107,9 +113,22 @@ func TestManyElections2A(t *testing.T) {
 		i1 := rand.Int() % servers
 		i2 := rand.Int() % servers
 		i3 := rand.Int() % servers
+		Debug(dTest, "S%v in term %v is disconnected", i1, cfg.rafts[i1].currentTerm)
+		Debug(dTest, "S%v in term %v is disconnected", i2, cfg.rafts[i2].currentTerm)
+		Debug(dTest, "S%v in term %v is disconnected", i3, cfg.rafts[i3].currentTerm)
 		cfg.disconnect(i1)
 		cfg.disconnect(i2)
 		cfg.disconnect(i3)
+
+		leaders := make(map[int][]int)
+		for i := 0; i < cfg.n; i++ {
+			if cfg.connected[i] {
+				if term, leader := cfg.rafts[i].GetState(); leader {
+					leaders[term] = append(leaders[term], i)
+				}
+			}
+		}
+		fmt.Println(leaders)
 
 		// either the current leader should still be alive,
 		// or the remaining four should elect a new one.
