@@ -1,3 +1,48 @@
-testing: warning: no tests to run
-PASS
-ok  	6.824/raft	0.310s
+000006 TERM S1 follower is starting an election for term 1
+000007 TERM S3 follower is starting an election for term 1
+Test (2A): multiple elections ...
+000015 VOTE S3 received 5 votes in term 1. There's 7 alive
+000015 VOTE S3 is elected for term 1
+000015 VOTE S1 received 2 votes in term 1. There's 7 alive
+000016 TIMR S3 Leader, checking heartbeats
+000017 TERM S2 has received heartbeat in term 1
+000018 TERM S4 has received heartbeat in term 1
+000018 TERM S6 has received heartbeat in term 1
+000019 TERM S5 has received heartbeat in term 1
+000019 TERM S0 has received heartbeat in term 1
+000020 VOTE S1 received a heart beat from leader 3 for term 1
+002881 TERM S4 follower is starting an election for term 2
+002885 VOTE S4 received 7 votes in term 2. There's 7 alive
+002885 VOTE S4 is elected for term 2
+002886 TIMR S4 Leader, checking heartbeats
+002888 TERM S3 has received heartbeat in term 2
+002889 TERM S6 has received heartbeat in term 2
+002889 TERM S2 has received heartbeat in term 2
+002889 TERM S5 has received heartbeat in term 2
+002889 TERM S0 has received heartbeat in term 2
+002889 TERM S1 has received heartbeat in term 2
+005332 TEST S2 in term 2 is disconnected
+005333 TEST S3 in term 2 is disconnected
+005333 TEST S2 in term 2 is disconnected
+map[2:[4]]
+005573 TERM S2 follower is starting an election for term 3
+005953 TERM S1 follower is starting an election for term 3
+007378 TERM S3 follower is starting an election for term 3
+008975 TERM S6 follower is starting an election for term 4
+012549 TERM S0 follower is starting an election for term 5
+016332 TERM S5 follower is starting an election for term 6
+021683 TERM S4 follower is starting an election for term 7
+054198 VOTE S1 received 5 votes in term 7. There's 5 alive
+054200 VOTE S1 is elected for term 7
+054201 TIMR S1 Leader, checking heartbeats
+055501 VOTE S6 received 5 votes in term 7. There's 5 alive
+055501 VOTE S6 is elected for term 7
+055502 TIMR S6 Leader, checking heartbeats
+055505 TERM S1 follower is starting an election for term 8
+055507 TERM S6 has received heartbeat in term 8
+055507 TERM S6 follower is starting an election for term 9
+--- FAIL: TestManyElections2A (5.60s)
+    config.go:460: expected one leader, got none
+FAIL
+exit status 1
+FAIL	6.824/raft	7.074s

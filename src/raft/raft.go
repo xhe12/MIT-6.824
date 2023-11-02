@@ -79,10 +79,11 @@ type Raft struct {
 	//nextIndex  []int
 	//matchIndex []int // initialized to 0
 
-	leaderID int // initialized to -1
-	status   status
-	hbs      chan bool // heartbeat channel
-	nPeers   uint32    // number of peers that are alive (responds to requestVote RPC)
+	leaderID      int // initialized to -1
+	status        status
+	hbs           chan bool // heartbeat channel
+	nPeers        uint32    // number of peers that are alive (responds to requestVote RPC)
+	electionTimer *time.Timer
 }
 
 // return currentTerm and whether this server
@@ -186,6 +187,8 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		if !exists || rf.votedFor[args.Term] == args.CandidateId {
 			reply.VoteGranted = true
 			rf.votedFor[args.Term] = args.CandidateId
+			electionTimeout := time.Duration(rand.Intn(350)+250) * time.Millisecond // 250ms ~ 400ms
+			rf.electionTimer.Reset(electionTimeout)
 		}
 
 	}
@@ -356,8 +359,9 @@ func (rf *Raft) ticker() {
 			// be started and to randomize sleeping time using
 			// time.Sleep().
 			electionTimeout := time.Duration(rand.Intn(200)+250) * time.Millisecond // 250ms ~ 400ms
+			rf.electionTimer.Reset(electionTimeout)
 			select {
-			case <-time.After(electionTimeout):
+			case <-rf.electionTimer.C:
 				rf.mu.Lock()
 				rf.status = candidate
 				Debug(dTerm, "S%d follower is starting an election for term %d", rf.me, rf.currentTerm+1)
@@ -377,6 +381,7 @@ func (rf *Raft) ticker() {
 func (rf *Raft) startElection() {
 	// Start another timer for receiving a majority of votes
 	electionTimeout := time.Duration(rand.Intn(350)+250) * time.Millisecond // 250ms ~ 400ms
+	rf.electionTimer.Reset(electionTimeout)
 	// call request vote
 	rf.mu.Lock()
 	rf.currentTerm++
@@ -439,7 +444,7 @@ func (rf *Raft) startElection() {
 		rf.status = follower
 		Debug(dVote, "S%d received a heart beat from leader %v for term %v\n", rf.me, rf.leaderID, rf.currentTerm)
 		rf.mu.Unlock()
-	case <-time.After(electionTimeout):
+	case <-rf.electionTimer.C:
 		// election timed out, start a new one
 		Debug(dVote, "S%d election is timed out, starting a new one...", rf.me)
 		rf.startElection()
@@ -463,6 +468,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.me = me
 	rf.cond = sync.NewCond(&rf.mu)
 	rf.hbs = make(chan bool, 20)
+	rf.electionTimer = time.NewTimer(0) //initialize a timer
 
 	// Your initialization code here (2A, 2B, 2C).
 
