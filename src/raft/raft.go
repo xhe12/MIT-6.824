@@ -255,7 +255,7 @@ func (rf *Raft) sendAppendEntries() {
 						replied <- rf.peers[i].Call("Raft.AppendEntries", &args, &reply)
 					}(i)
 					select {
-					case <-time.After(time.Millisecond * 10):
+					case <-time.After(time.Millisecond * 2):
 						//
 					case ok := <-replied:
 						if ok {
@@ -278,6 +278,7 @@ func (rf *Raft) sendAppendEntries() {
 			rf.mu.Lock()
 			status = rf.status
 			rf.mu.Unlock()
+			time.Sleep(10 * time.Millisecond)
 
 		}
 	}
@@ -420,6 +421,7 @@ func (rf *Raft) startElection() {
 	}
 	elected := make(chan struct{})
 	defer close(elected)
+	done := false
 
 	//wg.Wait()
 
@@ -429,7 +431,7 @@ func (rf *Raft) startElection() {
 			if atomic.LoadUint32(&vote) > uint32(len(rf.peers)/2) {
 				// there should not be more than one machine to elect a leader
 				rf.mu.Lock()
-				if currentTerm >= rf.currentTerm {
+				if currentTerm >= rf.currentTerm && !done {
 					elected <- struct{}{}
 				}
 				rf.mu.Unlock()
@@ -448,12 +450,14 @@ func (rf *Raft) startElection() {
 		go rf.sendAppendEntries()
 
 	case <-rf.hbs:
+		done = true
 		rf.mu.Lock()
 		rf.status = follower
 		Debug(dVote, "S%d received a heart beat from leader %v for term %v\n", rf.me, rf.leaderID, rf.currentTerm)
 		rf.mu.Unlock()
 	case <-rf.electionTimer.C:
 		// election timed out, start a new one
+		done = true
 		Debug(dVote, "S%d election is timed out, starting a new one...", rf.me)
 		rf.startElection()
 	}
