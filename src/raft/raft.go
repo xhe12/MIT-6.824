@@ -255,7 +255,7 @@ func (rf *Raft) sendAppendEntries() {
 						replied <- rf.peers[i].Call("Raft.AppendEntries", &args, &reply)
 					}(i)
 					select {
-					case <-time.After(time.Millisecond * 2):
+					case <-time.After(time.Millisecond * 10):
 						//
 					case ok := <-replied:
 						if ok {
@@ -278,7 +278,6 @@ func (rf *Raft) sendAppendEntries() {
 			rf.mu.Lock()
 			status = rf.status
 			rf.mu.Unlock()
-			time.Sleep(time.Millisecond * 2)
 
 		}
 	}
@@ -391,81 +390,73 @@ func (rf *Raft) ticker() {
 
 func (rf *Raft) startElection() {
 	// Start another timer for receiving a majority of votes
-	electionTimeout := time.Duration(rand.Intn(350)+250) * time.Millisecond // 250ms ~ 400ms
+	electionTimeout := time.Duration(rand.Intn(150)+250) * time.Millisecond // 250ms ~ 400ms
 	rf.electionTimer.Reset(electionTimeout)
 	// call request vote
 	rf.mu.Lock()
 	rf.currentTerm++
 	currentTerm := rf.currentTerm
-	rf.nPeers = uint32(1)
 	rf.votedFor[currentTerm] = rf.me
 	rf.mu.Unlock()
 	var vote uint32 = 1 // vote for self
 	// send request vote RPCs to all other servers
 	args := RequestVoteArgs{currentTerm, rf.me}
-	var wg sync.WaitGroup
 
 	for i := 0; i < len(rf.peers); i++ {
 		if i != rf.me {
-			wg.Add(1)
 			reply := RequestVoteReply{}
-			replied := make(chan bool)
 			go func(i int) {
-				replied <- rf.sendRequestVote(i, &args, &reply)
-				Debug(dVote, "S%d received vote request reply from %d", rf.me, i)
-
-			}(i)
-			select {
-			case <-time.After(time.Millisecond * 5):
-			case ok := <-replied:
+				ok := rf.sendRequestVote(i, &args, &reply)
 				if ok {
-					atomic.AddUint32(&rf.nPeers, 1)
 					if reply.VoteGranted {
 						atomic.AddUint32(&vote, 1)
 					}
 				}
-			}
-			wg.Done()
+
+				Debug(dVote, "S%d received vote request reply from %d", rf.me, i)
+
+			}(i)
 		}
 	}
-	elected := make(chan struct{}, 1)
+	elected := make(chan struct{})
 	defer close(elected)
-	wg.Wait()
 
-	Debug(dVote, "S%d received %v votes in term %v. There's %v alive\n", rf.me, vote, currentTerm, atomic.LoadUint32(&rf.nPeers))
+	//wg.Wait()
 
-	rf.mu.Lock()
-	if rf.nPeers > 1 {
-		if vote > uint32(rf.nPeers/2) {
-			// there should be more than one machine to elect a leader
-
-			if rf.status == candidate {
-				elected <- struct{}{}
-			}
-		}
-	}
-	rf.mu.Unlock()
+	//Debug(dVote, "S%d received %v votes in term %v. There's %v alive\n", rf.me, vote, currentTerm, atomic.LoadUint32(&rf.nPeers))
 	go func() {
-		select {
-		case <-elected:
-			rf.mu.Lock()
-			rf.leaderID = rf.me
-			rf.status = leader
-			Debug(dVote, "S%d is elected for term %v\n", rf.me, rf.currentTerm)
-			rf.mu.Unlock()
-			go rf.sendAppendEntries()
-
-		case <-rf.hbs:
-			rf.mu.Lock()
-			rf.status = follower
-			Debug(dVote, "S%d received a heart beat from leader %v for term %v\n", rf.me, rf.leaderID, rf.currentTerm)
-			rf.mu.Unlock()
-		case <-rf.electionTimer.C:
-			// election timed out, start a new one
-			Debug(dVote, "S%d election is timed out, starting a new one...", rf.me)
-			rf.startElection()
+		for {
+			if atomic.LoadUint32(&vote) > uint32(len(rf.peers)/2) {
+				// there should not be more than one machine to elect a leader
+				rf.mu.Lock()
+				if currentTerm >= rf.currentTerm {
+					elected <- struct{}{}
+				}
+				rf.mu.Unlock()
+				break
+			}
 		}
 	}()
+
+	select {
+	case <-elected:
+		rf.mu.Lock()
+		rf.leaderID = rf.me
+		rf.status = leader
+		Debug(dVote, "S%d is elected for term %v\n", rf.me, rf.currentTerm)
+		rf.mu.Unlock()
+		go rf.sendAppendEntries()
+
+	case <-rf.hbs:
+		rf.mu.Lock()
+		rf.status = follower
+		Debug(dVote, "S%d received a heart beat from leader %v for term %v\n", rf.me, rf.leaderID, rf.currentTerm)
+		rf.mu.Unlock()
+	case <-rf.electionTimer.C:
+		// election timed out, start a new one
+		Debug(dVote, "S%d election is timed out, starting a new one...", rf.me)
+		rf.startElection()
+	}
 
 }
 
