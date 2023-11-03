@@ -192,7 +192,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 			rf.mu.Lock()
 			rf.votedFor[args.Term] = args.CandidateId
 			rf.mu.Unlock()
-			electionTimeout := time.Duration(rand.Intn(350)+250) * time.Millisecond // 250ms ~ 400ms
+			electionTimeout := time.Duration(rand.Intn(500)+1000) * time.Millisecond // 250ms ~ 400ms
 			if !rf.electionTimer.Stop() {
 				<-rf.electionTimer.C
 			}
@@ -219,18 +219,20 @@ type AppendEntriesReply struct {
 
 func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply) {
 	rf.mu.Lock()
-	defer rf.mu.Unlock()
-	reply.Term = rf.currentTerm
-	if args.Term < rf.currentTerm {
+	curTerm := rf.currentTerm
+	rf.mu.Unlock()
+	reply.Term = curTerm
+	if args.Term < curTerm {
 		reply.Success = false
 	} else {
 		reply.Success = true
 		rf.hbs <- true
+		rf.mu.Lock()
 		Debug(dTerm, "S%d has received heartbeat from S%d in term %v\n", rf.me, args.LeaderId, rf.currentTerm)
 		rf.leaderID = args.LeaderId
 		rf.status = follower
 		rf.currentTerm = args.Term
-		//rf.cond.Broadcast()
+		rf.mu.Unlock()
 	}
 }
 func (rf *Raft) sendAppendEntries() {
@@ -254,9 +256,9 @@ func (rf *Raft) sendAppendEntries() {
 					go func(i int) {
 						replied <- rf.peers[i].Call("Raft.AppendEntries", &args, &reply)
 					}(i)
+					time.Sleep(time.Millisecond * 150)
 					select {
-					case <-time.After(time.Millisecond * 2):
-						//
+					//case <-time.After(time.Millisecond * 150):
 					case ok := <-replied:
 						if ok {
 							if reply.Term > curTerm {
@@ -268,6 +270,7 @@ func (rf *Raft) sendAppendEntries() {
 								Debug(dLeader, "S%d Leader, becomes follower", rf.me)
 							}
 						}
+					default:
 					}
 					wg.Done()
 
@@ -278,7 +281,6 @@ func (rf *Raft) sendAppendEntries() {
 			rf.mu.Lock()
 			status = rf.status
 			rf.mu.Unlock()
-			time.Sleep(10 * time.Millisecond)
 
 		}
 	}
@@ -369,7 +371,7 @@ func (rf *Raft) ticker() {
 			// Your code here to check if a leader election should
 			// be started and to randomize sleeping time using
 			// time.Sleep().
-			electionTimeout := time.Duration(rand.Intn(200)+250) * time.Millisecond // 250ms ~ 400ms
+			electionTimeout := time.Duration(rand.Intn(500)+1000) * time.Millisecond // 250ms ~ 400ms
 			if !rf.electionTimer.Stop() {
 				<-rf.electionTimer.C
 			}
@@ -391,7 +393,7 @@ func (rf *Raft) ticker() {
 
 func (rf *Raft) startElection() {
 	// Start another timer for receiving a majority of votes
-	electionTimeout := time.Duration(rand.Intn(150)+250) * time.Millisecond // 250ms ~ 400ms
+	electionTimeout := time.Duration(rand.Intn(500)+1000) * time.Millisecond // 250ms ~ 400ms
 	rf.electionTimer.Reset(electionTimeout)
 	// call request vote
 	rf.mu.Lock()
@@ -423,18 +425,17 @@ func (rf *Raft) startElection() {
 	defer close(elected)
 	done := false
 
-	//wg.Wait()
-
 	//Debug(dVote, "S%d received %v votes in term %v. There's %v alive\n", rf.me, vote, currentTerm, atomic.LoadUint32(&rf.nPeers))
 	go func() {
 		for {
 			if atomic.LoadUint32(&vote) > uint32(len(rf.peers)/2) {
 				// there should not be more than one machine to elect a leader
 				rf.mu.Lock()
-				if currentTerm >= rf.currentTerm && !done {
+				mostRecentTerm := rf.currentTerm
+				rf.mu.Unlock()
+				if currentTerm >= mostRecentTerm && !done {
 					elected <- struct{}{}
 				}
-				rf.mu.Unlock()
 				break
 			}
 		}
@@ -453,7 +454,7 @@ func (rf *Raft) startElection() {
 		done = true
 		rf.mu.Lock()
 		rf.status = follower
-		Debug(dVote, "S%d received a heart beat from leader %v for term %v\n", rf.me, rf.leaderID, rf.currentTerm)
+		Debug(dVote, "S%d candidate received a heart beat from leader %v for term %v\n", rf.me, rf.leaderID, rf.currentTerm)
 		rf.mu.Unlock()
 	case <-rf.electionTimer.C:
 		// election timed out, start a new one
@@ -480,7 +481,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.persister = persister
 	rf.me = me
 	rf.cond = sync.NewCond(&rf.mu)
-	rf.hbs = make(chan bool, 20)
+	rf.hbs = make(chan bool, 1)
 	rf.electionTimer = time.NewTimer(0) //initialize a timer
 
 	// Your initialization code here (2A, 2B, 2C).
