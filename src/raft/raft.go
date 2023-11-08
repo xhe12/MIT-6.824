@@ -97,6 +97,7 @@ type Raft struct {
 	hbs           chan bool // heartbeat channel
 	electionTimer *time.Timer
 	applyCh       chan ApplyMsg
+	leaderCommit  int
 }
 
 // return currentTerm and whether this server
@@ -271,6 +272,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 
 	reply.Term = curTerm
 	if args.Term < curTerm || !logCheck {
+		Debug(dLeader, "S%d has received stale heartbeat from S%d", rf.me, args.LeaderId)
 		reply.Success = false
 	} else {
 		reply.Success = true
@@ -280,6 +282,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 		rf.status = follower
 		rf.currentTerm = args.Term
 		conflictingIdx := 0
+		Debug(dLog, "S%d has received heartbeat from S%d with %d entries", rf.me, args.LeaderId, len(args.Entries))
 		if len(args.Entries) > 0 {
 			for i, logEntry := range args.Entries {
 				if len(rf.log) >= logEntry.Idx && rf.log[logEntry.Idx-1].Term != logEntry.Term {
@@ -292,7 +295,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 			}
 			for i := conflictingIdx; i < len(args.Entries); i++ {
 				rf.log = append(rf.log, args.Entries[i])
-				Debug(dLog, "S%d has appended command %d at index %d", rf.me, rf.log[conflictingIdx].Command, rf.log[conflictingIdx].Idx)
+				Debug(dLog, "S%d has appended command %v", rf.me, rf.log)
 			}
 
 			if args.LeaderCommit > rf.commitIndex {
@@ -300,32 +303,35 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 				Debug(dCommit, "S%d has commited command %d at index %d", rf.me, rf.log[rf.commitIndex-1].Command, rf.log[rf.commitIndex-1].Idx)
 			}
 		}
-		lastApplied := rf.lastApplied
-		if args.LeaderCommit > lastApplied {
-			// apply log[rf.lastApplied+1,... args.LeaderCommit]
-			for i := lastApplied + 1; i <= args.LeaderCommit; i++ {
-				rf.applyCh <- ApplyMsg{CommandValid: true, Command: rf.log[i-1].Command, CommandIndex: i}
-				rf.lastApplied++
-			}
-		}
+		rf.leaderCommit = args.LeaderCommit
+		rf.cond.Signal()
 		rf.mu.Unlock()
+
 	}
 }
+
+type replyMsg struct {
+	peerID  int
+	replied bool
+	reply   *AppendEntriesReply
+}
+
 func (rf *Raft) sendAppendEntries() {
 	for !rf.killed() {
 		rf.mu.Lock()
 		status := rf.status
 		rf.mu.Unlock()
 		for status == leader {
-			var wg sync.WaitGroup
-			Debug(dTimer, "S%d Leader, checking heartbeats", rf.me)
+			// var wg sync.WaitGroup
+			Debug(dLog, "S%d has nextIndex array:%v", rf.me, rf.nextIndex)
 			rf.mu.Lock()
 			curTerm := rf.currentTerm
 			rf.mu.Unlock()
-			replied := make(chan bool)
+			count := 1
+			replies := make(chan replyMsg)
 			for i := 0; i < len(rf.peers); i++ {
 				if i != rf.me {
-					wg.Add(1)
+					// wg.Add(1)
 					rf.mu.Lock()
 					// initialize AppendEntriesArg assuming prevLog doesn't exist
 					args := AppendEntriesArg{curTerm, rf.me, 0, 0, nil, rf.commitIndex}
@@ -341,59 +347,70 @@ func (rf *Raft) sendAppendEntries() {
 					rf.mu.Unlock()
 					reply := AppendEntriesReply{}
 					go func(i int) {
-						replied <- rf.peers[i].Call("Raft.AppendEntries", &args, &reply)
+						ok := rf.peers[i].Call("Raft.AppendEntries", &args, &reply)
+						replies <- replyMsg{i, ok, &reply}
 					}(i)
-					time.Sleep(time.Millisecond * 150)
-					select {
-					case ok := <-replied:
-						if ok {
-							rf.mu.Lock()
-							if !reply.Success && reply.Term > rf.currentTerm {
-								rf.status = follower
-								rf.leaderID = -1
-								rf.currentTerm = reply.Term
-								Debug(dLeader, "S%d Leader, becomes follower", rf.me)
-							} else if !reply.Success {
-								// Follower's log is inconsistent with the leader's
-								rf.nextIndex[i] = rf.nextIndex[i] - 1
-							} else {
-								// Success
-								rf.matchIndex[i] = len(rf.log)
-								rf.nextIndex[i] = len(rf.log) + 1
-							}
-							rf.mu.Unlock()
-						}
-					default:
-					}
-					wg.Done()
-
 				}
 			}
-			wg.Wait() // wait for all the calls to complete
+			go func() {
+				for r := range replies {
+					if r.replied {
+						rf.mu.Lock()
+						if !r.reply.Success && r.reply.Term > rf.currentTerm {
+							rf.status = follower
+							rf.leaderID = -1
+							rf.currentTerm = r.reply.Term
+							Debug(dLeader, "S%d Leader, becomes follower", rf.me)
+						} else if !r.reply.Success {
+							// Follower's log is inconsistent with the leader's
+							rf.nextIndex[r.peerID] = rf.nextIndex[r.peerID] - 1
+						} else {
+							// Success
+							rf.matchIndex[r.peerID] = len(rf.log)
+							rf.nextIndex[r.peerID] = len(rf.log) + 1
+							count++
+						}
+						rf.mu.Unlock()
+					}
+				}
+			}()
+
+			time.Sleep(time.Millisecond * 200)
+			close(replies)
 
 			rf.mu.Lock()
 			status = rf.status
-			if status == leader {
+			if status == leader && count > len(rf.peers)/2 {
 				for N := len(rf.log); N > rf.commitIndex; N-- {
 					if rf.log[N-1].Term == rf.currentTerm {
 						rf.commitIndex = N
 						break
 					}
 				}
-				lastApplied := rf.lastApplied
-				if rf.commitIndex > lastApplied {
-					// apply log[rf.lastApplied+1,... args.LeaderCommit]
-					for i := lastApplied + 1; i <= rf.commitIndex; i++ {
-						rf.applyCh <- ApplyMsg{CommandValid: true, Command: rf.log[i-1].Command, CommandIndex: i}
-						rf.lastApplied++
-					}
-				}
+				rf.leaderCommit = rf.commitIndex
+				rf.cond.Signal()
+				Debug(dCommit, "S%d leader has commited up to index %d with count =%v", rf.me, rf.commitIndex, count)
 			}
 			rf.mu.Unlock()
 
 		}
 	}
 
+}
+func (rf *Raft) applyLog() {
+	for !rf.killed() {
+		rf.cond.L.Lock()
+		for rf.leaderCommit <= rf.lastApplied {
+			rf.cond.Wait()
+		}
+		Debug(dCommit, "S%d is applying log", rf.me)
+		for i := rf.lastApplied + 1; i <= rf.leaderCommit; i++ {
+			// apply log[rf.lastApplied+1,... rf.leaderCommit]
+			rf.applyCh <- ApplyMsg{CommandValid: true, Command: rf.log[i-1].Command, CommandIndex: i}
+			rf.lastApplied++
+		}
+		rf.cond.L.Unlock()
+	}
 }
 
 // example code to send a RequestVote RPC to a server.
@@ -448,9 +465,9 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	if isLeader {
 		rf.mu.Lock()
 		logentry := logEntry{len(rf.log) + 1, term, command} // logEntry is 1-indexed
-		index = len(rf.log)
 		rf.log = append(rf.log, &logentry)
-		Debug(dCommit, "S%d will commit the command %d at index %d", rf.me, command, index)
+		index = len(rf.log)
+		Debug(dCommit, "S%d leader received the command %d at index %d from client", rf.me, command, index)
 		//nextIdx := len(rf.log)
 		rf.mu.Unlock()
 		// for i := 0; i < len(rf.peers); i++ {
@@ -611,6 +628,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.hbs = make(chan bool, 1)
 	rf.electionTimer = time.NewTimer(0) //initialize a timer
 	rf.applyCh = applyCh
+	rf.cond = sync.NewCond(&rf.mu)
 
 	// Your initialization code here (2A, 2B, 2C).
 
@@ -621,6 +639,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.lastApplied = 0              // initialized to -1
 	rf.leaderID = -1
 	rf.status = follower
+	rf.leaderCommit = 0
 
 	rf.nextIndex = make([]int, len(rf.peers))
 	rf.matchIndex = make([]int, len(rf.peers))
@@ -634,6 +653,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 
 	// start ticker goroutine to start elections
 	go rf.ticker()
+	go rf.applyLog()
 
 	return rf
 }

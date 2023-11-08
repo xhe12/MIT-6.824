@@ -1,17 +1,17 @@
 Test (2A): initial election ...
-  ... Passed --   4.0  3   22    2708    0
+  ... Passed --   3.7  3   20    2422    0
 Test (2A): election after network failure ...
-  ... Passed --   5.2  3   38    3296    0
+  ... Passed --   5.9  3   46    3802    0
 Test (2A): multiple elections ...
-map[1:[4]]
 map[]
+map[2:[3]]
+map[1:[2] 2:[3]]
 map[]
-map[2:[3] 4:[5]]
-map[1:[4] 4:[5]]
-map[4:[5]]
-map[4:[5]]
-map[6:[3]]
-map[8:[1]]
-  ... Passed --  13.7  7  272   21094    0
+map[5:[4]]
+map[3:[5] 5:[4]]
+map[7:[6]]
+map[]
+map[7:[6]]
+  ... Passed --  16.1  7  315   28925    0
 PASS
-ok  	6.824/raft	23.055s
+ok  	6.824/raft	25.851s

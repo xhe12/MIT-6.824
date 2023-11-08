@@ -1,19 +1,126 @@
-Test (2B): basic agreement ...
-1340 TERM S0 follower is starting an election for term 1
-1341 VOTE S0 is elected for term 1
-1342 TIMR S0 Leader, checking heartbeats
-1369 CMIT S0 will commit the command 100 at index 0
-1495 LOG1 S2 has appended command 100 at index 1
-1647 TIMR S0 Leader, checking heartbeats
-1949 TIMR S0 Leader, checking heartbeats
-1949 LOG1 S1 has appended command 100 at index 1
-1949 CMIT S1 has commited command 100 at index 1
-2249 TIMR S0 Leader, checking heartbeats
-2552 TIMR S0 Leader, checking heartbeats
-2854 TIMR S0 Leader, checking heartbeats
-3155 TIMR S0 Leader, checking heartbeats
---- FAIL: TestBasicAgree2B (3.39s)
-    config.go:600: one(100) failed to reach agreement
-FAIL
-exit status 1
-FAIL	6.824/raft	3.654s
+Test (2A): initial election ...
+1033 TERM S1 follower is starting an election for term 1
+1034 VOTE S1 is elected for term 1
+1034 LOG1 S1 has nextIndex array:[1 1 1]
+1034 LOG1 S2 has received heartbeat from S1 with 0 entries
+1034 LOG1 S0 has received heartbeat from S1 with 0 entries
+1234 CMIT S1 leader has commited up to index 0 with count =3
+1234 LOG1 S1 has nextIndex array:[1 1 1]
+1234 LOG1 S0 has received heartbeat from S1 with 0 entries
+1234 LOG1 S2 has received heartbeat from S1 with 0 entries
+1435 CMIT S1 leader has commited up to index 0 with count =3
+1435 LOG1 S1 has nextIndex array:[1 1 1]
+1436 LOG1 S2 has received heartbeat from S1 with 0 entries
+1436 LOG1 S0 has received heartbeat from S1 with 0 entries
+1636 CMIT S1 leader has commited up to index 0 with count =3
+1636 LOG1 S1 has nextIndex array:[1 1 1]
+1636 LOG1 S2 has received heartbeat from S1 with 0 entries
+1636 LOG1 S0 has received heartbeat from S1 with 0 entries
+1836 CMIT S1 leader has commited up to index 0 with count =3
+1836 LOG1 S1 has nextIndex array:[1 1 1]
+1836 LOG1 S2 has received heartbeat from S1 with 0 entries
+1836 LOG1 S0 has received heartbeat from S1 with 0 entries
+2036 CMIT S1 leader has commited up to index 0 with count =3
+2036 LOG1 S1 has nextIndex array:[1 1 1]
+2036 LOG1 S0 has received heartbeat from S1 with 0 entries
+2036 LOG1 S2 has received heartbeat from S1 with 0 entries
+2237 CMIT S1 leader has commited up to index 0 with count =3
+2237 LOG1 S1 has nextIndex array:[1 1 1]
+2237 LOG1 S2 has received heartbeat from S1 with 0 entries
+2237 LOG1 S0 has received heartbeat from S1 with 0 entries
+2437 CMIT S1 leader has commited up to index 0 with count =3
+2438 LOG1 S1 has nextIndex array:[1 1 1]
+2438 LOG1 S2 has received heartbeat from S1 with 0 entries
+2438 LOG1 S0 has received heartbeat from S1 with 0 entries
+2638 CMIT S1 leader has commited up to index 0 with count =3
+2638 LOG1 S1 has nextIndex array:[1 1 1]
+2638 LOG1 S0 has received heartbeat from S1 with 0 entries
+2638 LOG1 S2 has received heartbeat from S1 with 0 entries
+2838 CMIT S1 leader has commited up to index 0 with count =3
+2838 LOG1 S1 has nextIndex array:[1 1 1]
+2839 LOG1 S2 has received heartbeat from S1 with 0 entries
+2839 LOG1 S0 has received heartbeat from S1 with 0 entries
+3039 CMIT S1 leader has commited up to index 0 with count =3
+3039 LOG1 S1 has nextIndex array:[1 1 1]
+3039 LOG1 S0 has received heartbeat from S1 with 0 entries
+3039 LOG1 S2 has received heartbeat from S1 with 0 entries
+3239 CMIT S1 leader has commited up to index 0 with count =3
+3239 LOG1 S1 has nextIndex array:[1 1 1]
+3239 LOG1 S0 has received heartbeat from S1 with 0 entries
+3239 LOG1 S2 has received heartbeat from S1 with 0 entries
+3440 CMIT S1 leader has commited up to index 0 with count =3
+3440 LOG1 S1 has nextIndex array:[1 1 1]
+3440 LOG1 S0 has received heartbeat from S1 with 0 entries
+3440 LOG1 S2 has received heartbeat from S1 with 0 entries
+3640 CMIT S1 leader has commited up to index 0 with count =3
+3640 LOG1 S1 has nextIndex array:[1 1 1]
+3640 LOG1 S0 has received heartbeat from S1 with 0 entries
+3640 LOG1 S2 has received heartbeat from S1 with 0 entries
+3841 CMIT S1 leader has commited up to index 0 with count =3
+3841 LOG1 S1 has nextIndex array:[1 1 1]
+3841 LOG1 S2 has received heartbeat from S1 with 0 entries
+3841 LOG1 S0 has received heartbeat from S1 with 0 entries
+4042 CMIT S1 leader has commited up to index 0 with count =3
+4042 LOG1 S1 has nextIndex array:[1 1 1]
+4042 LOG1 S0 has received heartbeat from S1 with 0 entries
+4042 LOG1 S2 has received heartbeat from S1 with 0 entries
+  ... Passed --   4.1  3   34    8634    0
+Test (2A): election after network failure ...
+4243 CMIT S1 leader has commited up to index 0 with count =3
+4243 LOG1 S1 has nextIndex array:[1 1 1]
+4444 LOG1 S1 has nextIndex array:[1 1 1]
+4645 LOG1 S1 has nextIndex array:[1 1 1]
+4846 LOG1 S1 has nextIndex array:[1 1 1]
+5046 LOG1 S1 has nextIndex array:[1 1 1]
+5122 TERM S2 follower is starting an election for term 2
+5222 TERM S0 follower is starting an election for term 1
+5222 VOTE S0 is elected for term 1
+5222 LOG1 S0 has nextIndex array:[1 1 1]
+5222 LOG1 S1 has received heartbeat from S0 with 0 entries
+5222 LOG1 S2 has received heartbeat from S0 with 0 entries
+5247 LOG1 S1 has nextIndex array:[1 1 1]
+5423 CMIT S0 leader has commited up to index 0 with count =3
+5423 LOG1 S0 has nextIndex array:[1 1 1]
+5423 LOG1 S2 has received heartbeat from S0 with 0 entries
+5423 LOG1 S1 has received heartbeat from S0 with 0 entries
+5447 LOG1 S1 has nextIndex array:[1 1 1]
+5481 TERM S0 follower is starting an election for term 2
+5623 CMIT S0 leader has commited up to index 0 with count =3
+5623 LOG1 S0 has nextIndex array:[1 1 1]
+5623 LOG1 S1 has received heartbeat from S0 with 0 entries
+5623 LOG1 S2 has received heartbeat from S0 with 0 entries
+5647 LOG1 S1 has nextIndex array:[1 1 1]
+5824 CMIT S0 leader has commited up to index 0 with count =3
+5824 LOG1 S0 has nextIndex array:[1 1 1]
+5824 LOG1 S1 has received heartbeat from S0 with 0 entries
+5825 LOG1 S2 has received heartbeat from S0 with 0 entries
+5848 LOG1 S1 has nextIndex array:[1 1 1]
+6025 CMIT S0 leader has commited up to index 0 with count =3
+6025 LOG1 S0 has nextIndex array:[1 1 1]
+6025 LOG1 S1 has received heartbeat from S0 with 0 entries
+6025 LOG1 S2 has received heartbeat from S0 with 0 entries
+6048 LOG1 S1 has nextIndex array:[1 1 1]
+6072 TEST 0 and 1 are disconnected
+6226 CMIT S0 leader has commited up to index 0 with count =3
+6226 LOG1 S0 has nextIndex array:[1 1 1]
+6248 LOG1 S1 has nextIndex array:[1 1 1]
+6426 LOG1 S0 has nextIndex array:[1 1 1]
+6449 LOG1 S1 has nextIndex array:[1 1 1]
+6636 LOG1 S0 has nextIndex array:[1 1 1]
+6658 LOG1 S1 has nextIndex array:[1 1 1]
+6842 LOG1 S0 has nextIndex array:[1 1 1]
+6865 LOG1 S1 has nextIndex array:[1 1 1]
+7059 LOG1 S0 has nextIndex array:[1 1 1]
+7083 LOG1 S1 has nextIndex array:[1 1 1]
+7115 TERM S1 follower is starting an election for term 2
+7276 LOG1 S0 has nextIndex array:[1 1 1]
+7298 LOG1 S1 has nextIndex array:[1 1 1]
+panic: send on closed channel
+
+goroutine 278 [running]:
+6.824/raft.(*Raft).sendAppendEntries.func1(0x1)
+	/Users/sharonhe/Documents/Distributed System/6.824_my_solutin/src/raft/raft.go:351 +0xac
+created by 6.824/raft.(*Raft).sendAppendEntries in goroutine 197
+	/Users/sharonhe/Documents/Distributed System/6.824_my_solutin/src/raft/raft.go:349 +0x55f
+exit status 2
+FAIL	6.824/raft	7.423s
