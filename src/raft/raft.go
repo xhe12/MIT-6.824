@@ -58,9 +58,9 @@ const (
 )
 
 type logEntry struct {
-	idx     int // log index w.r.t. log[]
-	term    int // term of the leader which commited the log
-	command interface{}
+	Idx     int // log index w.r.t. log[]
+	Term    int // term of the leader which commited the log
+	Command interface{}
 }
 
 func min(a, b int) int {
@@ -199,11 +199,11 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		rf.currentTerm = args.Term
 		rf.status = follower
 		votedFor, exists := rf.votedFor[args.Term]
-		lastCommitedLogIndex := -1
+		lastCommitedLogIndex := 0
 		lastCommitedLogTerm := 0
-		if len(rf.log) > 0 && rf.commitIndex > -1 {
+		if len(rf.log) > 0 && rf.commitIndex > 0 {
 			lastCommitedLogIndex = rf.commitIndex
-			lastCommitedLogTerm = rf.log[rf.commitIndex].term
+			lastCommitedLogTerm = rf.log[rf.commitIndex-1].Term
 		}
 		rf.mu.Unlock()
 		if (!exists || votedFor == args.CandidateId) &&
@@ -258,12 +258,12 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 	rf.mu.Lock()
 	curTerm := rf.currentTerm
 
-	if args.PrevLogIndex < 0 {
+	if args.PrevLogIndex < 1 {
 		// leader doesn't have previous log entry
 		logCheck = true
-	} else if len(rf.log) > args.PrevLogIndex {
-		temp := rf.log[args.PrevLogIndex]
-		if temp.term == args.PrevLogTerm {
+	} else if len(rf.log) >= args.PrevLogIndex {
+		temp := rf.log[args.PrevLogIndex-1]
+		if temp.Term == args.PrevLogTerm {
 			logCheck = true
 		}
 	}
@@ -276,33 +276,35 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 		reply.Success = true
 		rf.hbs <- true
 		rf.mu.Lock()
-		Debug(dTerm, "S%d has received heartbeat from S%d in term %v\n", rf.me, args.LeaderId, rf.currentTerm)
 		rf.leaderID = args.LeaderId
 		rf.status = follower
 		rf.currentTerm = args.Term
 		conflictingIdx := 0
 		if len(args.Entries) > 0 {
 			for i, logEntry := range args.Entries {
-				if len(rf.log) > logEntry.idx && rf.log[logEntry.idx].term != logEntry.term {
+				if len(rf.log) >= logEntry.Idx && rf.log[logEntry.Idx-1].Term != logEntry.Term {
 					// if any existing entry conflicts with a new one,
 					// mark the entry idx and delete all the entries that follow it
 					conflictingIdx = i
-					rf.log = rf.log[:logEntry.idx]
+					rf.log = rf.log[:(logEntry.Idx - 1)]
 					break
 				}
 			}
 			for i := conflictingIdx; i < len(args.Entries); i++ {
 				rf.log = append(rf.log, args.Entries[i])
+				Debug(dLog, "S%d has appended command %d at index %d", rf.me, rf.log[conflictingIdx].Command, rf.log[conflictingIdx].Idx)
 			}
+
 			if args.LeaderCommit > rf.commitIndex {
-				rf.commitIndex = min(args.LeaderCommit, args.Entries[len(args.Entries)-1].idx)
+				rf.commitIndex = min(args.LeaderCommit, args.Entries[len(args.Entries)-1].Idx)
+				Debug(dCommit, "S%d has commited command %d at index %d", rf.me, rf.log[rf.commitIndex-1].Command, rf.log[rf.commitIndex-1].Idx)
 			}
 		}
 		lastApplied := rf.lastApplied
 		if args.LeaderCommit > lastApplied {
 			// apply log[rf.lastApplied+1,... args.LeaderCommit]
 			for i := lastApplied + 1; i <= args.LeaderCommit; i++ {
-				rf.applyCh <- ApplyMsg{CommandValid: true, Command: rf.log[i].command, CommandIndex: i}
+				rf.applyCh <- ApplyMsg{CommandValid: true, Command: rf.log[i-1].Command, CommandIndex: i}
 				rf.lastApplied++
 			}
 		}
@@ -326,15 +328,15 @@ func (rf *Raft) sendAppendEntries() {
 					wg.Add(1)
 					rf.mu.Lock()
 					// initialize AppendEntriesArg assuming prevLog doesn't exist
-					args := AppendEntriesArg{curTerm, rf.me, -1, -1, nil, rf.commitIndex}
-					if rf.nextIndex[i] > 0 {
+					args := AppendEntriesArg{curTerm, rf.me, 0, 0, nil, rf.commitIndex}
+					if rf.nextIndex[i] > 1 {
 						args.PrevLogIndex = rf.nextIndex[i] - 1
-						args.PrevLogTerm = rf.log[args.PrevLogIndex].term
+						args.PrevLogTerm = rf.log[args.PrevLogIndex-1].Term
 						// args.Entries could be empty
-						args.Entries = rf.log[rf.nextIndex[i]:len(rf.log)]
-					} else if rf.nextIndex[i] > -1 {
+						args.Entries = rf.log[rf.nextIndex[i]-1 : len(rf.log)]
+					} else if rf.nextIndex[i] > 0 {
 						// no previous log
-						args.Entries = rf.log[rf.nextIndex[i]:len(rf.log)]
+						args.Entries = rf.log[rf.nextIndex[i]-1 : len(rf.log)]
 					} // else no entries to send and no previous log
 					rf.mu.Unlock()
 					reply := AppendEntriesReply{}
@@ -356,8 +358,8 @@ func (rf *Raft) sendAppendEntries() {
 								rf.nextIndex[i] = rf.nextIndex[i] - 1
 							} else {
 								// Success
-								rf.matchIndex[i] = len(rf.log) - 1
-								rf.nextIndex[i] = len(rf.log)
+								rf.matchIndex[i] = len(rf.log)
+								rf.nextIndex[i] = len(rf.log) + 1
 							}
 							rf.mu.Unlock()
 						}
@@ -372,8 +374,8 @@ func (rf *Raft) sendAppendEntries() {
 			rf.mu.Lock()
 			status = rf.status
 			if status == leader {
-				for N := len(rf.log) - 1; N > rf.commitIndex; N-- {
-					if rf.log[N].term == rf.currentTerm {
+				for N := len(rf.log); N > rf.commitIndex; N-- {
+					if rf.log[N-1].Term == rf.currentTerm {
 						rf.commitIndex = N
 						break
 					}
@@ -382,7 +384,7 @@ func (rf *Raft) sendAppendEntries() {
 				if rf.commitIndex > lastApplied {
 					// apply log[rf.lastApplied+1,... args.LeaderCommit]
 					for i := lastApplied + 1; i <= rf.commitIndex; i++ {
-						rf.applyCh <- ApplyMsg{CommandValid: true, Command: rf.log[i].command, CommandIndex: i}
+						rf.applyCh <- ApplyMsg{CommandValid: true, Command: rf.log[i-1].Command, CommandIndex: i}
 						rf.lastApplied++
 					}
 				}
@@ -439,15 +441,16 @@ func (rf *Raft) sendRequestVote(server int, args *RequestVoteArgs, reply *Reques
 // term. the third return value is true if this server believes it is
 // the leader.
 func (rf *Raft) Start(command interface{}) (int, int, bool) {
-	index := -1
+	index := 0
 
 	// Your code here (2B).
 	term, isLeader := rf.GetState()
 	if isLeader {
 		rf.mu.Lock()
-		logentry := logEntry{len(rf.log), term, command} // logEntry is 0-indexed
-		rf.log = append(rf.log, &logentry)
+		logentry := logEntry{len(rf.log) + 1, term, command} // logEntry is 1-indexed
 		index = len(rf.log)
+		rf.log = append(rf.log, &logentry)
+		Debug(dCommit, "S%d will commit the command %d at index %d", rf.me, command, index)
 		//nextIdx := len(rf.log)
 		rf.mu.Unlock()
 		// for i := 0; i < len(rf.peers); i++ {
@@ -519,12 +522,12 @@ func (rf *Raft) startElection() {
 	rf.currentTerm++
 	currentTerm := rf.currentTerm
 	rf.votedFor[currentTerm] = rf.me
-	lastLogIdx := len(rf.log) - 1
+	lastLogIdx := len(rf.log)
 	// initialize args assuming rf.log is empty
-	args := RequestVoteArgs{currentTerm, rf.me, -1, 0}
-	if lastLogIdx > -1 {
+	args := RequestVoteArgs{currentTerm, rf.me, 0, 0}
+	if lastLogIdx > 0 {
 		args.LastLogIndex = lastLogIdx
-		args.LastLogTerm = rf.log[lastLogIdx].term
+		args.LastLogTerm = rf.log[lastLogIdx-1].Term
 	}
 
 	rf.mu.Unlock()
@@ -540,7 +543,7 @@ func (rf *Raft) startElection() {
 						atomic.AddUint32(&vote, 1)
 					}
 				}
-				Debug(dVote, "S%d received vote request reply from %d", rf.me, i)
+				//Debug(dVote, "S%d received vote request reply from %d", rf.me, i)
 
 			}(i)
 		}
@@ -578,12 +581,12 @@ func (rf *Raft) startElection() {
 		done = true
 		rf.mu.Lock()
 		rf.status = follower
-		Debug(dVote, "S%d candidate received a heart beat from leader %v for term %v\n", rf.me, rf.leaderID, rf.currentTerm)
+		//Debug(dVote, "S%d candidate received a heart beat from leader %v for term %v\n", rf.me, rf.leaderID, rf.currentTerm)
 		rf.mu.Unlock()
 	case <-rf.electionTimer.C:
 		// election timed out, start a new one
 		done = true
-		Debug(dVote, "S%d election is timed out, starting a new one...", rf.me)
+		//Debug(dVote, "S%d election is timed out, starting a new one...", rf.me)
 		rf.startElection()
 	}
 
@@ -607,22 +610,23 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.cond = sync.NewCond(&rf.mu)
 	rf.hbs = make(chan bool, 1)
 	rf.electionTimer = time.NewTimer(0) //initialize a timer
+	rf.applyCh = applyCh
 
 	// Your initialization code here (2A, 2B, 2C).
 
 	rf.log = make([]*logEntry, 0)
 	rf.currentTerm = 0              // initialized to 0
 	rf.votedFor = make(map[int]int) // intialized to an empty map
-	rf.commitIndex = -1             // initialized to -1
-	rf.lastApplied = -1             // initialized to -1
+	rf.commitIndex = 0              // initialized to -1
+	rf.lastApplied = 0              // initialized to -1
 	rf.leaderID = -1
 	rf.status = follower
 
 	rf.nextIndex = make([]int, len(rf.peers))
 	rf.matchIndex = make([]int, len(rf.peers))
 	for i := 0; i < len(rf.peers); i++ {
-		rf.nextIndex[i] = 0
-		rf.matchIndex[i] = -1
+		rf.nextIndex[i] = 1
+		rf.matchIndex[i] = 0
 	}
 
 	// initialize from state persisted before a crash
@@ -630,8 +634,6 @@ func Make(peers []*labrpc.ClientEnd, me int,
 
 	// start ticker goroutine to start elections
 	go rf.ticker()
-
-	applyCh <- rf.applyCh
 
 	return rf
 }

@@ -1,13 +1,19 @@
-Test (2A): multiple elections ...
-map[1:[2]]
-map[1:[2]]
-map[2:[6]]
-map[2:[6]]
-map[2:[6]]
-map[2:[6]]
-map[4:[4]]
-map[]
-map[4:[4]]
-  ... Passed --   8.0  7  150   16736    0
-PASS
-ok  	6.824/raft	8.159s
+Test (2B): basic agreement ...
+1340 TERM S0 follower is starting an election for term 1
+1341 VOTE S0 is elected for term 1
+1342 TIMR S0 Leader, checking heartbeats
+1369 CMIT S0 will commit the command 100 at index 0
+1495 LOG1 S2 has appended command 100 at index 1
+1647 TIMR S0 Leader, checking heartbeats
+1949 TIMR S0 Leader, checking heartbeats
+1949 LOG1 S1 has appended command 100 at index 1
+1949 CMIT S1 has commited command 100 at index 1
+2249 TIMR S0 Leader, checking heartbeats
+2552 TIMR S0 Leader, checking heartbeats
+2854 TIMR S0 Leader, checking heartbeats
+3155 TIMR S0 Leader, checking heartbeats
+--- FAIL: TestBasicAgree2B (3.39s)
+    config.go:600: one(100) failed to reach agreement
+FAIL
+exit status 1
+FAIL	6.824/raft	3.654s
