@@ -206,7 +206,7 @@ func TestRPCBytes2B(t *testing.T) {
 }
 
 // test just failure of followers.
-func For2023TestFollowerFailure2B(t *testing.T) {
+func TestFollowerFailure2B(t *testing.T) {
 	servers := 3
 	cfg := make_config(t, servers, false, false)
 	defer cfg.cleanup()
@@ -251,7 +251,7 @@ func For2023TestFollowerFailure2B(t *testing.T) {
 }
 
 // test just failure of leaders.
-func For2023TestLeaderFailure2B(t *testing.T) {
+func TestLeaderFailure2B(t *testing.T) {
 	servers := 3
 	cfg := make_config(t, servers, false, false)
 	defer cfg.cleanup()
@@ -263,6 +263,7 @@ func For2023TestLeaderFailure2B(t *testing.T) {
 	// disconnect the first leader.
 	leader1 := cfg.checkOneLeader()
 	cfg.disconnect(leader1)
+	Debug(dTest, "S%d is disconnected", leader1)
 
 	// the remaining followers should elect
 	// a new leader.
@@ -273,6 +274,7 @@ func For2023TestLeaderFailure2B(t *testing.T) {
 	// disconnect the new leader.
 	leader2 := cfg.checkOneLeader()
 	cfg.disconnect(leader2)
+	Debug(dTest, "S%d is disconnected", leader2)
 
 	// submit a command to each server.
 	for i := 0; i < servers; i++ {

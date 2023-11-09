@@ -317,86 +317,86 @@ type replyMsg struct {
 }
 
 func (rf *Raft) sendAppendEntries() {
-	for !rf.killed() {
+	rf.mu.Lock()
+	status := rf.status
+	rf.mu.Unlock()
+	for !rf.killed() && status == leader {
+		// var wg sync.WaitGroup
+		Debug(dLog, "S%d has nextIndex array:%v", rf.me, rf.nextIndex)
 		rf.mu.Lock()
-		status := rf.status
+		curTerm := rf.currentTerm
 		rf.mu.Unlock()
-		for status == leader {
-			// var wg sync.WaitGroup
-			Debug(dLog, "S%d has nextIndex array:%v", rf.me, rf.nextIndex)
-			rf.mu.Lock()
-			curTerm := rf.currentTerm
-			rf.mu.Unlock()
-			count := 1
-			replies := make(chan replyMsg)
-			for i := 0; i < len(rf.peers); i++ {
-				if i != rf.me {
-					// wg.Add(1)
-					rf.mu.Lock()
-					// initialize AppendEntriesArg assuming prevLog doesn't exist
-					args := AppendEntriesArg{curTerm, rf.me, 0, 0, nil, rf.commitIndex}
-					if rf.nextIndex[i] > 1 {
-						args.PrevLogIndex = rf.nextIndex[i] - 1
-						args.PrevLogTerm = rf.log[args.PrevLogIndex-1].Term
-						// args.Entries could be empty
-						args.Entries = rf.log[rf.nextIndex[i]-1 : len(rf.log)]
-					} else if rf.nextIndex[i] > 0 {
-						// no previous log
-						args.Entries = rf.log[rf.nextIndex[i]-1 : len(rf.log)]
-					} // else no entries to send and no previous log
-					rf.mu.Unlock()
-					reply := AppendEntriesReply{}
-					go func(i int) {
-						ok := rf.peers[i].Call("Raft.AppendEntries", &args, &reply)
+		count := 1
+		replies := make(chan replyMsg)
+		for i := 0; i < len(rf.peers); i++ {
+			if i != rf.me {
+				// wg.Add(1)
+				rf.mu.Lock()
+				// initialize AppendEntriesArg assuming prevLog doesn't exist
+				args := AppendEntriesArg{curTerm, rf.me, 0, 0, nil, rf.commitIndex}
+				if rf.nextIndex[i] > 1 {
+					args.PrevLogIndex = rf.nextIndex[i] - 1
+					args.PrevLogTerm = rf.log[args.PrevLogIndex-1].Term
+					// args.Entries could be empty
+					args.Entries = rf.log[rf.nextIndex[i]-1 : len(rf.log)]
+				} else if rf.nextIndex[i] > 0 {
+					// no previous log
+					args.Entries = rf.log[rf.nextIndex[i]-1 : len(rf.log)]
+				} // else no entries to send and no previous log
+				rf.mu.Unlock()
+				reply := AppendEntriesReply{}
+				go func(i int) {
+					ok := rf.peers[i].Call("Raft.AppendEntries", &args, &reply)
+					if ok {
 						replies <- replyMsg{i, ok, &reply}
-					}(i)
-				}
-			}
-			go func() {
-				for r := range replies {
-					if r.replied {
-						rf.mu.Lock()
-						if !r.reply.Success && r.reply.Term > rf.currentTerm {
-							rf.status = follower
-							rf.leaderID = -1
-							rf.currentTerm = r.reply.Term
-							Debug(dLeader, "S%d Leader, becomes follower", rf.me)
-						} else if !r.reply.Success {
-							// Follower's log is inconsistent with the leader's
-							rf.nextIndex[r.peerID] = rf.nextIndex[r.peerID] - 1
-						} else {
-							// Success
-							rf.matchIndex[r.peerID] = len(rf.log)
-							rf.nextIndex[r.peerID] = len(rf.log) + 1
-							count++
-						}
-						rf.mu.Unlock()
 					}
-				}
-			}()
-
-			time.Sleep(time.Millisecond * 200)
-			close(replies)
-
-			rf.mu.Lock()
-			status = rf.status
-			if status == leader && count > len(rf.peers)/2 {
-				for N := len(rf.log); N > rf.commitIndex; N-- {
-					if rf.log[N-1].Term == rf.currentTerm {
-						rf.commitIndex = N
-						break
-					}
-				}
-				rf.leaderCommit = rf.commitIndex
-				rf.cond.Signal()
-				Debug(dCommit, "S%d leader has commited up to index %d with count =%v", rf.me, rf.commitIndex, count)
+				}(i)
 			}
-			rf.mu.Unlock()
-
 		}
-	}
+		go func() {
+			for r := range replies {
+				if r.replied {
+					rf.mu.Lock()
+					if !r.reply.Success && r.reply.Term > rf.currentTerm {
+						rf.status = follower
+						rf.leaderID = -1
+						rf.currentTerm = r.reply.Term
+						Debug(dLeader, "S%d Leader, becomes follower", rf.me)
+					} else if !r.reply.Success {
+						// Follower's log is inconsistent with the leader's
+						rf.nextIndex[r.peerID] = rf.nextIndex[r.peerID] - 1
+					} else {
+						// Success
+						rf.matchIndex[r.peerID] = len(rf.log)
+						rf.nextIndex[r.peerID] = len(rf.log) + 1
+						count++
+					}
+					rf.mu.Unlock()
+				}
+			}
+		}()
 
+		time.Sleep(time.Millisecond * 150)
+		close(replies)
+
+		rf.mu.Lock()
+		if count > len(rf.peers)/2 {
+			for N := len(rf.log); N > rf.commitIndex; N-- {
+				if rf.log[N-1].Term == rf.currentTerm {
+					rf.commitIndex = N
+					break
+				}
+			}
+			rf.leaderCommit = rf.commitIndex
+			rf.cond.Signal()
+			Debug(dCommit, "S%d leader has commited up to index %d with count =%v", rf.me, rf.commitIndex, count)
+		}
+		status = rf.status
+		rf.mu.Unlock()
+
+	}
 }
+
 func (rf *Raft) applyLog() {
 	for !rf.killed() {
 		rf.cond.L.Lock()
@@ -571,7 +571,7 @@ func (rf *Raft) startElection() {
 
 	//Debug(dVote, "S%d received %v votes in term %v. There's %v alive\n", rf.me, vote, currentTerm, atomic.LoadUint32(&rf.nPeers))
 	go func() {
-		for {
+		for !rf.killed() {
 			if atomic.LoadUint32(&vote) > uint32(len(rf.peers)/2) {
 				// there should not be more than one machine to elect a leader
 				rf.mu.Lock()
@@ -590,6 +590,9 @@ func (rf *Raft) startElection() {
 		rf.mu.Lock()
 		rf.leaderID = rf.me
 		rf.status = leader
+		for i := 0; i < len(rf.peers); i++ {
+			rf.nextIndex[i] = rf.commitIndex + 1
+		}
 		Debug(dVote, "S%d is elected for term %v\n", rf.me, rf.currentTerm)
 		rf.mu.Unlock()
 		go rf.sendAppendEntries()
