@@ -85,12 +85,12 @@ type Raft struct {
 	currentTerm int // initialized to 0
 	votedFor    map[int]int
 	log         []*logEntry
-	commitIndex int // initialized to -1
-	lastApplied int // initialized to -1
+	commitIndex int // initialized to 0
+	lastApplied int // initialized to 0
 
 	// leader only
 	nextIndex  []int
-	matchIndex []int // initialized to -1
+	matchIndex []int // initialized to 0
 
 	leaderID      int // initialized to -1
 	status        status
@@ -295,7 +295,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 			}
 			for i := conflictingIdx; i < len(args.Entries); i++ {
 				rf.log = append(rf.log, args.Entries[i])
-				Debug(dLog, "S%d has appended command %v", rf.me, rf.log)
+				Debug(dLog, "S%d has log of length %v", rf.me, len(rf.log))
 			}
 
 			if args.LeaderCommit > rf.commitIndex {
@@ -325,6 +325,8 @@ func (rf *Raft) sendAppendEntries() {
 		Debug(dLog, "S%d has nextIndex array:%v", rf.me, rf.nextIndex)
 		rf.mu.Lock()
 		curTerm := rf.currentTerm
+		logCopy := make([]*logEntry, len(rf.log))
+		copy(logCopy, rf.log)
 		rf.mu.Unlock()
 		count := 1
 		replies := make(chan replyMsg)
@@ -336,12 +338,12 @@ func (rf *Raft) sendAppendEntries() {
 				args := AppendEntriesArg{curTerm, rf.me, 0, 0, nil, rf.commitIndex}
 				if rf.nextIndex[i] > 1 {
 					args.PrevLogIndex = rf.nextIndex[i] - 1
-					args.PrevLogTerm = rf.log[args.PrevLogIndex-1].Term
+					args.PrevLogTerm = logCopy[args.PrevLogIndex-1].Term
 					// args.Entries could be empty
-					args.Entries = rf.log[rf.nextIndex[i]-1 : len(rf.log)]
+					args.Entries = logCopy[rf.nextIndex[i]-1:]
 				} else if rf.nextIndex[i] > 0 {
 					// no previous log
-					args.Entries = rf.log[rf.nextIndex[i]-1 : len(rf.log)]
+					args.Entries = logCopy[rf.nextIndex[i]-1:]
 				} // else no entries to send and no previous log
 				rf.mu.Unlock()
 				reply := AppendEntriesReply{}
@@ -367,9 +369,11 @@ func (rf *Raft) sendAppendEntries() {
 						rf.nextIndex[r.peerID] = rf.nextIndex[r.peerID] - 1
 					} else {
 						// Success
-						rf.matchIndex[r.peerID] = len(rf.log)
-						rf.nextIndex[r.peerID] = len(rf.log) + 1
-						count++
+						if rf.nextIndex[r.peerID] <= len(logCopy) {
+							rf.matchIndex[r.peerID] = len(logCopy)
+							rf.nextIndex[r.peerID] = len(logCopy) + 1
+							count++
+						}
 					}
 					rf.mu.Unlock()
 				}
@@ -381,8 +385,8 @@ func (rf *Raft) sendAppendEntries() {
 
 		rf.mu.Lock()
 		if count > len(rf.peers)/2 {
-			for N := len(rf.log); N > rf.commitIndex; N-- {
-				if rf.log[N-1].Term == rf.currentTerm {
+			for N := len(logCopy); N > rf.commitIndex; N-- {
+				if logCopy[N-1].Term == rf.currentTerm {
 					rf.commitIndex = N
 					break
 				}

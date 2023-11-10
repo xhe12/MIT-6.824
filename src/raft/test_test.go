@@ -532,6 +532,7 @@ func TestBackup2B(t *testing.T) {
 	cfg.disconnect((leader1 + 2) % servers)
 	cfg.disconnect((leader1 + 3) % servers)
 	cfg.disconnect((leader1 + 4) % servers)
+	Debug(dTest, "S%d, S%d and S%d are disconnected", (leader1+2)%servers, (leader1+3)%servers, (leader1+4)%servers)
 
 	// submit lots of commands that won't commit
 	for i := 0; i < 50; i++ {
@@ -542,11 +543,13 @@ func TestBackup2B(t *testing.T) {
 
 	cfg.disconnect((leader1 + 0) % servers)
 	cfg.disconnect((leader1 + 1) % servers)
+	Debug(dTest, "S%d and S%d are disconnected", leader1, (leader1+1)%servers)
 
 	// allow other partition to recover
 	cfg.connect((leader1 + 2) % servers)
 	cfg.connect((leader1 + 3) % servers)
 	cfg.connect((leader1 + 4) % servers)
+	Debug(dTest, "S%d, S%d and S%d are connected", (leader1+2)%servers, (leader1+3)%servers, (leader1+4)%servers)
 
 	// lots of successful commands to new group.
 	for i := 0; i < 50; i++ {
@@ -560,6 +563,7 @@ func TestBackup2B(t *testing.T) {
 		other = (leader2 + 1) % servers
 	}
 	cfg.disconnect(other)
+	Debug(dTest, "S%d is disconnected", other)
 
 	// lots more commands that won't commit
 	for i := 0; i < 50; i++ {
@@ -575,6 +579,7 @@ func TestBackup2B(t *testing.T) {
 	cfg.connect((leader1 + 0) % servers)
 	cfg.connect((leader1 + 1) % servers)
 	cfg.connect(other)
+	Debug(dTest, "Only S%d, S%d and S%d are connected", leader1, (leader1+1)%servers, other)
 
 	// lots of successful commands to new group.
 	for i := 0; i < 50; i++ {
@@ -585,6 +590,7 @@ func TestBackup2B(t *testing.T) {
 	for i := 0; i < servers; i++ {
 		cfg.connect(i)
 	}
+	Debug(dTest, "All servers are connected")
 	cfg.one(rand.Int(), servers, true)
 
 	cfg.end()
