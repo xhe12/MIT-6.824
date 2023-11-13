@@ -87,6 +87,8 @@ type Raft struct {
 	log         []*logEntry
 	commitIndex int // initialized to 0
 	lastApplied int // initialized to 0
+	// consistency check optimization
+	termIndxMap map[int]int // keep track of the first index for each term
 
 	// leader only
 	nextIndex  []int
@@ -271,9 +273,18 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 	rf.mu.Unlock()
 
 	reply.Term = curTerm
-	if args.Term < curTerm || !logCheck {
+	if args.Term < curTerm {
 		Debug(dLeader, "S%d has received stale heartbeat from S%d", rf.me, args.LeaderId)
 		reply.Success = false
+	} else if !logCheck {
+		reply.Success = false
+		rf.hbs <- true
+		rf.mu.Lock()
+		rf.currentTerm = args.Term
+		rf.leaderID = args.LeaderId
+		rf.status = follower
+		Debug(dLog, "S%d has inconsistent entry %d from leader S%d", rf.me, args.PrevLogIndex, args.LeaderId)
+		rf.mu.Unlock()
 	} else {
 		reply.Success = true
 		rf.hbs <- true
@@ -297,11 +308,15 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 				rf.log = append(rf.log, args.Entries[i])
 				Debug(dLog, "S%d has log of length %v", rf.me, len(rf.log))
 			}
-
-			if args.LeaderCommit > rf.commitIndex {
+		}
+		if args.LeaderCommit > rf.commitIndex {
+			if len(args.Entries) > 0 {
 				rf.commitIndex = min(args.LeaderCommit, args.Entries[len(args.Entries)-1].Idx)
-				Debug(dCommit, "S%d has commited command %d at index %d", rf.me, rf.log[rf.commitIndex-1].Command, rf.log[rf.commitIndex-1].Idx)
+			} else {
+				rf.commitIndex = args.LeaderCommit
 			}
+
+			Debug(dCommit, "S%d has commited command %d at index %d", rf.me, rf.log[rf.commitIndex-1].Command, rf.log[rf.commitIndex-1].Idx)
 		}
 		rf.leaderCommit = args.LeaderCommit
 		rf.cond.Signal()
@@ -310,18 +325,27 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 	}
 }
 
-type replyMsg struct {
-	peerID  int
-	replied bool
-	reply   *AppendEntriesReply
-}
+// type SafeChannel struct {
+// 	C      chan replyMsg
+// 	closed bool
+// }
+
+// func (mc *SafeChannel) isClosed() bool {
+// 	return mc.closed
+// }
+// func (mc *SafeChannel) safeClose() {
+// 	if !mc.closed {
+// 		close(mc.C)
+// 		mc.closed = true
+// 	}
+// }
 
 func (rf *Raft) sendAppendEntries() {
 	rf.mu.Lock()
 	status := rf.status
 	rf.mu.Unlock()
 	for !rf.killed() && status == leader {
-		// var wg sync.WaitGroup
+		var wg sync.WaitGroup
 		Debug(dLog, "S%d has nextIndex array:%v", rf.me, rf.nextIndex)
 		rf.mu.Lock()
 		curTerm := rf.currentTerm
@@ -329,10 +353,12 @@ func (rf *Raft) sendAppendEntries() {
 		copy(logCopy, rf.log)
 		rf.mu.Unlock()
 		count := 1
-		replies := make(chan replyMsg)
+		//replies := &SafeChannel{C: make(chan replyMsg), closed: false}
+		//replies := make(chan replyMsg, len(rf.peers))
+		//replied := make(chan bool, len(rf.peers))
 		for i := 0; i < len(rf.peers); i++ {
 			if i != rf.me {
-				// wg.Add(1)
+				wg.Add(1)
 				rf.mu.Lock()
 				// initialize AppendEntriesArg assuming prevLog doesn't exist
 				args := AppendEntriesArg{curTerm, rf.me, 0, 0, nil, rf.commitIndex}
@@ -347,41 +373,46 @@ func (rf *Raft) sendAppendEntries() {
 				} // else no entries to send and no previous log
 				rf.mu.Unlock()
 				reply := AppendEntriesReply{}
+				ok := false
 				go func(i int) {
-					ok := rf.peers[i].Call("Raft.AppendEntries", &args, &reply)
+					ok = rf.peers[i].Call("Raft.AppendEntries", &args, &reply)
+					//replies <- replyMsg{i, ok, &reply}
+					// if ok && then.Add(time.Millisecond*150).After(time.Now()) {
+					// 	Debug(dLeader, "S%d leader received reply from S%d", rf.me, i)
+					// 	if !replies.closed {
+					// 		replies.C <- replyMsg{i, ok, &reply}
+					// 	}
+					// }
+				}(i)
+				go func(i int) {
+					time.Sleep(100 * time.Millisecond)
 					if ok {
-						replies <- replyMsg{i, ok, &reply}
+						rf.mu.Lock()
+						if !reply.Success && reply.Term > rf.currentTerm {
+							rf.status = follower
+							rf.leaderID = -1
+							rf.currentTerm = reply.Term
+							Debug(dLeader, "S%d Leader, becomes follower", rf.me)
+						} else if !reply.Success {
+							// Follower's log is inconsistent with the leader's
+							rf.nextIndex[i] = rf.nextIndex[i] - 1
+						} else {
+							// Success
+							if rf.nextIndex[i] <= len(logCopy) {
+								rf.matchIndex[i] = len(logCopy)
+								rf.nextIndex[i] = len(logCopy) + 1
+								count++
+							}
+						}
+						rf.mu.Unlock()
+
 					}
+					wg.Done()
 				}(i)
 			}
 		}
-		go func() {
-			for r := range replies {
-				if r.replied {
-					rf.mu.Lock()
-					if !r.reply.Success && r.reply.Term > rf.currentTerm {
-						rf.status = follower
-						rf.leaderID = -1
-						rf.currentTerm = r.reply.Term
-						Debug(dLeader, "S%d Leader, becomes follower", rf.me)
-					} else if !r.reply.Success {
-						// Follower's log is inconsistent with the leader's
-						rf.nextIndex[r.peerID] = rf.nextIndex[r.peerID] - 1
-					} else {
-						// Success
-						if rf.nextIndex[r.peerID] <= len(logCopy) {
-							rf.matchIndex[r.peerID] = len(logCopy)
-							rf.nextIndex[r.peerID] = len(logCopy) + 1
-							count++
-						}
-					}
-					rf.mu.Unlock()
-				}
-			}
-		}()
 
-		time.Sleep(time.Millisecond * 150)
-		close(replies)
+		wg.Wait()
 
 		rf.mu.Lock()
 		if count > len(rf.peers)/2 {
@@ -530,6 +561,7 @@ func (rf *Raft) ticker() {
 
 			}
 		}
+		time.Sleep(10 * time.Millisecond)
 
 	}
 }
@@ -586,6 +618,7 @@ func (rf *Raft) startElection() {
 				}
 				break
 			}
+			time.Sleep(10 * time.Microsecond)
 		}
 	}()
 
@@ -610,7 +643,7 @@ func (rf *Raft) startElection() {
 	case <-rf.electionTimer.C:
 		// election timed out, start a new one
 		done = true
-		//Debug(dVote, "S%d election is timed out, starting a new one...", rf.me)
+		Debug(dVote, "S%d election is timed out, starting a new one at term %d", rf.me, currentTerm)
 		rf.startElection()
 	}
 
@@ -647,6 +680,8 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.leaderID = -1
 	rf.status = follower
 	rf.leaderCommit = 0
+
+	rf.termIndxMap = make(map[int]int) // initialized to an empty map
 
 	rf.nextIndex = make([]int, len(rf.peers))
 	rf.matchIndex = make([]int, len(rf.peers))
