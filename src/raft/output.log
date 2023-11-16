@@ -1,17 +1,4 @@
-Test (2A): initial election ...
-  ... Passed --   4.0  3   56   14242    0
-Test (2A): election after network failure ...
-  ... Passed --   5.4  3  104   22118    0
-Test (2A): multiple elections ...
-map[]
-map[1:[6] 2:[0]]
-map[2:[0]]
-map[2:[0]]
-map[2:[0]]
-map[4:[3]]
-map[]
-map[]
-map[5:[0] 6:[1]]
-  ... Passed --   8.9  7  684  141886    0
+Test (2B): leader backs up quickly over incorrect follower logs ...
+  ... Passed --  28.1  5 2024 1810106  102
 PASS
-ok  	6.824/raft	22.409s
+ok  	6.824/raft	28.349s

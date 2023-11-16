@@ -70,6 +70,13 @@ func min(a, b int) int {
 	return b
 }
 
+func max(a, b int) int {
+	if a < b {
+		return b
+	}
+	return a
+}
+
 // A Go object implementing a single Raft peer.
 type Raft struct {
 	mu        sync.Mutex // Lock to protect shared access to this peer's state
@@ -88,7 +95,8 @@ type Raft struct {
 	commitIndex int // initialized to 0
 	lastApplied int // initialized to 0
 	// consistency check optimization
-	termIndxMap map[int]int // keep track of the first index for each term
+	// termFirstIndxMap map[int]int // keep track of the first index for each term
+	// termLastIndxMap  map[int]int // keep track of the last index for each term
 
 	// leader only
 	nextIndex  []int
@@ -251,8 +259,10 @@ type AppendEntriesArg struct {
 }
 
 type AppendEntriesReply struct {
-	Term    int // currentTerm
-	Success bool
+	Term          int // currentTerm
+	Success       bool
+	ConflictIndex int
+	ConflictTerm  int
 }
 
 func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply) {
@@ -278,12 +288,25 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 		reply.Success = false
 	} else if !logCheck {
 		reply.Success = false
+		if len(rf.log) < args.PrevLogIndex {
+			reply.ConflictIndex = len(rf.log) + 1
+			reply.ConflictTerm = 0
+		} else {
+			reply.ConflictTerm = rf.log[args.PrevLogIndex-1].Term
+			reply.ConflictIndex = args.PrevLogIndex
+			for i := args.PrevLogIndex; i >= 1; i-- {
+				if rf.log[i-1].Term != reply.ConflictTerm {
+					reply.ConflictIndex = i + 1
+				}
+			}
+		}
+
 		rf.hbs <- true
 		rf.mu.Lock()
 		rf.currentTerm = args.Term
 		rf.leaderID = args.LeaderId
 		rf.status = follower
-		Debug(dLog, "S%d has inconsistent entry %d from leader S%d", rf.me, args.PrevLogIndex, args.LeaderId)
+		Debug(dLog, "S%d has inconsistent entry %d from leader S%d", rf.me, reply.ConflictIndex, args.LeaderId)
 		rf.mu.Unlock()
 	} else {
 		reply.Success = true
@@ -305,9 +328,11 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 				}
 			}
 			for i := conflictingIdx; i < len(args.Entries); i++ {
-				rf.log = append(rf.log, args.Entries[i])
-				Debug(dLog, "S%d has log of length %v", rf.me, len(rf.log))
+				if len(rf.log) < args.Entries[i].Idx {
+					rf.log = append(rf.log, args.Entries[i])
+				}
 			}
+			Debug(dLog, "S%d has log of length %v", rf.me, len(rf.log))
 		}
 		if args.LeaderCommit > rf.commitIndex {
 			if len(args.Entries) > 0 {
@@ -325,21 +350,6 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 	}
 }
 
-// type SafeChannel struct {
-// 	C      chan replyMsg
-// 	closed bool
-// }
-
-// func (mc *SafeChannel) isClosed() bool {
-// 	return mc.closed
-// }
-// func (mc *SafeChannel) safeClose() {
-// 	if !mc.closed {
-// 		close(mc.C)
-// 		mc.closed = true
-// 	}
-// }
-
 func (rf *Raft) sendAppendEntries() {
 	rf.mu.Lock()
 	status := rf.status
@@ -353,9 +363,6 @@ func (rf *Raft) sendAppendEntries() {
 		copy(logCopy, rf.log)
 		rf.mu.Unlock()
 		count := 1
-		//replies := &SafeChannel{C: make(chan replyMsg), closed: false}
-		//replies := make(chan replyMsg, len(rf.peers))
-		//replied := make(chan bool, len(rf.peers))
 		for i := 0; i < len(rf.peers); i++ {
 			if i != rf.me {
 				wg.Add(1)
@@ -376,13 +383,6 @@ func (rf *Raft) sendAppendEntries() {
 				ok := false
 				go func(i int) {
 					ok = rf.peers[i].Call("Raft.AppendEntries", &args, &reply)
-					//replies <- replyMsg{i, ok, &reply}
-					// if ok && then.Add(time.Millisecond*150).After(time.Now()) {
-					// 	Debug(dLeader, "S%d leader received reply from S%d", rf.me, i)
-					// 	if !replies.closed {
-					// 		replies.C <- replyMsg{i, ok, &reply}
-					// 	}
-					// }
 				}(i)
 				go func(i int) {
 					time.Sleep(100 * time.Millisecond)
@@ -395,7 +395,16 @@ func (rf *Raft) sendAppendEntries() {
 							Debug(dLeader, "S%d Leader, becomes follower", rf.me)
 						} else if !reply.Success {
 							// Follower's log is inconsistent with the leader's
-							rf.nextIndex[i] = rf.nextIndex[i] - 1
+							rf.nextIndex[i] = reply.ConflictIndex
+							if reply.ConflictTerm != 0 {
+								// Search log for the last entry j with term conflictTerm
+								for j := len(rf.log); j >= 1; j-- {
+									if rf.log[j-1].Term == reply.ConflictTerm {
+										rf.nextIndex[i] = j + 1
+									}
+								}
+							}
+
 						} else {
 							// Success
 							if rf.nextIndex[i] <= len(logCopy) {
@@ -439,12 +448,16 @@ func (rf *Raft) applyLog() {
 			rf.cond.Wait()
 		}
 		Debug(dCommit, "S%d is applying log", rf.me)
+		rf.cond.L.Unlock()
 		for i := rf.lastApplied + 1; i <= rf.leaderCommit; i++ {
 			// apply log[rf.lastApplied+1,... rf.leaderCommit]
-			rf.applyCh <- ApplyMsg{CommandValid: true, Command: rf.log[i-1].Command, CommandIndex: i}
+			rf.mu.Lock()
+			command := rf.log[i-1].Command
+			rf.mu.Unlock()
+			rf.applyCh <- ApplyMsg{CommandValid: true, Command: command, CommandIndex: i}
 			rf.lastApplied++
 		}
-		rf.cond.L.Unlock()
+
 	}
 }
 
@@ -503,13 +516,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		rf.log = append(rf.log, &logentry)
 		index = len(rf.log)
 		Debug(dCommit, "S%d leader received the command %d at index %d from client", rf.me, command, index)
-		//nextIdx := len(rf.log)
 		rf.mu.Unlock()
-		// for i := 0; i < len(rf.peers); i++ {
-		// 	if i != rf.me {
-		// 		rf.nextIndex[i] = nextIdx
-		// 	}
-		// }
 	}
 
 	return index, term, isLeader
@@ -680,8 +687,6 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.leaderID = -1
 	rf.status = follower
 	rf.leaderCommit = 0
-
-	rf.termIndxMap = make(map[int]int) // initialized to an empty map
 
 	rf.nextIndex = make([]int, len(rf.peers))
 	rf.matchIndex = make([]int, len(rf.peers))
