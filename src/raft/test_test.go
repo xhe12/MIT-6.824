@@ -115,9 +115,9 @@ func TestManyElections2A(t *testing.T) {
 		i1 := rand.Int() % servers
 		i2 := rand.Int() % servers
 		i3 := rand.Int() % servers
-		Debug(dTest, "S%v in term %v is disconnected", i1, cfg.rafts[i1].currentTerm)
-		Debug(dTest, "S%v in term %v is disconnected", i2, cfg.rafts[i2].currentTerm)
-		Debug(dTest, "S%v in term %v is disconnected", i3, cfg.rafts[i3].currentTerm)
+		Debug(dTest, "S%v in term %v is disconnected", i1, cfg.rafts[i1].CurrentTerm)
+		Debug(dTest, "S%v in term %v is disconnected", i2, cfg.rafts[i2].CurrentTerm)
+		Debug(dTest, "S%v in term %v is disconnected", i3, cfg.rafts[i3].CurrentTerm)
 		cfg.disconnect(i1)
 		cfg.disconnect(i2)
 		cfg.disconnect(i3)
@@ -139,9 +139,9 @@ func TestManyElections2A(t *testing.T) {
 		cfg.connect(i1)
 		cfg.connect(i2)
 		cfg.connect(i3)
-		Debug(dTest, "S%v in term %v is connected", i1, cfg.rafts[i1].currentTerm)
-		Debug(dTest, "S%v in term %v is connected", i2, cfg.rafts[i2].currentTerm)
-		Debug(dTest, "S%v in term %v is connected", i3, cfg.rafts[i3].currentTerm)
+		Debug(dTest, "S%v in term %v is connected", i1, cfg.rafts[i1].CurrentTerm)
+		Debug(dTest, "S%v in term %v is connected", i2, cfg.rafts[i2].CurrentTerm)
+		Debug(dTest, "S%v in term %v is connected", i3, cfg.rafts[i3].CurrentTerm)
 	}
 
 	cfg.checkOneLeader()
@@ -770,6 +770,7 @@ func TestPersist22C(t *testing.T) {
 
 		cfg.disconnect((leader1 + 1) % servers)
 		cfg.disconnect((leader1 + 2) % servers)
+		// Debug(dTest, "S%d and S%d are disconnected", (leader1+1)%servers, (leader1+2)%servers)
 
 		cfg.one(10+index, servers-2, true)
 		index++
@@ -777,22 +778,26 @@ func TestPersist22C(t *testing.T) {
 		cfg.disconnect((leader1 + 0) % servers)
 		cfg.disconnect((leader1 + 3) % servers)
 		cfg.disconnect((leader1 + 4) % servers)
+		// Debug(dTest, "S%d, S%d and S%d are disconnected", (leader1+0)%servers, (leader1+3)%servers, (leader1+4)%servers)
 
 		cfg.start1((leader1+1)%servers, cfg.applier)
 		cfg.start1((leader1+2)%servers, cfg.applier)
 		cfg.connect((leader1 + 1) % servers)
 		cfg.connect((leader1 + 2) % servers)
+		// Debug(dTest, "S%d and S%d are restarted", (leader1+1)%servers, (leader1+2)%servers)
 
 		time.Sleep(RaftElectionTimeout)
 
 		cfg.start1((leader1+3)%servers, cfg.applier)
 		cfg.connect((leader1 + 3) % servers)
+		// Debug(dTest, "S%d is restarted", (leader1+3)%servers)
 
 		cfg.one(10+index, servers-2, true)
 		index++
 
 		cfg.connect((leader1 + 4) % servers)
 		cfg.connect((leader1 + 0) % servers)
+		// Debug(dTest, "S%d and S%d are connected", (leader1+0)%servers, (leader1+4)%servers)
 	}
 
 	cfg.one(1000, servers, true)
@@ -811,19 +816,24 @@ func TestPersist32C(t *testing.T) {
 
 	leader := cfg.checkOneLeader()
 	cfg.disconnect((leader + 2) % servers)
+	Debug(dTest, "S%d is disconnected", (leader+2)%servers)
 
 	cfg.one(102, 2, true)
 
 	cfg.crash1((leader + 0) % servers)
 	cfg.crash1((leader + 1) % servers)
+	Debug(dTest, "S%d and S%d are crashed", (leader+0)%servers, (leader+1)%servers)
 	cfg.connect((leader + 2) % servers)
+	Debug(dTest, "S%d is connected", (leader+2)%servers)
 	cfg.start1((leader+0)%servers, cfg.applier)
 	cfg.connect((leader + 0) % servers)
+	Debug(dTest, "S%d is restarted", (leader+0)%servers)
 
 	cfg.one(103, 2, true)
 
 	cfg.start1((leader+1)%servers, cfg.applier)
 	cfg.connect((leader + 1) % servers)
+	Debug(dTest, "S%d is restarted", (leader+1)%servers)
 
 	cfg.one(104, servers, true)
 

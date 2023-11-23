@@ -1,4 +1,64 @@
-Test (2B): leader backs up quickly over incorrect follower logs ...
-  ... Passed --  28.1  5 2024 1810106  102
-PASS
-ok  	6.824/raft	28.349s
+Test (2C): partitioned leader and one follower crash, leader restarts ...
+1200 TERM S0 follower is starting an election for term 1
+1200 VOTE S0 is elected for term 1
+1201 LOG1 S0 has nextIndex array:[1 1 1]
+1201 LOG1 S2 has received heartbeat from S0 with 0 entries
+1201 LOG1 S1 has received heartbeat from S0 with 0 entries
+1221 CMIT S0 leader received the command 101 at index 1 from client
+1304 LOG1 S0 has nextIndex array:[1 1 1]
+1304 LOG1 S1 has received heartbeat from S0 with 1 entries
+1304 LOG1 S1 has log of length 1
+1304 LOG1 S2 has received heartbeat from S0 with 1 entries
+1304 LOG1 S2 has log of length 1
+1405 CMIT S0 leader has commited up to index 1 with count =3
+1406 LOG1 S0 has nextIndex array:[1 2 2]
+1406 CMIT S0 is applying log
+1406 LOG1 S1 has received heartbeat from S0 with 0 entries
+1406 CMIT S1 has commited command 101 at index 1
+1406 LOG1 S2 has received heartbeat from S0 with 0 entries
+1406 CMIT S2 has commited command 101 at index 1
+1406 CMIT S1 is applying log
+1406 CMIT S2 is applying log
+1506 LOG1 S0 has nextIndex array:[1 2 2]
+1506 LOG1 S2 has received heartbeat from S0 with 0 entries
+1506 LOG1 S1 has received heartbeat from S0 with 0 entries
+1607 LOG1 S0 has nextIndex array:[1 2 2]
+1607 LOG1 S1 has received heartbeat from S0 with 0 entries
+1607 LOG1 S2 has received heartbeat from S0 with 0 entries
+1709 LOG1 S0 has nextIndex array:[1 2 2]
+1709 LOG1 S1 has received heartbeat from S0 with 0 entries
+1710 LOG1 S2 has received heartbeat from S0 with 0 entries
+1810 LOG1 S0 has nextIndex array:[1 2 2]
+1810 LOG1 S1 has received heartbeat from S0 with 0 entries
+1810 LOG1 S2 has received heartbeat from S0 with 0 entries
+1892 TEST S2 is disconnected
+1892 CMIT S0 leader received the command 102 at index 2 from client
+1910 LOG1 S0 has nextIndex array:[1 2 2]
+1911 LOG1 S1 has received heartbeat from S0 with 1 entries
+1911 LOG1 S1 has log of length 2
+2011 CMIT S0 leader has commited up to index 2 with count =2
+2011 LOG1 S0 has nextIndex array:[1 3 2]
+2011 CMIT S0 is applying log
+2011 LOG1 S1 has received heartbeat from S0 with 0 entries
+2011 CMIT S1 has commited command 102 at index 2
+2011 CMIT S1 is applying log
+2014 TEST S0 and S1 are crashed
+2014 TEST S2 is connected
+2014 TEST S0 is restarted
+2905 TERM S2 follower is starting an election for term 2
+2905 VOTE S2 is elected for term 2
+2905 LOG1 S2 has nextIndex array:[2 2 2]
+2905 LOG1 S0 has received heartbeat from S2 with 0 entries
+2905 CMIT S0 is applying log
+2942 CMIT S2 leader received the command 103 at index 2 from client
+3005 LOG1 S2 has nextIndex array:[2 2 2]
+3005 LOG1 S0 has received heartbeat from S2 with 1 entries
+3005 LOG1 S0 has log of length 2
+3108 CMIT S2 leader has commited up to index 2 with count =2
+3108 LOG1 S2 has nextIndex array:[3 2 2]
+3108 CMIT S2 is applying log
+2: log map[1:101]; server map[1:101 2:102]
+2: log map[1:101]; server map[1:101 2:102]
+apply error: commit index=2 server=2 103 != server=1 102
+exit status 1
+FAIL	6.824/raft	3.268s
