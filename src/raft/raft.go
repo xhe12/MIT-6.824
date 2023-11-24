@@ -410,7 +410,6 @@ func (rf *Raft) sendAppendEntries() {
 							rf.leaderID = -1
 							rf.CurrentTerm = reply.Term
 							Debug(dLeader, "S%d Leader, becomes follower", rf.me)
-							rf.persist()
 						} else if !reply.Success {
 							// Follower's log is inconsistent with the leader's
 							rf.nextIndex[i] = reply.ConflictIndex
@@ -445,6 +444,7 @@ func (rf *Raft) sendAppendEntries() {
 		if count > len(rf.peers)/2 {
 			for N := len(logCopy); N > rf.commitIndex; N-- {
 				if logCopy[N-1].Term == rf.CurrentTerm {
+					// Figure 8, only commits entries from current term
 					rf.commitIndex = N
 					break
 				}
@@ -455,6 +455,7 @@ func (rf *Raft) sendAppendEntries() {
 		}
 		status = rf.status
 		rf.mu.Unlock()
+		rf.persist()
 
 	}
 }
@@ -507,7 +508,11 @@ func (rf *Raft) applyLog() {
 // that the caller passes the address of the reply struct with &, not
 // the struct itself.
 func (rf *Raft) sendRequestVote(server int, args *RequestVoteArgs, reply *RequestVoteReply) bool {
-	ok := rf.peers[server].Call("Raft.RequestVote", args, reply)
+	ok := false
+	if !rf.killed() {
+		ok = rf.peers[server].Call("Raft.RequestVote", args, reply)
+	}
+
 	return ok
 }
 
@@ -582,7 +587,10 @@ func (rf *Raft) ticker() {
 				rf.status = candidate
 				Debug(dTerm, "S%d follower is starting an election for term %d", rf.me, rf.CurrentTerm+1)
 				rf.mu.Unlock()
-				rf.startElection()
+				if !rf.killed() {
+					rf.startElection()
+				}
+
 			case <-rf.hbs:
 
 			}
@@ -669,8 +677,11 @@ func (rf *Raft) startElection() {
 	case <-rf.electionTimer.C:
 		// election timed out, start a new one
 		done = true
-		Debug(dVote, "S%d election is timed out, starting a new one at term %d", rf.me, currentTerm)
-		rf.startElection()
+		if !rf.killed() {
+			rf.startElection()
+			Debug(dVote, "S%d election is timed out, starting a new one at term %d", rf.me, currentTerm)
+		}
+
 	}
 
 }

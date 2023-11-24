@@ -879,6 +879,7 @@ func TestFigure82C(t *testing.T) {
 
 		if leader != -1 {
 			cfg.crash1(leader)
+			Debug(dTest, "S%d crashed", leader)
 			nup -= 1
 		}
 
@@ -888,6 +889,7 @@ func TestFigure82C(t *testing.T) {
 				cfg.start1(s, cfg.applier)
 				cfg.connect(s)
 				nup += 1
+				Debug(dTest, "S%d restarted", s)
 			}
 		}
 	}
@@ -896,6 +898,7 @@ func TestFigure82C(t *testing.T) {
 		if cfg.rafts[i] == nil {
 			cfg.start1(i, cfg.applier)
 			cfg.connect(i)
+			Debug(dTest, "S%d restarted", i)
 		}
 	}
 
@@ -1060,6 +1063,7 @@ func internalChurn(t *testing.T, unreliable bool) {
 		if (rand.Int() % 1000) < 200 {
 			i := rand.Int() % servers
 			cfg.disconnect(i)
+			//Debug(dTest, "S%d is disconnected", i)
 		}
 
 		if (rand.Int() % 1000) < 500 {
@@ -1068,12 +1072,14 @@ func internalChurn(t *testing.T, unreliable bool) {
 				cfg.start1(i, cfg.applier)
 			}
 			cfg.connect(i)
+			//Debug(dTest, "S%d is connected", i)
 		}
 
 		if (rand.Int() % 1000) < 200 {
 			i := rand.Int() % servers
 			if cfg.rafts[i] != nil {
 				cfg.crash1(i)
+				//Debug(dTest, "S%d crashed", i)
 			}
 		}
 
@@ -1091,6 +1097,7 @@ func internalChurn(t *testing.T, unreliable bool) {
 			cfg.start1(i, cfg.applier)
 		}
 		cfg.connect(i)
+		//Debug(dTest, "S%d is connected", i)
 	}
 
 	atomic.StoreInt32(&stop, 1)
