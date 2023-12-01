@@ -567,7 +567,7 @@ func (rf *Raft) applyLog() {
 		for i := rf.lastApplied + 1; i <= rf.leaderCommit; i++ {
 			// apply log[rf.lastApplied+1,... rf.leaderCommit]
 			rf.mu.Lock()
-			command := rf.Log[i+rf.LastIncludedIndex-1].Command
+			command := rf.Log[i-rf.LastIncludedIndex-1].Command
 			rf.mu.Unlock()
 			rf.applyCh <- ApplyMsg{CommandValid: true, Command: command, CommandIndex: i}
 			rf.lastApplied++
@@ -631,9 +631,9 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	term, isLeader := rf.GetState()
 	if isLeader {
 		rf.mu.Lock()
-		logentry := logEntry{len(rf.Log) + 1, term, command} // logEntry is 1-indexed
+		logentry := logEntry{len(rf.Log) + 1 + rf.LastIncludedIndex, term, command} // logEntry is 1-indexed
 		rf.Log = append(rf.Log, &logentry)
-		index = len(rf.Log)
+		index = logentry.Idx
 		Debug(dCommit, "S%d leader received the command %d at index %d from client", rf.me, command, index)
 		rf.mu.Unlock()
 		rf.persist()
@@ -705,12 +705,12 @@ func (rf *Raft) startElection() {
 	rf.CurrentTerm++
 	currentTerm := rf.CurrentTerm
 	rf.VotedFor = rf.me
-	lastLogIdx := len(rf.Log)
+	lastLogIdx := len(rf.Log) + rf.LastIncludedIndex
 	// initialize args assuming rf.Log is empty
-	args := RequestVoteArgs{currentTerm, rf.me, 0, 0}
-	if lastLogIdx > 0 {
+	args := RequestVoteArgs{currentTerm, rf.me, rf.LastIncludedIndex, rf.LastIncludedTerm}
+	if lastLogIdx > rf.LastIncludedIndex {
 		args.LastLogIndex = lastLogIdx
-		args.LastLogTerm = rf.Log[lastLogIdx-1].Term
+		args.LastLogTerm = rf.Log[lastLogIdx-rf.LastIncludedIndex-1].Term
 	}
 
 	rf.mu.Unlock()
