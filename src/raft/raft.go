@@ -75,7 +75,7 @@ func min(a, b int) int {
 
 // A Go object implementing a single Raft peer.
 type Raft struct {
-	mu        sync.Mutex // Lock to protect shared access to this peer's state
+	mu        sync.RWMutex // Lock to protect shared access to this peer's state
 	cond      *sync.Cond
 	peers     []*labrpc.ClientEnd // RPC end points of all peers
 	persister *Persister          // Object to hold this peer's persisted state
@@ -113,8 +113,8 @@ type Raft struct {
 // believes it is the leader.
 func (rf *Raft) GetState() (int, bool) {
 
-	rf.mu.Lock()
-	defer rf.mu.Unlock()
+	rf.mu.RLock()
+	defer rf.mu.RUnlock()
 	var term int = rf.CurrentTerm
 	var isleader bool
 	// Your code here (2A).
@@ -134,13 +134,13 @@ func (rf *Raft) persist() {
 	// Example:
 	w := new(bytes.Buffer)
 	e := labgob.NewEncoder(w)
-	rf.mu.Lock()
+	rf.mu.RLock()
 	e.Encode(rf.CurrentTerm)
 	e.Encode(rf.VotedFor)
 	e.Encode(rf.Log[:rf.commitIndex-rf.LastIncludedIndex])
 	e.Encode(rf.LastIncludedIndex)
 	e.Encode(rf.LastIncludedTerm)
-	rf.mu.Unlock()
+	rf.mu.RUnlock()
 	data := w.Bytes()
 	rf.persister.SaveRaftState(data)
 }
@@ -182,6 +182,8 @@ func (rf *Raft) readPersist(data []byte) {
 func (rf *Raft) CondInstallSnapshot(lastIncludedTerm int, lastIncludedIndex int, snapshot []byte) bool {
 
 	// Your code here (2D).
+	rf.mu.RLock()
+	defer rf.mu.RUnlock()
 	return rf.commitIndex <= lastIncludedIndex
 }
 
@@ -201,24 +203,33 @@ func (rf *Raft) Snapshot(index int, snapshot []byte) {
 		rf.Log = rf.Log[:index-rf.LastIncludedIndex]
 		rf.LastIncludedIndex = index
 		rf.LastIncludedTerm = term
+		status := rf.status
 		rf.mu.Unlock()
+
+		rf.persist()
 		rf.applyCh <- ApplyMsg{SnapshotValid: true, Snapshot: snapshot, SnapshotTerm: term, SnapshotIndex: index}
 
-		if rf.status == leader {
+		if status == leader {
 			args := InstallSnapshotArgs{rf.CurrentTerm, rf.me, index, term, snapshot}
 			reply := InstallSnapshotReply{}
 			ok := false
 			for i := 0; i < len(rf.peers); i++ {
-				if i != rf.me && rf.nextIndex[i] <= index {
+				rf.mu.RLock()
+				nextIdx := rf.nextIndex[i]
+				rf.mu.RUnlock()
+				if i != rf.me && nextIdx <= index {
 					go func(i int) {
 						ok = rf.peers[i].Call("Raft.InstallSnapshot", &args, &reply)
 
+						rf.mu.Lock()
 						if ok && reply.Term > rf.CurrentTerm {
 							rf.status = follower
 							rf.leaderID = -1
 							rf.CurrentTerm = reply.Term
 							Debug(dLeader, "S%d Leader, becomes follower when sending snapshot", rf.me)
+							rf.persist()
 						}
+						rf.mu.Unlock()
 					}(i)
 				}
 			}
@@ -241,7 +252,7 @@ type InstallSnapshotReply struct {
 }
 
 func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapshotReply) {
-	rf.mu.Lock()
+	rf.mu.RLock()
 	reply.Term = rf.CurrentTerm
 	if args.Term < reply.Term {
 		return
@@ -254,7 +265,9 @@ func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapsho
 		// the snapshot overlaps with rf.Log
 		overLap = true
 	}
+	rf.mu.RUnlock()
 
+	rf.mu.Lock()
 	if !overLap {
 		rf.Log = make([]*logEntry, 0)
 	} else {
@@ -263,6 +276,7 @@ func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapsho
 	rf.LastIncludedIndex = args.LastIncludedIndex
 	rf.LastIncludedTerm = args.LastIncludedTerm
 	rf.mu.Unlock()
+	rf.persist()
 	rf.applyCh <- ApplyMsg{SnapshotValid: true, Snapshot: args.Data, SnapshotTerm: args.LastIncludedTerm, SnapshotIndex: args.LastIncludedIndex}
 }
 
@@ -287,13 +301,14 @@ type RequestVoteReply struct {
 // example RequestVote RPC handler.
 func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	// Your code here (2A, 2B).
-	rf.mu.Lock()
+	rf.mu.RLock()
 	curTerm := rf.CurrentTerm
-	rf.mu.Unlock()
+	logLength := len(rf.Log)
+	rf.mu.RUnlock()
 	reply.Term = curTerm
 	reply.VoteGranted = false
 	if args.Term >= curTerm {
-		rf.mu.Lock()
+		rf.mu.RLock()
 		rf.CurrentTerm = args.Term
 		rf.status = follower
 		if args.Term > curTerm {
@@ -302,11 +317,11 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		votedFor := rf.VotedFor
 		lastCommitedLogIndex := 0
 		lastCommitedLogTerm := 0
-		if len(rf.Log) > 0 && rf.commitIndex-rf.LastIncludedIndex > 0 {
+		if logLength > 0 && rf.commitIndex-rf.LastIncludedIndex > 0 {
 			lastCommitedLogIndex = rf.commitIndex
 			lastCommitedLogTerm = rf.Log[rf.commitIndex-rf.LastIncludedIndex-1].Term
 		}
-		rf.mu.Unlock()
+		rf.mu.RUnlock()
 		//if (!exists || votedFor == args.CandidateId) &&
 		if (votedFor == -1 || votedFor == args.CandidateId) && checkCandidateLogUpToDate(args.LastLogIndex, args.LastLogTerm, lastCommitedLogIndex, lastCommitedLogTerm) {
 			reply.VoteGranted = true
@@ -359,7 +374,7 @@ type AppendEntriesReply struct {
 func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply) {
 	logCheck := false
 
-	rf.mu.Lock()
+	rf.mu.RLock()
 	curTerm := rf.CurrentTerm
 
 	if args.PrevLogIndex-rf.LastIncludedIndex == 0 && args.PrevLogTerm == rf.LastIncludedTerm {
@@ -371,7 +386,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 			logCheck = true
 		}
 	}
-	rf.mu.Unlock()
+	rf.mu.RUnlock()
 
 	reply.Term = curTerm
 	if args.Term < curTerm {
@@ -379,6 +394,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 		reply.Success = false
 	} else if !logCheck {
 		reply.Success = false
+		rf.mu.RLock()
 		if len(rf.Log) < args.PrevLogIndex-rf.LastIncludedIndex {
 			// follower has several missing entries
 			reply.ConflictIndex = rf.Log[len(rf.Log)-1].Idx + 1
@@ -399,6 +415,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 			}
 
 		}
+		rf.mu.RUnlock()
 
 		rf.hbs <- true
 		rf.mu.Lock()
@@ -456,22 +473,22 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 }
 
 func (rf *Raft) sendAppendEntries() {
-	rf.mu.Lock()
+	rf.mu.RLock()
 	status := rf.status
-	rf.mu.Unlock()
+	rf.mu.RUnlock()
 	for !rf.killed() && status == leader {
 		var wg sync.WaitGroup
 		Debug(dLog, "S%d has nextIndex array:%v", rf.me, rf.nextIndex)
-		rf.mu.Lock()
+		rf.mu.RLock()
 		curTerm := rf.CurrentTerm
 		logCopy := make([]*logEntry, len(rf.Log))
 		copy(logCopy, rf.Log)
-		rf.mu.Unlock()
+		rf.mu.RUnlock()
 		count := 1
 		for i := 0; i < len(rf.peers); i++ {
 			if i != rf.me {
 				wg.Add(1)
-				rf.mu.Lock()
+				rf.mu.RLock()
 				// initialize AppendEntriesArg assuming prevLog doesn't exist
 				args := AppendEntriesArg{curTerm, rf.me, 0, 0, nil, rf.commitIndex}
 				if rf.nextIndex[i]-rf.LastIncludedIndex > 1 {
@@ -483,7 +500,7 @@ func (rf *Raft) sendAppendEntries() {
 					// no previous log or previous log index is equal to lastIncludedIndex
 					args.Entries = logCopy
 				} // else no entries to send and no previous log
-				rf.mu.Unlock()
+				rf.mu.RUnlock()
 				reply := AppendEntriesReply{}
 				ok := false
 				go func(i int) {
@@ -564,13 +581,20 @@ func (rf *Raft) applyLog() {
 		}
 		Debug(dCommit, "S%d is applying log", rf.me)
 		rf.cond.L.Unlock()
-		for i := rf.lastApplied + 1; i <= rf.leaderCommit; i++ {
+
+		rf.mu.RLock()
+		lastApplied := rf.lastApplied
+		leaderCommit := rf.leaderCommit
+		rf.mu.RUnlock()
+		for i := lastApplied + 1; i <= leaderCommit; i++ {
 			// apply log[rf.lastApplied+1,... rf.leaderCommit]
-			rf.mu.Lock()
+			rf.mu.RLock()
 			command := rf.Log[i-rf.LastIncludedIndex-1].Command
-			rf.mu.Unlock()
+			rf.mu.RUnlock()
 			rf.applyCh <- ApplyMsg{CommandValid: true, Command: command, CommandIndex: i}
+			rf.mu.Lock()
 			rf.lastApplied++
+			rf.mu.Unlock()
 		}
 
 	}
@@ -665,9 +689,9 @@ func (rf *Raft) killed() bool {
 // heartsbeats recently.
 func (rf *Raft) ticker() {
 	for !rf.killed() {
-		rf.mu.Lock()
+		rf.mu.RLock()
 		status := rf.status
-		rf.mu.Unlock()
+		rf.mu.RUnlock()
 		if status == follower {
 			// Your code here to check if a leader election should
 			// be started and to randomize sleeping time using
@@ -705,6 +729,8 @@ func (rf *Raft) startElection() {
 	rf.CurrentTerm++
 	currentTerm := rf.CurrentTerm
 	rf.VotedFor = rf.me
+	rf.mu.Unlock()
+	rf.mu.RLock()
 	lastLogIdx := len(rf.Log) + rf.LastIncludedIndex
 	// initialize args assuming rf.Log is empty
 	args := RequestVoteArgs{currentTerm, rf.me, rf.LastIncludedIndex, rf.LastIncludedTerm}
@@ -713,7 +739,7 @@ func (rf *Raft) startElection() {
 		args.LastLogTerm = rf.Log[lastLogIdx-rf.LastIncludedIndex-1].Term
 	}
 
-	rf.mu.Unlock()
+	rf.mu.RUnlock()
 	var vote uint32 = 1 // vote for self
 	// send request vote RPCs to all other servers\
 	for i := 0; i < len(rf.peers); i++ {
@@ -740,9 +766,9 @@ func (rf *Raft) startElection() {
 		for !rf.killed() {
 			if atomic.LoadUint32(&vote) > uint32(len(rf.peers)/2) {
 				// there should not be more than one machine to elect a leader
-				rf.mu.Lock()
+				rf.mu.RLock()
 				mostRecentTerm := rf.CurrentTerm
-				rf.mu.Unlock()
+				rf.mu.RUnlock()
 				if currentTerm >= mostRecentTerm && !done {
 					elected <- struct{}{}
 				}
@@ -827,7 +853,8 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.readPersist(persister.ReadRaftState())
 	rf.commitIndex = len(rf.Log) + rf.LastIncludedIndex
 	// TO DO: how to reload rf.lastApplied, rf.leaderCommit
-	//rf.lastApplied = rf.commitIndex
+	rf.lastApplied = rf.commitIndex
+	rf.leaderCommit = rf.commitIndex
 
 	// start ticker goroutine to start elections
 	go rf.ticker()
