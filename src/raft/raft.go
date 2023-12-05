@@ -76,6 +76,7 @@ func min(a, b int) int {
 // A Go object implementing a single Raft peer.
 type Raft struct {
 	mu        sync.RWMutex // Lock to protect shared access to this peer's state
+	condMu    sync.Mutex
 	cond      *sync.Cond
 	peers     []*labrpc.ClientEnd // RPC end points of all peers
 	persister *Persister          // Object to hold this peer's persisted state
@@ -184,7 +185,8 @@ func (rf *Raft) CondInstallSnapshot(lastIncludedTerm int, lastIncludedIndex int,
 	// Your code here (2D).
 	rf.mu.RLock()
 	defer rf.mu.RUnlock()
-	return rf.commitIndex <= lastIncludedIndex && rf.Log[len(rf.Log)-1].Idx <= lastIncludedIndex
+	return rf.lastApplied < lastIncludedIndex
+
 }
 
 // the service says it has created a snapshot that has
@@ -465,11 +467,12 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 				rf.commitIndex = args.LeaderCommit
 			}
 
-			Debug(dCommit, "S%d has commited command %d at index %d", rf.me, rf.Log[rf.commitIndex-1-rf.LastIncludedIndex].Command, rf.Log[rf.commitIndex-1-rf.LastIncludedIndex].Idx)
+			Debug(dCommit, "S%d has commited command %d at index %d, commitIndex=%v, lastAppliedIndex=%v",
+				rf.me, rf.Log[rf.commitIndex-1-rf.LastIncludedIndex].Command, rf.Log[rf.commitIndex-1-rf.LastIncludedIndex].Idx, rf.commitIndex, rf.lastApplied)
 		}
 		rf.leaderCommit = args.LeaderCommit
-		rf.cond.Signal()
 		rf.mu.Unlock()
+		rf.cond.Signal()
 		rf.persist()
 
 	}
@@ -493,7 +496,7 @@ func (rf *Raft) sendAppendEntries() {
 				wg.Add(1)
 				rf.mu.RLock()
 				// initialize AppendEntriesArg assuming prevLog doesn't exist
-				args := AppendEntriesArg{curTerm, rf.me, 0, 0, nil, rf.commitIndex}
+				args := AppendEntriesArg{curTerm, rf.me, rf.LastIncludedIndex, rf.LastIncludedTerm, nil, rf.commitIndex}
 				if rf.nextIndex[i]-rf.LastIncludedIndex > 1 {
 					args.PrevLogIndex = rf.nextIndex[i] - 1
 					args.PrevLogTerm = logCopy[args.PrevLogIndex-rf.LastIncludedIndex-1].Term
@@ -566,11 +569,11 @@ func (rf *Raft) sendAppendEntries() {
 				}
 			}
 			rf.leaderCommit = rf.commitIndex
-			rf.cond.Signal()
-			Debug(dCommit, "S%d leader has commited up to index %d with count =%v, lastIncludedIndex=%v", rf.me, rf.commitIndex, count, rf.LastIncludedIndex)
+			Debug(dCommit, "S%d leader has commited up to index %d, lastIncludedIndex=%v, lastAppliedIndex=%v", rf.me, rf.commitIndex, rf.LastIncludedIndex, rf.lastApplied)
 		}
 		status = rf.status
 		rf.mu.Unlock()
+		rf.cond.Signal()
 		rf.persist()
 
 	}
@@ -581,8 +584,9 @@ func (rf *Raft) applyLog() {
 		rf.cond.L.Lock()
 		for rf.leaderCommit <= rf.lastApplied {
 			rf.cond.Wait()
+			Debug(dSnap, "S%d came back from waiting with leaderCommit index=%v, lastApplied index=%v", rf.me, rf.leaderCommit, rf.lastApplied)
 		}
-		Debug(dCommit, "S%d is applying log", rf.me)
+
 		rf.cond.L.Unlock()
 
 		rf.mu.RLock()
@@ -599,7 +603,7 @@ func (rf *Raft) applyLog() {
 			rf.lastApplied++
 			rf.mu.Unlock()
 		}
-
+		Debug(dCommit, "S%d has applied log with lastApplied index=%v", rf.me, rf.lastApplied)
 	}
 }
 
@@ -829,7 +833,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.hbs = make(chan bool, 1)
 	rf.electionTimer = time.NewTimer(0) //initialize a timer
 	rf.applyCh = applyCh
-	rf.cond = sync.NewCond(&rf.mu)
+	rf.cond = sync.NewCond(&rf.condMu)
 
 	// Your initialization code here (2A, 2B, 2C).
 
