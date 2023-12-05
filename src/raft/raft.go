@@ -184,7 +184,7 @@ func (rf *Raft) CondInstallSnapshot(lastIncludedTerm int, lastIncludedIndex int,
 	// Your code here (2D).
 	rf.mu.RLock()
 	defer rf.mu.RUnlock()
-	return rf.commitIndex <= lastIncludedIndex
+	return rf.commitIndex <= lastIncludedIndex && rf.Log[len(rf.Log)-1].Idx <= lastIncludedIndex
 }
 
 // the service says it has created a snapshot that has
@@ -199,8 +199,9 @@ func (rf *Raft) Snapshot(index int, snapshot []byte) {
 			Debug(dSnap, "S%d received stale snapshot from service", rf.me)
 			return
 		}
+		Debug(dSnap, "S%d is snapshoting at index %d", rf.me, index)
 		term := rf.Log[index-rf.LastIncludedIndex-1].Term
-		rf.Log = rf.Log[:index-rf.LastIncludedIndex]
+		rf.Log = rf.Log[index-rf.LastIncludedIndex:]
 		rf.LastIncludedIndex = index
 		rf.LastIncludedTerm = term
 		status := rf.status
@@ -219,6 +220,7 @@ func (rf *Raft) Snapshot(index int, snapshot []byte) {
 				rf.mu.RUnlock()
 				if i != rf.me && nextIdx <= index {
 					go func(i int) {
+						Debug(dSnap, "S%d is sending snapshot to S%d", rf.me, i)
 						ok = rf.peers[i].Call("Raft.InstallSnapshot", &args, &reply)
 
 						rf.mu.Lock()
@@ -275,6 +277,7 @@ func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapsho
 	}
 	rf.LastIncludedIndex = args.LastIncludedIndex
 	rf.LastIncludedTerm = args.LastIncludedTerm
+	Debug(dSnap, "S%d received snapshot from leader S%d at index %d", rf.me, rf.leaderID, rf.LastIncludedIndex)
 	rf.mu.Unlock()
 	rf.persist()
 	rf.applyCh <- ApplyMsg{SnapshotValid: true, Snapshot: args.Data, SnapshotTerm: args.LastIncludedTerm, SnapshotIndex: args.LastIncludedIndex}
@@ -462,7 +465,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArg, reply *AppendEntriesReply)
 				rf.commitIndex = args.LeaderCommit
 			}
 
-			Debug(dCommit, "S%d has commited command %d at index %d", rf.me, rf.Log[rf.commitIndex-1].Command, rf.Log[rf.commitIndex-1].Idx)
+			Debug(dCommit, "S%d has commited command %d at index %d", rf.me, rf.Log[rf.commitIndex-1-rf.LastIncludedIndex].Command, rf.Log[rf.commitIndex-1-rf.LastIncludedIndex].Idx)
 		}
 		rf.leaderCommit = args.LeaderCommit
 		rf.cond.Signal()
@@ -537,9 +540,9 @@ func (rf *Raft) sendAppendEntries() {
 
 						} else {
 							// Success
-							if rf.nextIndex[i] <= len(logCopy)+rf.LastIncludedIndex {
-								rf.matchIndex[i] = len(logCopy) + rf.LastIncludedIndex
-								rf.nextIndex[i] = len(logCopy) + rf.LastIncludedIndex + 1
+							if len(logCopy) >= 1 && rf.nextIndex[i] <= logCopy[len(logCopy)-1].Idx {
+								rf.matchIndex[i] = logCopy[len(logCopy)-1].Idx
+								rf.nextIndex[i] = logCopy[len(logCopy)-1].Idx + 1
 								count++
 							}
 						}
@@ -558,13 +561,13 @@ func (rf *Raft) sendAppendEntries() {
 			for N := len(logCopy); N > rf.commitIndex-rf.LastIncludedIndex; N-- {
 				if logCopy[N-1].Term == rf.CurrentTerm {
 					// Figure 8, only commits entries from current term
-					rf.commitIndex = N + rf.LastIncludedIndex
+					rf.commitIndex = logCopy[N-1].Idx
 					break
 				}
 			}
 			rf.leaderCommit = rf.commitIndex
 			rf.cond.Signal()
-			Debug(dCommit, "S%d leader has commited up to index %d with count =%v", rf.me, rf.commitIndex, count)
+			Debug(dCommit, "S%d leader has commited up to index %d with count =%v, lastIncludedIndex=%v", rf.me, rf.commitIndex, count, rf.LastIncludedIndex)
 		}
 		status = rf.status
 		rf.mu.Unlock()
