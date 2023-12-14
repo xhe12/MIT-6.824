@@ -1,452 +1,281 @@
-Test (2D): snapshots basic ...
-1104 TERM S0 follower is starting an election for term 1
-1104 VOTE S0 is elected for term 1
-1104 LOG1 S0 has nextIndex array:[1 1 1]
-1104 LOG1 S2 has received heartbeat from S0 with 0 entries
-1104 LOG1 S1 has received heartbeat from S0 with 0 entries
-1104 SNAP S2 came back from waiting with leaderCommit index=0, lastApplied index=0
-1104 SNAP S1 came back from waiting with leaderCommit index=0, lastApplied index=0
-1115 CMIT S0 leader received the command 3726460361676030896 at index 1 from client
-1205 LOG1 S0 has nextIndex array:[1 1 1]
-1205 SNAP S0 came back from waiting with leaderCommit index=0, lastApplied index=0
-1205 LOG1 S1 has received heartbeat from S0 with 1 entries
-1205 LOG1 S1 has log of length 1
-1205 LOG1 S2 has received heartbeat from S0 with 1 entries
-1205 LOG1 S2 has log of length 1
-1205 SNAP S1 came back from waiting with leaderCommit index=0, lastApplied index=0
-1205 SNAP S2 came back from waiting with leaderCommit index=0, lastApplied index=0
-1305 CMIT S0 leader has commited up to index 1, lastIncludedIndex=0, lastAppliedIndex=0
-1305 SNAP S0 came back from waiting with leaderCommit index=1, lastApplied index=0
-1305 LOG1 S0 has nextIndex array:[1 2 2]
-1305 CMIT S0 has applied log with lastApplied index=1
-1305 LOG1 S2 has received heartbeat from S0 with 0 entries
-1305 CMIT S2 has commited command 3726460361676030896 at index 1, commitIndex=1, lastAppliedIndex=0
-1305 LOG1 S1 has received heartbeat from S0 with 0 entries
-1305 CMIT S1 has commited command 3726460361676030896 at index 1, commitIndex=1, lastAppliedIndex=0
-1305 SNAP S2 came back from waiting with leaderCommit index=1, lastApplied index=0
-1305 SNAP S1 came back from waiting with leaderCommit index=1, lastApplied index=0
-1305 CMIT S1 has applied log with lastApplied index=1
-1305 CMIT S2 has applied log with lastApplied index=1
-1406 SNAP S0 came back from waiting with leaderCommit index=1, lastApplied index=1
-1406 LOG1 S0 has nextIndex array:[1 2 2]
-1406 LOG1 S2 has received heartbeat from S0 with 0 entries
-1406 LOG1 S1 has received heartbeat from S0 with 0 entries
-1406 SNAP S2 came back from waiting with leaderCommit index=1, lastApplied index=1
-1406 SNAP S1 came back from waiting with leaderCommit index=1, lastApplied index=1
-1507 LOG1 S0 has nextIndex array:[1 2 2]
-1507 SNAP S0 came back from waiting with leaderCommit index=1, lastApplied index=1
-1507 LOG1 S1 has received heartbeat from S0 with 0 entries
-1507 LOG1 S2 has received heartbeat from S0 with 0 entries
-1507 SNAP S1 came back from waiting with leaderCommit index=1, lastApplied index=1
-1507 SNAP S2 came back from waiting with leaderCommit index=1, lastApplied index=1
-1607 SNAP S0 came back from waiting with leaderCommit index=1, lastApplied index=1
-1607 LOG1 S0 has nextIndex array:[1 2 2]
-1607 LOG1 S2 has received heartbeat from S0 with 0 entries
-1607 LOG1 S1 has received heartbeat from S0 with 0 entries
-1607 SNAP S2 came back from waiting with leaderCommit index=1, lastApplied index=1
-1607 SNAP S1 came back from waiting with leaderCommit index=1, lastApplied index=1
-1708 LOG1 S0 has nextIndex array:[1 2 2]
-1708 SNAP S0 came back from waiting with leaderCommit index=1, lastApplied index=1
-1708 LOG1 S1 has received heartbeat from S0 with 0 entries
-1708 LOG1 S2 has received heartbeat from S0 with 0 entries
-1708 SNAP S1 came back from waiting with leaderCommit index=1, lastApplied index=1
-1708 SNAP S2 came back from waiting with leaderCommit index=1, lastApplied index=1
-1788 CMIT S0 leader received the command 346957062530848920 at index 2 from client
-1789 CMIT S0 leader received the command 4506258412783500761 at index 3 from client
-1789 CMIT S0 leader received the command 4216506352289404484 at index 4 from client
-1789 CMIT S0 leader received the command 5769575216049364930 at index 5 from client
-1789 CMIT S0 leader received the command 9488871959668310 at index 6 from client
-1789 CMIT S0 leader received the command 5587177423543545 at index 7 from client
-1808 SNAP S0 came back from waiting with leaderCommit index=1, lastApplied index=1
-1808 LOG1 S0 has nextIndex array:[1 2 2]
-1809 LOG1 S2 has received heartbeat from S0 with 6 entries
-1809 LOG1 S2 has log of length 7
-1809 LOG1 S1 has received heartbeat from S0 with 6 entries
-1809 LOG1 S1 has log of length 7
-1809 SNAP S2 came back from waiting with leaderCommit index=1, lastApplied index=1
-1809 SNAP S1 came back from waiting with leaderCommit index=1, lastApplied index=1
-1909 CMIT S0 leader has commited up to index 7, lastIncludedIndex=0, lastAppliedIndex=1
-1909 SNAP S0 came back from waiting with leaderCommit index=7, lastApplied index=1
-1909 LOG1 S0 has nextIndex array:[1 8 8]
-1909 CMIT S0 has applied log with lastApplied index=7
-1909 LOG1 S2 has received heartbeat from S0 with 0 entries
-1909 CMIT S2 has commited command 5587177423543545 at index 7, commitIndex=7, lastAppliedIndex=1
-1909 LOG1 S1 has received heartbeat from S0 with 0 entries
-1909 CMIT S1 has commited command 5587177423543545 at index 7, commitIndex=7, lastAppliedIndex=1
-1909 SNAP S2 came back from waiting with leaderCommit index=7, lastApplied index=1
-1909 CMIT S2 has applied log with lastApplied index=7
-1909 SNAP S1 came back from waiting with leaderCommit index=7, lastApplied index=1
-1909 CMIT S1 has applied log with lastApplied index=7
-1910 CMIT S0 leader received the command 3807334762415514168 at index 8 from client
-2009 SNAP S0 came back from waiting with leaderCommit index=7, lastApplied index=7
-2009 LOG1 S0 has nextIndex array:[1 8 8]
-2009 LOG1 S1 has received heartbeat from S0 with 1 entries
-2009 LOG1 S1 has log of length 8
-2009 LOG1 S2 has received heartbeat from S0 with 1 entries
-2009 LOG1 S2 has log of length 8
-2009 SNAP S1 came back from waiting with leaderCommit index=7, lastApplied index=7
-2009 SNAP S2 came back from waiting with leaderCommit index=7, lastApplied index=7
-2109 CMIT S0 leader has commited up to index 8, lastIncludedIndex=0, lastAppliedIndex=7
-2109 SNAP S0 came back from waiting with leaderCommit index=8, lastApplied index=7
-2109 CMIT S0 has applied log with lastApplied index=8
-2109 LOG1 S0 has nextIndex array:[1 9 9]
-2109 LOG1 S1 has received heartbeat from S0 with 0 entries
-2109 CMIT S1 has commited command 3807334762415514168 at index 8, commitIndex=8, lastAppliedIndex=7
-2109 LOG1 S2 has received heartbeat from S0 with 0 entries
-2109 CMIT S2 has commited command 3807334762415514168 at index 8, commitIndex=8, lastAppliedIndex=7
-2109 SNAP S1 came back from waiting with leaderCommit index=8, lastApplied index=7
-2109 CMIT S1 has applied log with lastApplied index=8
-2109 SNAP S2 came back from waiting with leaderCommit index=8, lastApplied index=7
-2109 CMIT S2 has applied log with lastApplied index=8
-2118 CMIT S0 leader received the command 6190633250275646317 at index 9 from client
-2118 CMIT S0 leader received the command 2135617031370964726 at index 10 from client
-2118 CMIT S0 leader received the command 2055379106219014474 at index 11 from client
-2118 CMIT S0 leader received the command 9177967808087423940 at index 12 from client
-2118 CMIT S0 leader received the command 2228646716622823885 at index 13 from client
-2118 CMIT S0 leader received the command 1805613514887954526 at index 14 from client
-2118 CMIT S0 leader received the command 3488886153290369075 at index 15 from client
-2118 CMIT S0 leader received the command 5004837924076228833 at index 16 from client
-2118 CMIT S0 leader received the command 4299453915946831286 at index 17 from client
-2118 CMIT S0 leader received the command 7525243326171486265 at index 18 from client
-2118 CMIT S0 leader received the command 5756571331719289882 at index 19 from client
-2118 CMIT S0 leader received the command 165478857820121378 at index 20 from client
-2210 SNAP S0 came back from waiting with leaderCommit index=8, lastApplied index=8
-2210 LOG1 S0 has nextIndex array:[1 9 9]
-2210 LOG1 S2 has received heartbeat from S0 with 12 entries
-2210 LOG1 S2 has log of length 20
-2210 LOG1 S1 has received heartbeat from S0 with 12 entries
-2210 SNAP S2 came back from waiting with leaderCommit index=8, lastApplied index=8
-2210 LOG1 S1 has log of length 20
-2210 SNAP S1 came back from waiting with leaderCommit index=8, lastApplied index=8
-2311 CMIT S0 leader has commited up to index 20, lastIncludedIndex=0, lastAppliedIndex=8
-2311 SNAP S0 came back from waiting with leaderCommit index=20, lastApplied index=8
-2311 LOG1 S0 has nextIndex array:[1 21 21]
-2311 SNAP S0 is snapshoting at index 9
-2311 LOG1 S2 has received heartbeat from S0 with 0 entries
-2311 CMIT S2 has commited command 165478857820121378 at index 20, commitIndex=20, lastAppliedIndex=8
-2311 LOG1 S1 has received heartbeat from S0 with 0 entries
-2311 CMIT S1 has commited command 165478857820121378 at index 20, commitIndex=20, lastAppliedIndex=8
-2311 SNAP S2 came back from waiting with leaderCommit index=20, lastApplied index=8
-2311 SNAP S1 came back from waiting with leaderCommit index=20, lastApplied index=8
-2311 SNAP S2 is snapshoting at index 9
-2311 SNAP S1 is snapshoting at index 9
-2411 LOG1 S0 has nextIndex array:[1 21 21]
-2411 LOG1 S2 has received heartbeat from S0 with 0 entries
-2411 LOG1 S1 has received heartbeat from S0 with 0 entries
-2511 LOG1 S0 has nextIndex array:[1 21 21]
-2512 LOG1 S1 has received heartbeat from S0 with 0 entries
-2512 LOG1 S2 has received heartbeat from S0 with 0 entries
-2612 LOG1 S0 has nextIndex array:[1 21 21]
-2612 LOG1 S1 has received heartbeat from S0 with 0 entries
-2612 LOG1 S2 has received heartbeat from S0 with 0 entries
-2712 LOG1 S0 has nextIndex array:[1 21 21]
-2712 LOG1 S1 has received heartbeat from S0 with 0 entries
-2712 LOG1 S2 has received heartbeat from S0 with 0 entries
-2813 LOG1 S0 has nextIndex array:[1 21 21]
-2814 LOG1 S1 has received heartbeat from S0 with 0 entries
-2814 LOG1 S2 has received heartbeat from S0 with 0 entries
-2914 LOG1 S0 has nextIndex array:[1 21 21]
-2914 LOG1 S1 has received heartbeat from S0 with 0 entries
-2914 LOG1 S2 has received heartbeat from S0 with 0 entries
-3015 LOG1 S0 has nextIndex array:[1 21 21]
-3015 LOG1 S1 has received heartbeat from S0 with 0 entries
-3015 LOG1 S2 has received heartbeat from S0 with 0 entries
-3116 LOG1 S0 has nextIndex array:[1 21 21]
-3116 LOG1 S1 has received heartbeat from S0 with 0 entries
-3116 LOG1 S2 has received heartbeat from S0 with 0 entries
-3217 LOG1 S0 has nextIndex array:[1 21 21]
-3217 LOG1 S2 has received heartbeat from S0 with 0 entries
-3217 LOG1 S1 has received heartbeat from S0 with 0 entries
-3317 LOG1 S0 has nextIndex array:[1 21 21]
-3317 LOG1 S2 has received heartbeat from S0 with 0 entries
-3317 LOG1 S1 has received heartbeat from S0 with 0 entries
-3417 LOG1 S0 has nextIndex array:[1 21 21]
-3417 LOG1 S1 has received heartbeat from S0 with 0 entries
-3418 LOG1 S2 has received heartbeat from S0 with 0 entries
-3518 LOG1 S0 has nextIndex array:[1 21 21]
-3518 LOG1 S1 has received heartbeat from S0 with 0 entries
-3518 LOG1 S2 has received heartbeat from S0 with 0 entries
-3619 LOG1 S0 has nextIndex array:[1 21 21]
-3620 LOG1 S1 has received heartbeat from S0 with 0 entries
-3620 LOG1 S2 has received heartbeat from S0 with 0 entries
-3720 LOG1 S0 has nextIndex array:[1 21 21]
-3720 LOG1 S1 has received heartbeat from S0 with 0 entries
-3720 LOG1 S2 has received heartbeat from S0 with 0 entries
-3821 LOG1 S0 has nextIndex array:[1 21 21]
-3821 LOG1 S1 has received heartbeat from S0 with 0 entries
-3821 LOG1 S2 has received heartbeat from S0 with 0 entries
-3921 LOG1 S0 has nextIndex array:[1 21 21]
-3921 LOG1 S2 has received heartbeat from S0 with 0 entries
-3921 LOG1 S1 has received heartbeat from S0 with 0 entries
-4021 LOG1 S0 has nextIndex array:[1 21 21]
-4022 LOG1 S2 has received heartbeat from S0 with 0 entries
-4022 LOG1 S1 has received heartbeat from S0 with 0 entries
-4119 CMIT S0 leader received the command 165478857820121378 at index 21 from client
-4122 LOG1 S0 has nextIndex array:[1 21 21]
-4122 LOG1 S1 has received heartbeat from S0 with 1 entries
-4122 LOG1 S1 has log of length 12
-4122 LOG1 S2 has received heartbeat from S0 with 1 entries
-4122 LOG1 S2 has log of length 12
-4222 CMIT S0 leader has commited up to index 21, lastIncludedIndex=9, lastAppliedIndex=9
-4222 LOG1 S0 has nextIndex array:[1 22 22]
-4223 LOG1 S1 has received heartbeat from S0 with 0 entries
-4223 CMIT S1 has commited command 165478857820121378 at index 21, commitIndex=21, lastAppliedIndex=9
-4223 LOG1 S2 has received heartbeat from S0 with 0 entries
-4223 CMIT S2 has commited command 165478857820121378 at index 21, commitIndex=21, lastAppliedIndex=9
-4323 LOG1 S0 has nextIndex array:[1 22 22]
-4323 LOG1 S1 has received heartbeat from S0 with 0 entries
-4323 LOG1 S2 has received heartbeat from S0 with 0 entries
-4424 LOG1 S0 has nextIndex array:[1 22 22]
-4424 LOG1 S1 has received heartbeat from S0 with 0 entries
-4424 LOG1 S2 has received heartbeat from S0 with 0 entries
-4525 LOG1 S0 has nextIndex array:[1 22 22]
-4525 LOG1 S1 has received heartbeat from S0 with 0 entries
-4525 LOG1 S2 has received heartbeat from S0 with 0 entries
-4625 LOG1 S0 has nextIndex array:[1 22 22]
-4625 LOG1 S2 has received heartbeat from S0 with 0 entries
-4625 LOG1 S1 has received heartbeat from S0 with 0 entries
-4726 LOG1 S0 has nextIndex array:[1 22 22]
-4726 LOG1 S2 has received heartbeat from S0 with 0 entries
-4726 LOG1 S1 has received heartbeat from S0 with 0 entries
-4827 LOG1 S0 has nextIndex array:[1 22 22]
-4827 LOG1 S2 has received heartbeat from S0 with 0 entries
-4827 LOG1 S1 has received heartbeat from S0 with 0 entries
-4927 LOG1 S0 has nextIndex array:[1 22 22]
-4927 LOG1 S2 has received heartbeat from S0 with 0 entries
-4927 LOG1 S1 has received heartbeat from S0 with 0 entries
-5028 LOG1 S0 has nextIndex array:[1 22 22]
-5028 LOG1 S1 has received heartbeat from S0 with 0 entries
-5028 LOG1 S2 has received heartbeat from S0 with 0 entries
-5129 LOG1 S0 has nextIndex array:[1 22 22]
-5129 LOG1 S1 has received heartbeat from S0 with 0 entries
-5129 LOG1 S2 has received heartbeat from S0 with 0 entries
-5230 LOG1 S0 has nextIndex array:[1 22 22]
-5230 LOG1 S1 has received heartbeat from S0 with 0 entries
-5230 LOG1 S2 has received heartbeat from S0 with 0 entries
-5331 LOG1 S0 has nextIndex array:[1 22 22]
-5331 LOG1 S1 has received heartbeat from S0 with 0 entries
-5331 LOG1 S2 has received heartbeat from S0 with 0 entries
-5431 LOG1 S0 has nextIndex array:[1 22 22]
-5431 LOG1 S1 has received heartbeat from S0 with 0 entries
-5431 LOG1 S2 has received heartbeat from S0 with 0 entries
-5532 LOG1 S0 has nextIndex array:[1 22 22]
-5532 LOG1 S1 has received heartbeat from S0 with 0 entries
-5532 LOG1 S2 has received heartbeat from S0 with 0 entries
-5632 LOG1 S0 has nextIndex array:[1 22 22]
-5632 LOG1 S2 has received heartbeat from S0 with 0 entries
-5632 LOG1 S1 has received heartbeat from S0 with 0 entries
-5732 LOG1 S0 has nextIndex array:[1 22 22]
-5733 LOG1 S1 has received heartbeat from S0 with 0 entries
-5733 LOG1 S2 has received heartbeat from S0 with 0 entries
-5833 LOG1 S0 has nextIndex array:[1 22 22]
-5833 LOG1 S1 has received heartbeat from S0 with 0 entries
-5833 LOG1 S2 has received heartbeat from S0 with 0 entries
-5933 LOG1 S0 has nextIndex array:[1 22 22]
-5933 LOG1 S1 has received heartbeat from S0 with 0 entries
-5933 LOG1 S2 has received heartbeat from S0 with 0 entries
-6033 LOG1 S0 has nextIndex array:[1 22 22]
-6033 LOG1 S1 has received heartbeat from S0 with 0 entries
-6033 LOG1 S2 has received heartbeat from S0 with 0 entries
-6120 CMIT S0 leader received the command 165478857820121378 at index 22 from client
-6134 LOG1 S0 has nextIndex array:[1 22 22]
-6134 LOG1 S1 has received heartbeat from S0 with 1 entries
-6134 LOG1 S1 has log of length 13
-6134 LOG1 S2 has received heartbeat from S0 with 1 entries
-6134 LOG1 S2 has log of length 13
-6235 CMIT S0 leader has commited up to index 22, lastIncludedIndex=9, lastAppliedIndex=9
-6235 LOG1 S0 has nextIndex array:[1 23 23]
-6235 LOG1 S1 has received heartbeat from S0 with 0 entries
-6235 CMIT S1 has commited command 165478857820121378 at index 22, commitIndex=22, lastAppliedIndex=9
-6235 LOG1 S2 has received heartbeat from S0 with 0 entries
-6235 CMIT S2 has commited command 165478857820121378 at index 22, commitIndex=22, lastAppliedIndex=9
-6335 LOG1 S0 has nextIndex array:[1 23 23]
-6335 LOG1 S1 has received heartbeat from S0 with 0 entries
-6335 LOG1 S2 has received heartbeat from S0 with 0 entries
-6435 LOG1 S0 has nextIndex array:[1 23 23]
-6435 LOG1 S1 has received heartbeat from S0 with 0 entries
-6435 LOG1 S2 has received heartbeat from S0 with 0 entries
-6535 LOG1 S0 has nextIndex array:[1 23 23]
-6535 LOG1 S1 has received heartbeat from S0 with 0 entries
-6536 LOG1 S2 has received heartbeat from S0 with 0 entries
-6636 LOG1 S0 has nextIndex array:[1 23 23]
-6636 LOG1 S1 has received heartbeat from S0 with 0 entries
-6636 LOG1 S2 has received heartbeat from S0 with 0 entries
-6736 LOG1 S0 has nextIndex array:[1 23 23]
-6736 LOG1 S2 has received heartbeat from S0 with 0 entries
-6736 LOG1 S1 has received heartbeat from S0 with 0 entries
-6837 LOG1 S0 has nextIndex array:[1 23 23]
-6838 LOG1 S1 has received heartbeat from S0 with 0 entries
-6838 LOG1 S2 has received heartbeat from S0 with 0 entries
-6938 LOG1 S0 has nextIndex array:[1 23 23]
-6938 LOG1 S2 has received heartbeat from S0 with 0 entries
-6938 LOG1 S1 has received heartbeat from S0 with 0 entries
-7038 LOG1 S0 has nextIndex array:[1 23 23]
-7039 LOG1 S1 has received heartbeat from S0 with 0 entries
-7039 LOG1 S2 has received heartbeat from S0 with 0 entries
-7139 LOG1 S0 has nextIndex array:[1 23 23]
-7139 LOG1 S1 has received heartbeat from S0 with 0 entries
-7139 LOG1 S2 has received heartbeat from S0 with 0 entries
-7239 LOG1 S0 has nextIndex array:[1 23 23]
-7240 LOG1 S1 has received heartbeat from S0 with 0 entries
-7240 LOG1 S2 has received heartbeat from S0 with 0 entries
-7340 LOG1 S0 has nextIndex array:[1 23 23]
-7340 LOG1 S1 has received heartbeat from S0 with 0 entries
-7340 LOG1 S2 has received heartbeat from S0 with 0 entries
-7441 LOG1 S0 has nextIndex array:[1 23 23]
-7441 LOG1 S2 has received heartbeat from S0 with 0 entries
-7441 LOG1 S1 has received heartbeat from S0 with 0 entries
-7541 LOG1 S0 has nextIndex array:[1 23 23]
-7542 LOG1 S1 has received heartbeat from S0 with 0 entries
-7542 LOG1 S2 has received heartbeat from S0 with 0 entries
-7642 LOG1 S0 has nextIndex array:[1 23 23]
-7642 LOG1 S1 has received heartbeat from S0 with 0 entries
-7642 LOG1 S2 has received heartbeat from S0 with 0 entries
-7743 LOG1 S0 has nextIndex array:[1 23 23]
-7743 LOG1 S1 has received heartbeat from S0 with 0 entries
-7743 LOG1 S2 has received heartbeat from S0 with 0 entries
-7843 LOG1 S0 has nextIndex array:[1 23 23]
-7844 LOG1 S1 has received heartbeat from S0 with 0 entries
-7844 LOG1 S2 has received heartbeat from S0 with 0 entries
-7944 LOG1 S0 has nextIndex array:[1 23 23]
-7944 LOG1 S1 has received heartbeat from S0 with 0 entries
-7944 LOG1 S2 has received heartbeat from S0 with 0 entries
-8045 LOG1 S0 has nextIndex array:[1 23 23]
-8045 LOG1 S1 has received heartbeat from S0 with 0 entries
-8045 LOG1 S2 has received heartbeat from S0 with 0 entries
-8135 CMIT S0 leader received the command 165478857820121378 at index 23 from client
-8146 LOG1 S0 has nextIndex array:[1 23 23]
-8146 LOG1 S1 has received heartbeat from S0 with 1 entries
-8146 LOG1 S1 has log of length 14
-8146 LOG1 S2 has received heartbeat from S0 with 1 entries
-8146 LOG1 S2 has log of length 14
-8247 CMIT S0 leader has commited up to index 23, lastIncludedIndex=9, lastAppliedIndex=9
-8247 LOG1 S0 has nextIndex array:[1 24 24]
-8247 LOG1 S1 has received heartbeat from S0 with 0 entries
-8247 CMIT S1 has commited command 165478857820121378 at index 23, commitIndex=23, lastAppliedIndex=9
-8247 LOG1 S2 has received heartbeat from S0 with 0 entries
-8247 CMIT S2 has commited command 165478857820121378 at index 23, commitIndex=23, lastAppliedIndex=9
-8348 LOG1 S0 has nextIndex array:[1 24 24]
-8348 LOG1 S2 has received heartbeat from S0 with 0 entries
-8348 LOG1 S1 has received heartbeat from S0 with 0 entries
-8448 LOG1 S0 has nextIndex array:[1 24 24]
-8448 LOG1 S1 has received heartbeat from S0 with 0 entries
-8448 LOG1 S2 has received heartbeat from S0 with 0 entries
-8548 LOG1 S0 has nextIndex array:[1 24 24]
-8548 LOG1 S1 has received heartbeat from S0 with 0 entries
-8548 LOG1 S2 has received heartbeat from S0 with 0 entries
-8649 LOG1 S0 has nextIndex array:[1 24 24]
-8649 LOG1 S1 has received heartbeat from S0 with 0 entries
-8650 LOG1 S2 has received heartbeat from S0 with 0 entries
-8750 LOG1 S0 has nextIndex array:[1 24 24]
-8750 LOG1 S1 has received heartbeat from S0 with 0 entries
-8750 LOG1 S2 has received heartbeat from S0 with 0 entries
-8850 LOG1 S0 has nextIndex array:[1 24 24]
-8850 LOG1 S1 has received heartbeat from S0 with 0 entries
-8850 LOG1 S2 has received heartbeat from S0 with 0 entries
-8951 LOG1 S0 has nextIndex array:[1 24 24]
-8951 LOG1 S1 has received heartbeat from S0 with 0 entries
-8952 LOG1 S2 has received heartbeat from S0 with 0 entries
-9052 LOG1 S0 has nextIndex array:[1 24 24]
-9052 LOG1 S1 has received heartbeat from S0 with 0 entries
-9052 LOG1 S2 has received heartbeat from S0 with 0 entries
-9153 LOG1 S0 has nextIndex array:[1 24 24]
-9153 LOG1 S1 has received heartbeat from S0 with 0 entries
-9153 LOG1 S2 has received heartbeat from S0 with 0 entries
-9253 LOG1 S0 has nextIndex array:[1 24 24]
-9254 LOG1 S1 has received heartbeat from S0 with 0 entries
-9254 LOG1 S2 has received heartbeat from S0 with 0 entries
-9355 LOG1 S0 has nextIndex array:[1 24 24]
-9355 LOG1 S1 has received heartbeat from S0 with 0 entries
-9355 LOG1 S2 has received heartbeat from S0 with 0 entries
-9455 LOG1 S0 has nextIndex array:[1 24 24]
-9455 LOG1 S1 has received heartbeat from S0 with 0 entries
-9455 LOG1 S2 has received heartbeat from S0 with 0 entries
-9556 LOG1 S0 has nextIndex array:[1 24 24]
-9556 LOG1 S1 has received heartbeat from S0 with 0 entries
-9556 LOG1 S2 has received heartbeat from S0 with 0 entries
-9656 LOG1 S0 has nextIndex array:[1 24 24]
-9656 LOG1 S1 has received heartbeat from S0 with 0 entries
-9657 LOG1 S2 has received heartbeat from S0 with 0 entries
-9757 LOG1 S0 has nextIndex array:[1 24 24]
-9757 LOG1 S1 has received heartbeat from S0 with 0 entries
-9757 LOG1 S2 has received heartbeat from S0 with 0 entries
-9858 LOG1 S0 has nextIndex array:[1 24 24]
-9858 LOG1 S1 has received heartbeat from S0 with 0 entries
-9858 LOG1 S2 has received heartbeat from S0 with 0 entries
-9958 LOG1 S0 has nextIndex array:[1 24 24]
-9958 LOG1 S1 has received heartbeat from S0 with 0 entries
-9958 LOG1 S2 has received heartbeat from S0 with 0 entries
-10059 LOG1 S0 has nextIndex array:[1 24 24]
-10059 LOG1 S1 has received heartbeat from S0 with 0 entries
-10059 LOG1 S2 has received heartbeat from S0 with 0 entries
-10139 CMIT S0 leader received the command 165478857820121378 at index 24 from client
-10159 LOG1 S0 has nextIndex array:[1 24 24]
-10159 LOG1 S1 has received heartbeat from S0 with 1 entries
-10159 LOG1 S1 has log of length 15
-10159 LOG1 S2 has received heartbeat from S0 with 1 entries
-10159 LOG1 S2 has log of length 15
-10260 CMIT S0 leader has commited up to index 24, lastIncludedIndex=9, lastAppliedIndex=9
-10260 LOG1 S0 has nextIndex array:[1 25 25]
-10260 LOG1 S1 has received heartbeat from S0 with 0 entries
-10260 CMIT S1 has commited command 165478857820121378 at index 24, commitIndex=24, lastAppliedIndex=9
-10260 LOG1 S2 has received heartbeat from S0 with 0 entries
-10260 CMIT S2 has commited command 165478857820121378 at index 24, commitIndex=24, lastAppliedIndex=9
-10360 LOG1 S0 has nextIndex array:[1 25 25]
-10360 LOG1 S1 has received heartbeat from S0 with 0 entries
-10360 LOG1 S2 has received heartbeat from S0 with 0 entries
-10461 LOG1 S0 has nextIndex array:[1 25 25]
-10461 LOG1 S1 has received heartbeat from S0 with 0 entries
-10461 LOG1 S2 has received heartbeat from S0 with 0 entries
-10561 LOG1 S0 has nextIndex array:[1 25 25]
-10561 LOG1 S1 has received heartbeat from S0 with 0 entries
-10561 LOG1 S2 has received heartbeat from S0 with 0 entries
-10661 LOG1 S0 has nextIndex array:[1 25 25]
-10661 LOG1 S1 has received heartbeat from S0 with 0 entries
-10661 LOG1 S2 has received heartbeat from S0 with 0 entries
-10761 LOG1 S0 has nextIndex array:[1 25 25]
-10761 LOG1 S1 has received heartbeat from S0 with 0 entries
-10761 LOG1 S2 has received heartbeat from S0 with 0 entries
-10862 LOG1 S0 has nextIndex array:[1 25 25]
-10862 LOG1 S1 has received heartbeat from S0 with 0 entries
-10862 LOG1 S2 has received heartbeat from S0 with 0 entries
-10962 LOG1 S0 has nextIndex array:[1 25 25]
-10962 LOG1 S2 has received heartbeat from S0 with 0 entries
-10962 LOG1 S1 has received heartbeat from S0 with 0 entries
-11062 LOG1 S0 has nextIndex array:[1 25 25]
-11063 LOG1 S1 has received heartbeat from S0 with 0 entries
-11063 LOG1 S2 has received heartbeat from S0 with 0 entries
-11163 LOG1 S0 has nextIndex array:[1 25 25]
-11163 LOG1 S2 has received heartbeat from S0 with 0 entries
-11163 LOG1 S1 has received heartbeat from S0 with 0 entries
-11263 LOG1 S0 has nextIndex array:[1 25 25]
-11264 LOG1 S1 has received heartbeat from S0 with 0 entries
-11264 LOG1 S2 has received heartbeat from S0 with 0 entries
-11364 LOG1 S0 has nextIndex array:[1 25 25]
-11364 LOG1 S1 has received heartbeat from S0 with 0 entries
-11364 LOG1 S2 has received heartbeat from S0 with 0 entries
-11465 LOG1 S0 has nextIndex array:[1 25 25]
-11465 LOG1 S1 has received heartbeat from S0 with 0 entries
-11465 LOG1 S2 has received heartbeat from S0 with 0 entries
-11566 LOG1 S0 has nextIndex array:[1 25 25]
-11566 LOG1 S1 has received heartbeat from S0 with 0 entries
-11566 LOG1 S2 has received heartbeat from S0 with 0 entries
-11666 LOG1 S0 has nextIndex array:[1 25 25]
-11666 LOG1 S1 has received heartbeat from S0 with 0 entries
-11666 LOG1 S2 has received heartbeat from S0 with 0 entries
-11767 LOG1 S0 has nextIndex array:[1 25 25]
-11767 LOG1 S1 has received heartbeat from S0 with 0 entries
-11767 LOG1 S2 has received heartbeat from S0 with 0 entries
-11867 LOG1 S0 has nextIndex array:[1 25 25]
-11868 LOG1 S1 has received heartbeat from S0 with 0 entries
-11868 LOG1 S2 has received heartbeat from S0 with 0 entries
-11968 LOG1 S0 has nextIndex array:[1 25 25]
-11969 LOG1 S1 has received heartbeat from S0 with 0 entries
-11969 LOG1 S2 has received heartbeat from S0 with 0 entries
-12070 LOG1 S0 has nextIndex array:[1 25 25]
-12070 LOG1 S1 has received heartbeat from S0 with 0 entries
-12070 LOG1 S2 has received heartbeat from S0 with 0 entries
---- FAIL: TestSnapshotBasic2D (12.16s)
-    config.go:607: one(165478857820121378) failed to reach agreement
+Test (2D): install snapshots (disconnect) ...
+1253 TERM S0 follower is starting an election for term 1
+1254 VOTE S0 is elected for term 1
+1254 LOG1 S0 has nextIndex array:[1 1 1]
+1254 LOG1 S1 has received heartbeat from S0 with 0 entries
+1255 LOG1 S2 has received heartbeat from S0 with 0 entries
+1286 CMIT S0 leader received the command 6647684148323577135 at index 1 from client
+1355 LOG1 S0 has nextIndex array:[1 1 1]
+1355 LOG1 S2 has received heartbeat from S0 with 1 entries
+1355 LOG1 S2 has log of length 1
+1355 LOG1 S1 has received heartbeat from S0 with 1 entries
+1355 LOG1 S1 has log of length 1
+1455 CMIT S0 leader has commited up to index 1, lastIncludedIndex=0, lastAppliedIndex=0
+1455 LOG1 S0 has nextIndex array:[1 2 2]
+1456 LOG1 S2 has received heartbeat from S0 with 0 entries
+1456 CMIT S2 has commited command 6647684148323577135 at index 1, commitIndex=1, lastAppliedIndex=0
+1456 LOG1 S1 has received heartbeat from S0 with 0 entries
+1456 CMIT S1 has commited command 6647684148323577135 at index 1, commitIndex=1, lastAppliedIndex=0
+1556 LOG1 S0 has nextIndex array:[1 2 2]
+1556 LOG1 S2 has received heartbeat from S0 with 0 entries
+1557 LOG1 S1 has received heartbeat from S0 with 0 entries
+1656 LOG1 S0 has nextIndex array:[1 2 2]
+1657 LOG1 S2 has received heartbeat from S0 with 0 entries
+1657 LOG1 S1 has received heartbeat from S0 with 0 entries
+1757 LOG1 S0 has nextIndex array:[1 2 2]
+1757 LOG1 S2 has received heartbeat from S0 with 0 entries
+1757 LOG1 S1 has received heartbeat from S0 with 0 entries
+1857 LOG1 S0 has nextIndex array:[1 2 2]
+1857 LOG1 S1 has received heartbeat from S0 with 0 entries
+1858 LOG1 S2 has received heartbeat from S0 with 0 entries
+1958 LOG1 S0 has nextIndex array:[1 2 2]
+1958 LOG1 S2 has received heartbeat from S0 with 0 entries
+1958 LOG1 S1 has received heartbeat from S0 with 0 entries
+1988 TEST S1 is disconnected
+1988 CMIT S0 leader received the command 4315426143442506691 at index 2 from client
+2058 LOG1 S0 has nextIndex array:[1 2 2]
+2059 LOG1 S2 has received heartbeat from S0 with 1 entries
+2059 LOG1 S2 has log of length 2
+2160 CMIT S0 leader has commited up to index 2, lastIncludedIndex=0, lastAppliedIndex=1
+2160 LOG1 S0 has nextIndex array:[1 2 3]
+2160 LOG1 S2 has received heartbeat from S0 with 0 entries
+2160 CMIT S2 has commited command 4315426143442506691 at index 2, commitIndex=2, lastAppliedIndex=1
+2172 CMIT S0 leader received the command 629398992483382842 at index 3 from client
+2172 CMIT S0 leader received the command 8164331041047498835 at index 4 from client
+2172 CMIT S0 leader received the command 5691578661901703460 at index 5 from client
+2172 CMIT S0 leader received the command 8229019656850571919 at index 6 from client
+2172 CMIT S0 leader received the command 6328538055839897441 at index 7 from client
+2172 CMIT S0 leader received the command 7418583958570885347 at index 8 from client
+2172 CMIT S0 leader received the command 9157614100730542475 at index 9 from client
+2172 CMIT S0 leader received the command 1057319852781784586 at index 10 from client
+2261 LOG1 S0 has nextIndex array:[1 2 3]
+2262 LOG1 S2 has received heartbeat from S0 with 8 entries
+2262 LOG1 S2 has log of length 10
+2362 CMIT S0 leader has commited up to index 10, lastIncludedIndex=0, lastAppliedIndex=2
+2362 LOG1 S0 has nextIndex array:[1 2 11]
+2362 SNAP S0 is snapshoting at index 9
+2362 SNAP S0 is sending snapshot to S1
+2362 LOG1 S2 has received heartbeat from S0 with 0 entries
+2362 CMIT S2 has commited command 1057319852781784586 at index 10, commitIndex=10, lastAppliedIndex=2
+2362 SNAP S2 is snapshoting at index 9
+2463 LOG1 S0 has nextIndex array:[1 2 11]
+2463 LOG1 S2 has received heartbeat from S0 with 0 entries
+2563 LOG1 S0 has nextIndex array:[1 2 11]
+2564 LOG1 S2 has received heartbeat from S0 with 0 entries
+2664 LOG1 S0 has nextIndex array:[1 2 11]
+2664 LOG1 S2 has received heartbeat from S0 with 0 entries
+2764 LOG1 S0 has nextIndex array:[1 2 11]
+2764 LOG1 S2 has received heartbeat from S0 with 0 entries
+2865 LOG1 S0 has nextIndex array:[1 2 11]
+2865 LOG1 S2 has received heartbeat from S0 with 0 entries
+2965 LOG1 S0 has nextIndex array:[1 2 11]
+2965 LOG1 S2 has received heartbeat from S0 with 0 entries
+3065 LOG1 S0 has nextIndex array:[1 2 11]
+3066 LOG1 S2 has received heartbeat from S0 with 0 entries
+3166 LOG1 S0 has nextIndex array:[1 2 11]
+3166 LOG1 S2 has received heartbeat from S0 with 0 entries
+3256 TERM S1 follower is starting an election for term 2
+3266 LOG1 S0 has nextIndex array:[1 2 11]
+3267 LOG1 S2 has received heartbeat from S0 with 0 entries
+3366 LOG1 S0 has nextIndex array:[1 2 11]
+3366 LOG1 S2 has received heartbeat from S0 with 0 entries
+3466 LOG1 S0 has nextIndex array:[1 2 11]
+3466 LOG1 S2 has received heartbeat from S0 with 0 entries
+3566 LOG1 S0 has nextIndex array:[1 2 11]
+3566 LOG1 S2 has received heartbeat from S0 with 0 entries
+3668 LOG1 S0 has nextIndex array:[1 2 11]
+3668 LOG1 S2 has received heartbeat from S0 with 0 entries
+3768 LOG1 S0 has nextIndex array:[1 2 11]
+3768 LOG1 S2 has received heartbeat from S0 with 0 entries
+3868 LOG1 S0 has nextIndex array:[1 2 11]
+3868 LOG1 S2 has received heartbeat from S0 with 0 entries
+3968 LOG1 S0 has nextIndex array:[1 2 11]
+3969 LOG1 S2 has received heartbeat from S0 with 0 entries
+4068 LOG1 S0 has nextIndex array:[1 2 11]
+4069 LOG1 S2 has received heartbeat from S0 with 0 entries
+4169 LOG1 S0 has nextIndex array:[1 2 11]
+4169 LOG1 S2 has received heartbeat from S0 with 0 entries
+4173 CMIT S0 leader received the command 1057319852781784586 at index 11 from client
+4269 LOG1 S0 has nextIndex array:[1 2 11]
+4269 LOG1 S2 has received heartbeat from S0 with 1 entries
+4269 LOG1 S2 has log of length 2
+4369 CMIT S0 leader has commited up to index 11, lastIncludedIndex=9, lastAppliedIndex=9
+4369 LOG1 S0 has nextIndex array:[1 2 12]
+4369 LOG1 S2 has received heartbeat from S0 with 0 entries
+4369 CMIT S2 has commited command 1057319852781784586 at index 11, commitIndex=11, lastAppliedIndex=10
+4469 LOG1 S0 has nextIndex array:[1 2 12]
+4469 LOG1 S2 has received heartbeat from S0 with 0 entries
+4569 LOG1 S0 has nextIndex array:[1 2 12]
+4569 LOG1 S2 has received heartbeat from S0 with 0 entries
+4669 LOG1 S0 has nextIndex array:[1 2 12]
+4669 LOG1 S2 has received heartbeat from S0 with 0 entries
+4769 LOG1 S0 has nextIndex array:[1 2 12]
+4769 LOG1 S2 has received heartbeat from S0 with 0 entries
+4869 LOG1 S0 has nextIndex array:[1 2 12]
+4869 LOG1 S2 has received heartbeat from S0 with 0 entries
+4969 LOG1 S0 has nextIndex array:[1 2 12]
+4970 LOG1 S2 has received heartbeat from S0 with 0 entries
+5069 LOG1 S0 has nextIndex array:[1 2 12]
+5070 LOG1 S2 has received heartbeat from S0 with 0 entries
+5170 LOG1 S0 has nextIndex array:[1 2 12]
+5170 LOG1 S2 has received heartbeat from S0 with 0 entries
+5270 LOG1 S0 has nextIndex array:[1 2 12]
+5270 LOG1 S2 has received heartbeat from S0 with 0 entries
+5362 SNAP S0 is sending snapshot to S1
+5370 LOG1 S0 has nextIndex array:[1 2 12]
+5370 LOG1 S2 has received heartbeat from S0 with 0 entries
+5470 LOG1 S0 has nextIndex array:[1 2 12]
+5470 LOG1 S2 has received heartbeat from S0 with 0 entries
+5570 LOG1 S0 has nextIndex array:[1 2 12]
+5570 LOG1 S2 has received heartbeat from S0 with 0 entries
+5670 LOG1 S0 has nextIndex array:[1 2 12]
+5670 LOG1 S2 has received heartbeat from S0 with 0 entries
+5770 LOG1 S0 has nextIndex array:[1 2 12]
+5770 LOG1 S2 has received heartbeat from S0 with 0 entries
+5870 LOG1 S0 has nextIndex array:[1 2 12]
+5870 LOG1 S2 has received heartbeat from S0 with 0 entries
+5970 LOG1 S0 has nextIndex array:[1 2 12]
+5970 LOG1 S2 has received heartbeat from S0 with 0 entries
+6070 LOG1 S0 has nextIndex array:[1 2 12]
+6071 LOG1 S2 has received heartbeat from S0 with 0 entries
+6170 LOG1 S0 has nextIndex array:[1 2 12]
+6171 LOG1 S2 has received heartbeat from S0 with 0 entries
+6177 CMIT S0 leader received the command 1057319852781784586 at index 12 from client
+6271 LOG1 S0 has nextIndex array:[1 2 12]
+6271 LOG1 S2 has received heartbeat from S0 with 1 entries
+6271 LOG1 S2 has log of length 3
+6371 CMIT S0 leader has commited up to index 12, lastIncludedIndex=9, lastAppliedIndex=9
+6371 LOG1 S0 has nextIndex array:[1 2 13]
+6371 LOG1 S2 has received heartbeat from S0 with 0 entries
+6371 CMIT S2 has commited command 1057319852781784586 at index 12, commitIndex=12, lastAppliedIndex=11
+6473 LOG1 S0 has nextIndex array:[1 2 13]
+6473 LOG1 S2 has received heartbeat from S0 with 0 entries
+6574 LOG1 S0 has nextIndex array:[1 2 13]
+6574 LOG1 S2 has received heartbeat from S0 with 0 entries
+6691 LOG1 S0 has nextIndex array:[1 2 13]
+6691 LOG1 S2 has received heartbeat from S0 with 0 entries
+6791 LOG1 S0 has nextIndex array:[1 2 13]
+6792 LOG1 S2 has received heartbeat from S0 with 0 entries
+6891 LOG1 S0 has nextIndex array:[1 2 13]
+6892 LOG1 S2 has received heartbeat from S0 with 0 entries
+6992 LOG1 S0 has nextIndex array:[1 2 13]
+6992 LOG1 S2 has received heartbeat from S0 with 0 entries
+7092 LOG1 S0 has nextIndex array:[1 2 13]
+7092 LOG1 S2 has received heartbeat from S0 with 0 entries
+7192 LOG1 S0 has nextIndex array:[1 2 13]
+7192 LOG1 S2 has received heartbeat from S0 with 0 entries
+7292 LOG1 S0 has nextIndex array:[1 2 13]
+7292 LOG1 S2 has received heartbeat from S0 with 0 entries
+7392 LOG1 S0 has nextIndex array:[1 2 13]
+7392 LOG1 S2 has received heartbeat from S0 with 0 entries
+7492 LOG1 S0 has nextIndex array:[1 2 13]
+7492 LOG1 S2 has received heartbeat from S0 with 0 entries
+7592 LOG1 S0 has nextIndex array:[1 2 13]
+7592 LOG1 S2 has received heartbeat from S0 with 0 entries
+7692 LOG1 S0 has nextIndex array:[1 2 13]
+7692 LOG1 S2 has received heartbeat from S0 with 0 entries
+7792 LOG1 S0 has nextIndex array:[1 2 13]
+7793 LOG1 S2 has received heartbeat from S0 with 0 entries
+7892 LOG1 S0 has nextIndex array:[1 2 13]
+7893 LOG1 S2 has received heartbeat from S0 with 0 entries
+7993 LOG1 S0 has nextIndex array:[1 2 13]
+7993 LOG1 S2 has received heartbeat from S0 with 0 entries
+8093 LOG1 S0 has nextIndex array:[1 2 13]
+8093 LOG1 S2 has received heartbeat from S0 with 0 entries
+8192 CMIT S0 leader received the command 1057319852781784586 at index 13 from client
+8193 LOG1 S0 has nextIndex array:[1 2 13]
+8193 LOG1 S2 has received heartbeat from S0 with 1 entries
+8193 LOG1 S2 has log of length 4
+8293 CMIT S0 leader has commited up to index 13, lastIncludedIndex=9, lastAppliedIndex=9
+8293 LOG1 S0 has nextIndex array:[1 2 14]
+8293 LOG1 S2 has received heartbeat from S0 with 0 entries
+8293 CMIT S2 has commited command 1057319852781784586 at index 13, commitIndex=13, lastAppliedIndex=12
+8362 SNAP S0 is sending snapshot to S1
+8393 LOG1 S0 has nextIndex array:[1 2 14]
+8393 LOG1 S2 has received heartbeat from S0 with 0 entries
+8493 LOG1 S0 has nextIndex array:[1 2 14]
+8493 LOG1 S2 has received heartbeat from S0 with 0 entries
+8593 LOG1 S0 has nextIndex array:[1 2 14]
+8593 LOG1 S2 has received heartbeat from S0 with 0 entries
+8693 LOG1 S0 has nextIndex array:[1 2 14]
+8693 LOG1 S2 has received heartbeat from S0 with 0 entries
+8793 LOG1 S0 has nextIndex array:[1 2 14]
+8793 LOG1 S2 has received heartbeat from S0 with 0 entries
+8893 LOG1 S0 has nextIndex array:[1 2 14]
+8893 LOG1 S2 has received heartbeat from S0 with 0 entries
+8993 LOG1 S0 has nextIndex array:[1 2 14]
+8993 LOG1 S2 has received heartbeat from S0 with 0 entries
+9093 LOG1 S0 has nextIndex array:[1 2 14]
+9094 LOG1 S2 has received heartbeat from S0 with 0 entries
+9193 LOG1 S0 has nextIndex array:[1 2 14]
+9194 LOG1 S2 has received heartbeat from S0 with 0 entries
+9294 LOG1 S0 has nextIndex array:[1 2 14]
+9294 LOG1 S2 has received heartbeat from S0 with 0 entries
+9394 LOG1 S0 has nextIndex array:[1 2 14]
+9394 LOG1 S2 has received heartbeat from S0 with 0 entries
+9494 LOG1 S0 has nextIndex array:[1 2 14]
+9494 LOG1 S2 has received heartbeat from S0 with 0 entries
+9594 LOG1 S0 has nextIndex array:[1 2 14]
+9594 LOG1 S2 has received heartbeat from S0 with 0 entries
+9694 LOG1 S0 has nextIndex array:[1 2 14]
+9694 LOG1 S2 has received heartbeat from S0 with 0 entries
+9794 LOG1 S0 has nextIndex array:[1 2 14]
+9794 LOG1 S2 has received heartbeat from S0 with 0 entries
+9894 LOG1 S0 has nextIndex array:[1 2 14]
+9894 LOG1 S2 has received heartbeat from S0 with 0 entries
+9994 LOG1 S0 has nextIndex array:[1 2 14]
+9994 LOG1 S2 has received heartbeat from S0 with 0 entries
+10094 LOG1 S0 has nextIndex array:[1 2 14]
+10094 LOG1 S2 has received heartbeat from S0 with 0 entries
+10194 LOG1 S0 has nextIndex array:[1 2 14]
+10194 LOG1 S2 has received heartbeat from S0 with 0 entries
+10196 CMIT S0 leader received the command 1057319852781784586 at index 14 from client
+10294 LOG1 S0 has nextIndex array:[1 2 14]
+10295 LOG1 S2 has received heartbeat from S0 with 1 entries
+10295 LOG1 S2 has log of length 5
+10395 CMIT S0 leader has commited up to index 14, lastIncludedIndex=9, lastAppliedIndex=9
+10395 LOG1 S0 has nextIndex array:[1 2 15]
+10395 LOG1 S2 has received heartbeat from S0 with 0 entries
+10395 CMIT S2 has commited command 1057319852781784586 at index 14, commitIndex=14, lastAppliedIndex=13
+10495 LOG1 S0 has nextIndex array:[1 2 15]
+10495 LOG1 S2 has received heartbeat from S0 with 0 entries
+10595 LOG1 S0 has nextIndex array:[1 2 15]
+10595 LOG1 S2 has received heartbeat from S0 with 0 entries
+10695 LOG1 S0 has nextIndex array:[1 2 15]
+10695 LOG1 S2 has received heartbeat from S0 with 0 entries
+10795 LOG1 S0 has nextIndex array:[1 2 15]
+10795 LOG1 S2 has received heartbeat from S0 with 0 entries
+10895 LOG1 S0 has nextIndex array:[1 2 15]
+10895 LOG1 S2 has received heartbeat from S0 with 0 entries
+10995 LOG1 S0 has nextIndex array:[1 2 15]
+10995 LOG1 S2 has received heartbeat from S0 with 0 entries
+11095 LOG1 S0 has nextIndex array:[1 2 15]
+11095 LOG1 S2 has received heartbeat from S0 with 0 entries
+11195 LOG1 S0 has nextIndex array:[1 2 15]
+11195 LOG1 S2 has received heartbeat from S0 with 0 entries
+11295 LOG1 S0 has nextIndex array:[1 2 15]
+11295 LOG1 S2 has received heartbeat from S0 with 0 entries
+11362 SNAP S0 is sending snapshot to S1
+11395 LOG1 S0 has nextIndex array:[1 2 15]
+11396 LOG1 S2 has received heartbeat from S0 with 0 entries
+11495 LOG1 S0 has nextIndex array:[1 2 15]
+11496 LOG1 S2 has received heartbeat from S0 with 0 entries
+11596 LOG1 S0 has nextIndex array:[1 2 15]
+11596 LOG1 S2 has received heartbeat from S0 with 0 entries
+11696 LOG1 S0 has nextIndex array:[1 2 15]
+11696 LOG1 S2 has received heartbeat from S0 with 0 entries
+11796 LOG1 S0 has nextIndex array:[1 2 15]
+11796 LOG1 S2 has received heartbeat from S0 with 0 entries
+11896 LOG1 S0 has nextIndex array:[1 2 15]
+11896 LOG1 S2 has received heartbeat from S0 with 0 entries
+11996 LOG1 S0 has nextIndex array:[1 2 15]
+11996 LOG1 S2 has received heartbeat from S0 with 0 entries
+12096 LOG1 S0 has nextIndex array:[1 2 15]
+12096 LOG1 S2 has received heartbeat from S0 with 0 entries
+12196 LOG1 S0 has nextIndex array:[1 2 15]
+12196 LOG1 S2 has received heartbeat from S0 with 0 entries
+--- FAIL: TestSnapshotInstall2D (12.20s)
+    config.go:608: one(1057319852781784586) failed to reach agreement
 FAIL
 exit status 1
-FAIL	6.824/raft	12.388s
+FAIL	6.824/raft	12.370s

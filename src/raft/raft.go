@@ -181,11 +181,11 @@ func (rf *Raft) readPersist(data []byte) {
 // A service wants to switch to snapshot.  Only do so if Raft hasn't
 // have more recent info since it communicate the snapshot on applyCh.
 func (rf *Raft) CondInstallSnapshot(lastIncludedTerm int, lastIncludedIndex int, snapshot []byte) bool {
-
-	// Your code here (2D).
 	rf.mu.RLock()
-	defer rf.mu.RUnlock()
-	return rf.lastApplied < lastIncludedIndex
+	commitedIndex := rf.commitIndex
+	rf.mu.RUnlock()
+
+	return commitedIndex < lastIncludedIndex
 
 }
 
@@ -199,6 +199,7 @@ func (rf *Raft) Snapshot(index int, snapshot []byte) {
 		rf.mu.Lock()
 		if index <= rf.LastIncludedIndex {
 			Debug(dSnap, "S%d received stale snapshot from service", rf.me)
+			rf.mu.Unlock()
 			return
 		}
 		Debug(dSnap, "S%d is snapshoting at index %d", rf.me, index)
@@ -210,31 +211,40 @@ func (rf *Raft) Snapshot(index int, snapshot []byte) {
 		rf.mu.Unlock()
 
 		rf.persist()
-		rf.applyCh <- ApplyMsg{SnapshotValid: true, Snapshot: snapshot, SnapshotTerm: term, SnapshotIndex: index}
-
+		//Debug(dSnap, "S%d is sending snapshot at index %d", rf.me, index)
+		go func() {
+			rf.applyCh <- ApplyMsg{SnapshotValid: true, SnapshotTerm: term, SnapshotIndex: index, Snapshot: snapshot}
+		}()
+		//Debug(dSnap, "S%d sent snapshot at index %d", rf.me, index)
 		if status == leader {
 			args := InstallSnapshotArgs{rf.CurrentTerm, rf.me, index, term, snapshot}
 			reply := InstallSnapshotReply{}
-			ok := false
 			for i := 0; i < len(rf.peers); i++ {
 				rf.mu.RLock()
 				nextIdx := rf.nextIndex[i]
+				lastIncludedIndex := rf.LastIncludedIndex
 				rf.mu.RUnlock()
-				if i != rf.me && nextIdx <= index {
+				ok := false
+				for i != rf.me && nextIdx <= index && lastIncludedIndex <= index && !ok {
 					go func(i int) {
 						Debug(dSnap, "S%d is sending snapshot to S%d", rf.me, i)
 						ok = rf.peers[i].Call("Raft.InstallSnapshot", &args, &reply)
-
-						rf.mu.Lock()
-						if ok && reply.Term > rf.CurrentTerm {
-							rf.status = follower
-							rf.leaderID = -1
-							rf.CurrentTerm = reply.Term
-							Debug(dLeader, "S%d Leader, becomes follower when sending snapshot", rf.me)
-							rf.persist()
-						}
-						rf.mu.Unlock()
 					}(i)
+					time.Sleep(3000 * time.Millisecond)
+					if ok && reply.Term > rf.CurrentTerm {
+						rf.mu.Lock()
+						rf.status = follower
+						rf.leaderID = -1
+						rf.CurrentTerm = reply.Term
+						Debug(dLeader, "S%d Leader, becomes follower when sending snapshot", rf.me)
+						rf.mu.Unlock()
+						rf.persist()
+					}
+
+					rf.mu.RLock()
+					nextIdx = rf.nextIndex[i]
+					lastIncludedIndex = rf.LastIncludedIndex
+					rf.mu.RUnlock()
 				}
 			}
 
@@ -257,8 +267,10 @@ type InstallSnapshotReply struct {
 
 func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapshotReply) {
 	rf.mu.RLock()
+	Debug(dSnap, "S%d received snapshot from leader S%d at index %d", rf.me, rf.leaderID, rf.LastIncludedIndex)
 	reply.Term = rf.CurrentTerm
 	if args.Term < reply.Term {
+		rf.mu.RUnlock()
 		return
 	}
 	//truncateIndex := len(rf.Log)
@@ -279,7 +291,6 @@ func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapsho
 	}
 	rf.LastIncludedIndex = args.LastIncludedIndex
 	rf.LastIncludedTerm = args.LastIncludedTerm
-	Debug(dSnap, "S%d received snapshot from leader S%d at index %d", rf.me, rf.leaderID, rf.LastIncludedIndex)
 	rf.mu.Unlock()
 	rf.persist()
 	rf.applyCh <- ApplyMsg{SnapshotValid: true, Snapshot: args.Data, SnapshotTerm: args.LastIncludedTerm, SnapshotIndex: args.LastIncludedIndex}
@@ -584,7 +595,6 @@ func (rf *Raft) applyLog() {
 		rf.cond.L.Lock()
 		for rf.leaderCommit <= rf.lastApplied {
 			rf.cond.Wait()
-			Debug(dSnap, "S%d came back from waiting with leaderCommit index=%v, lastApplied index=%v", rf.me, rf.leaderCommit, rf.lastApplied)
 		}
 
 		rf.cond.L.Unlock()
@@ -598,12 +608,11 @@ func (rf *Raft) applyLog() {
 			rf.mu.RLock()
 			command := rf.Log[i-rf.LastIncludedIndex-1].Command
 			rf.mu.RUnlock()
-			rf.applyCh <- ApplyMsg{CommandValid: true, Command: command, CommandIndex: i}
+			rf.applyCh <- ApplyMsg{SnapshotValid: false, CommandValid: true, Command: command, CommandIndex: i}
 			rf.mu.Lock()
 			rf.lastApplied++
 			rf.mu.Unlock()
 		}
-		Debug(dCommit, "S%d has applied log with lastApplied index=%v", rf.me, rf.lastApplied)
 	}
 }
 
