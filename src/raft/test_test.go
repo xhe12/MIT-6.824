@@ -1181,7 +1181,7 @@ func snapcommon(t *testing.T, name string, disconnect bool, reliable bool, crash
 		}
 
 		// perhaps send enough to get a snapshot
-		nn := 7 //(SnapShotInterval / 2) + (rand.Int() % SnapShotInterval)
+		nn := (SnapShotInterval / 2) + (rand.Int() % SnapShotInterval)
 		for i := 0; i < nn; i++ {
 			cfg.rafts[sender].Start(rand.Int())
 		}
@@ -1193,7 +1193,9 @@ func snapcommon(t *testing.T, name string, disconnect bool, reliable bool, crash
 			// TestSnapshotBasic2D().
 			cfg.one(rand.Int(), servers, true)
 		} else {
+			Debug(dTest, "Sending command to raft")
 			cfg.one(rand.Int(), servers-1, true)
+			Debug(dTest, "Done sending command to raft")
 		}
 
 		if cfg.LogSize() >= MAXLOGSIZE {

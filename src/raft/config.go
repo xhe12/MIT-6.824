@@ -207,6 +207,7 @@ func (cfg *config) ingestSnap(i int, snapshot []byte, index int) string {
 		cfg.logs[i][j] = xlog[j]
 	}
 	cfg.lastApplied[i] = lastIncludedIndex
+	Debug(dTest, "S%v snapshot until index %v", i, lastIncludedIndex)
 	return ""
 }
 
@@ -513,6 +514,7 @@ func (cfg *config) nCommitted(index int) (int, interface{}) {
 			cmd = cmd1
 		}
 	}
+	//Debug(dTest, "log entry of %d has committed by %d servers", cmd, count)
 	return count, cmd
 }
 
