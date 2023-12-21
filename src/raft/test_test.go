@@ -1193,9 +1193,7 @@ func snapcommon(t *testing.T, name string, disconnect bool, reliable bool, crash
 			// TestSnapshotBasic2D().
 			cfg.one(rand.Int(), servers, true)
 		} else {
-			Debug(dTest, "Sending command to raft")
 			cfg.one(rand.Int(), servers-1, true)
-			Debug(dTest, "Done sending command to raft")
 		}
 
 		if cfg.LogSize() >= MAXLOGSIZE {
@@ -1266,12 +1264,14 @@ func TestSnapshotAllCrash2D(t *testing.T) {
 		// crash all
 		for i := 0; i < servers; i++ {
 			cfg.crash1(i)
+			Debug(dTest, "S%d is crashed ...", i)
 		}
 
 		// revive all
 		for i := 0; i < servers; i++ {
 			cfg.start1(i, cfg.applierSnap)
 			cfg.connect(i)
+			Debug(dTest, "S%d is connected ...", i)
 		}
 
 		index2 := cfg.one(rand.Int(), servers, true)

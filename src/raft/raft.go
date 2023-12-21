@@ -233,50 +233,53 @@ func (rf *Raft) Snapshot(index int, snapshot []byte) {
 		}()
 		//Debug(dSnap, "S%d sent snapshot at index %d", rf.me, index)
 		if status == leader {
-			args := InstallSnapshotArgs{rf.CurrentTerm, rf.me, index, term, snapshot}
-			reply := InstallSnapshotReply{}
-			for i := 0; i < len(rf.peers); i++ {
-				go func(i int) {
-					rf.mu.RLock()
-					nextIdx := rf.nextIndex[i]
-					lastIncludedIndex := rf.LastIncludedIndex
-					rf.mu.RUnlock()
-					ok := false
-					for i != rf.me && nextIdx <= index && lastIncludedIndex <= index && !ok {
-						go func(i int) {
-							Debug(dSnap, "S%d is sending snapshot to S%d", rf.me, i)
-							ok = rf.peers[i].Call("Raft.InstallSnapshot", &args, &reply)
-						}(i)
-						time.Sleep(20 * time.Millisecond)
-
-						if ok {
-							Debug(dSnap, "S%d leader is checking the snapshot reply", rf.me)
-							if reply.Term > rf.CurrentTerm {
-								rf.mu.Lock()
-								rf.status = follower
-								rf.leaderID = -1
-								rf.CurrentTerm = reply.Term
-								Debug(dLeader, "S%d Leader, becomes follower when sending snapshot", rf.me)
-								rf.mu.Unlock()
-								rf.persist()
-							} else {
-								rf.mu.Lock()
-								rf.nextIndex[i] = lastIncludedIndex + 1
-								rf.mu.Unlock()
-							}
-						}
-						time.Sleep(600 * time.Millisecond)
-						rf.mu.RLock()
-						nextIdx = rf.nextIndex[i]
-						lastIncludedIndex = rf.LastIncludedIndex
-						rf.mu.RUnlock()
-					}
-				}(i)
-			}
-
+			rf.sendSnapShot(index, term, snapshot)
 		}
 	}
 
+}
+
+func (rf *Raft) sendSnapShot(index int, term int, snapshot []byte) {
+	args := InstallSnapshotArgs{rf.CurrentTerm, rf.me, index, term, snapshot}
+	reply := InstallSnapshotReply{}
+	for i := 0; i < len(rf.peers); i++ {
+		go func(i int) {
+			rf.mu.RLock()
+			nextIdx := rf.nextIndex[i]
+			lastIncludedIndex := rf.LastIncludedIndex
+			rf.mu.RUnlock()
+			ok := false
+			for i != rf.me && nextIdx <= index && lastIncludedIndex <= index && !ok {
+				go func(i int) {
+					Debug(dSnap, "S%d is sending snapshot to S%d", rf.me, i)
+					ok = rf.peers[i].Call("Raft.InstallSnapshot", &args, &reply)
+				}(i)
+				time.Sleep(20 * time.Millisecond)
+
+				if ok {
+					Debug(dSnap, "S%d leader is checking the snapshot reply", rf.me)
+					if reply.Term > rf.CurrentTerm {
+						rf.mu.Lock()
+						rf.status = follower
+						rf.leaderID = -1
+						rf.CurrentTerm = reply.Term
+						Debug(dLeader, "S%d Leader, becomes follower when sending snapshot", rf.me)
+						rf.mu.Unlock()
+						rf.persist()
+					} else {
+						rf.mu.Lock()
+						rf.nextIndex[i] = lastIncludedIndex + 1
+						rf.mu.Unlock()
+					}
+				}
+				time.Sleep(600 * time.Millisecond)
+				rf.mu.RLock()
+				nextIdx = rf.nextIndex[i]
+				lastIncludedIndex = rf.LastIncludedIndex
+				rf.mu.RUnlock()
+			}
+		}(i)
+	}
 }
 
 type InstallSnapshotArgs struct {
@@ -573,14 +576,17 @@ func (rf *Raft) sendAppendEntries() {
 							Debug(dLeader, "S%d Leader, becomes follower", rf.me)
 						} else if !reply.Success {
 							// Follower's log is inconsistent with the leader's
-							if nextIndexCopy[i] == rf.LastIncludedIndex+1 && reply.ConflictIndex == nextIndexCopy[i] {
+							//if nextIndexCopy[i] == rf.LastIncludedIndex+1 && reply.ConflictIndex == nextIndexCopy[i] {
+							if reply.ConflictIndex == nextIndexCopy[i] {
 								// This is when leader sent all the current log entries, but all of them conflict
 								// Then send a snap shot to the follower
 								// TO DO: not sure how to send a snapshot
 								Debug(dSnap, "S%d needs a snapshot from leader S%d", i+1, rf.me)
-								return
+								snapshot := rf.persister.ReadSnapshot()
+								rf.sendSnapShot(rf.LastIncludedIndex, rf.CurrentTerm, snapshot)
+							} else {
+								rf.nextIndex[i] = reply.ConflictIndex
 							}
-							rf.nextIndex[i] = reply.ConflictIndex
 							//if reply.ConflictTerm != 0 {
 							// Search log for the last entry j with term conflictTerm
 							// for j := len(rf.Log); j >= 1; j-- {
@@ -624,7 +630,6 @@ func (rf *Raft) sendAppendEntries() {
 		status = rf.status
 		rf.mu.Unlock()
 		rf.cond.Signal()
-		rf.persist()
 
 	}
 }
@@ -651,7 +656,7 @@ func (rf *Raft) applyLog() {
 			rf.applyCh <- ApplyMsg{SnapshotValid: false, CommandValid: true, Command: command, CommandIndex: i}
 
 		}
-
+		rf.persist()
 		Debug(dSnap, "S%d has applied log up to index of %d, where commitIndex=%d", rf.me, rf.lastApplied, commitIndex)
 	}
 }
@@ -842,7 +847,7 @@ func (rf *Raft) startElection() {
 		for i := 0; i < len(rf.peers); i++ {
 			rf.nextIndex[i] = rf.commitIndex + 1
 		}
-		Debug(dVote, "S%d is elected for term %v\n", rf.me, rf.CurrentTerm)
+		Debug(dVote, "S%d is elected for term %v\n, nextIndex=%v", rf.me, rf.CurrentTerm, rf.nextIndex)
 		rf.mu.Unlock()
 		go rf.sendAppendEntries()
 

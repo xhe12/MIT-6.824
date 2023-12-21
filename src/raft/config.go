@@ -193,9 +193,12 @@ func (cfg *config) ingestSnap(i int, snapshot []byte, index int) string {
 	d := labgob.NewDecoder(r)
 	var lastIncludedIndex int
 	var xlog []interface{}
-	if d.Decode(&lastIncludedIndex) != nil ||
-		d.Decode(&xlog) != nil {
-		log.Fatalf("snapshot decode error")
+	if err := d.Decode(&lastIncludedIndex); err != nil {
+		log.Fatalf("snapshot decode error:%v", err)
+		return "snapshot Decode() error"
+	}
+	if err := d.Decode(&xlog); err != nil {
+		log.Fatalf("snapshot decode error:%v", err)
 		return "snapshot Decode() error"
 	}
 	if index != -1 && index != lastIncludedIndex {
@@ -207,7 +210,6 @@ func (cfg *config) ingestSnap(i int, snapshot []byte, index int) string {
 		cfg.logs[i][j] = xlog[j]
 	}
 	cfg.lastApplied[i] = lastIncludedIndex
-	Debug(dTest, "S%v snapshot until index %v", i, lastIncludedIndex)
 	return ""
 }
 
@@ -315,6 +317,27 @@ func (cfg *config) start1(i int, applier func(int, chan ApplyMsg)) {
 				cfg.t.Fatal(err)
 			}
 		}
+		data := cfg.saved[i].ReadRaftState()
+		if data != nil {
+			r := bytes.NewBuffer(data)
+			d := labgob.NewDecoder(r)
+			var currentTerm int
+			var votedFor int
+			var Log []*logEntry
+
+			if d.Decode(&currentTerm) != nil ||
+				d.Decode(&votedFor) != nil ||
+				d.Decode(&Log) != nil {
+				log.Fatal("Decoding error")
+			}
+
+			for j := 0; j < len(Log); j++ {
+				cfg.logs[i][j+1+cfg.lastApplied[i]] = Log[j].Command
+			}
+			cfg.lastApplied[i] += len(Log)
+		}
+		//Debug(dTest, "S%d is restarting, cfg.lastAppplied = %d", i, cfg.lastApplied[i])
+
 	} else {
 		cfg.saved[i] = MakePersister()
 	}
@@ -514,7 +537,6 @@ func (cfg *config) nCommitted(index int) (int, interface{}) {
 			cmd = cmd1
 		}
 	}
-	//Debug(dTest, "log entry of %d has committed by %d servers", cmd, count)
 	return count, cmd
 }
 
